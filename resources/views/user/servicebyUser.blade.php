@@ -24,8 +24,7 @@
           <th class="text-light">Client Name</th>
           <th class="text-light">Mobile</th>
           <th class="text-light">Product</th>
-          <th class="text-light">Last Service</th>
-          <th class="text-light">Next Service</th>
+          <th class="text-light">Installation Date</th>
           <th class="text-light">Action</th>
         </tr>                      
       </thead>
@@ -65,15 +64,35 @@
           <br><br>
           <label for="partsChanged">Parts Changed</label><br>
           <div class="card"></div>
-          <select name="partsChanged[]" id="partsChange"class="form-control" multiple="multiple">
+          <select name="partsChanged[]" id="partsChange" class="form-control" multiple="multiple">
             <option value="">loading</option>
           </select>
           <span class="error partsChanged_error text-danger"></span>
 
-          <label for="nextService">Next Service</label>
-          <input type="text" name="nextService" id="nextServ" class="form-control mt-3">
-          <span class="error nextService_error text-danger"></span>
+          <label for="nextService">Select Next Service Duration:</label>
+          <select id="duration" name="duration" class="form-control">
+              <option value="">Select Option</option>
+              <option value="4">4 Months</option>
+              <option value="6">6 Months</option>
+              <option value="12">12 Months</option>
+          </select>
+  
+          <label for="specificDate">Or, select a specific date:</label>
+          <input type="date" id="specificDate" name="specificDate" class="form-control">
           
+      <!--date  will attach the below input -->
+      <input type="hidden" id="nextService" name="nextService">
+   
+          <span class="error nextService_error text-danger"></span>
+
+          <label for="">Amount Paid(if paid service)</label>
+          <input type="text" name="amount" id="amount" class="form-control mt-3" >
+          <span class="error amount_error text-danger"></span>
+
+          <label for="">Remarks</label>
+          <input type="text" name="remarks" id="remark" class="form-control mt-3">
+          <span class="error remarks_error text-danger"></span>
+
           <input type="hidden" name="customer_id" id="customerId">
           <input type="hidden" name="staff_id" id="staffId">
         <div class="modal-footer">
@@ -171,9 +190,6 @@ $(document).ready(function() {
                     }
                 }
             },
-            {
-              data:'nextService',name:'nextService',
-            },
             
             {
                 data: null,
@@ -222,7 +238,7 @@ $('#serviceTable').on('click', '.fix-button', function() {
                    
             document.getElementById('customerId').value = response.insDetails.individual_id;
             document.getElementById('staffId').value = response.staff_id;
-            document.getElementById('nextServ').value = response.insDetails.nextService;
+            
         
                 // Show the modal
                 $('.fix-modal').modal('show');
@@ -281,7 +297,73 @@ function formatDate(dateStr) {
     const ampm = date.getHours() >= 12 ? 'pm' : 'am';
     return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
 }
+function updateNextService() {
+            const durationValue = $('#duration').val();
+            const dateValue = $('#specificDate').val();
+            const today = new Date();
+            const result = $('#result');
+            let endDate;
 
+            if (durationValue) {
+                // Calculate the end date based on the selected duration
+                endDate = new Date(today.setMonth(today.getMonth() + parseInt(durationValue, 10)));
+                $('#nextService').val(`${endDate.toISOString().split('T')[0]}`);
+          
+            } else if (dateValue) {
+                // Display the selected specific date
+                $('#nextService').val(`${new Date(dateValue).toISOString().split('T')[0]}`);
+             
+            } else {
+                // Clear the result and hidden input if neither option is selected
+                $('#nextService').val('');
+                result.text('');
+            }
+        }
+
+        $('#duration').on('change', updateNextService);
+        $('#specificDate').on('change', updateNextService);
+        $(document).ready(function() {
+    $(".submit-application").click(function(e) {
+        e.preventDefault();
+        let form = $('#submitApplication')[0];
+        let data = new FormData(form);
+
+        $.ajax({
+            url: `{{ url('/user/service/new') }}`,
+            type: "POST",
+            data: data,
+            dataType: "JSON",
+            processData: false,
+            contentType: false,
+            success: function(response) {
+            console.log(response); // Log response for debugging
+
+    // Clear previous error messages
+    $('.error').text('');
+
+    if (response.status === 0) {
+        $.each(response.error, function(key, value) {
+            $('#' + key).next('.error').text(value);
+        });
+        toastr.error('Please fix the errors and try again.', 'Validation Error', { positionClass: 'toast-top-right' });
+    } else if (response.status === 1) {
+        toastr.success(response.message, 'Success', { positionClass: 'toast-top-right' });
+        $('#submitApplication')[0].reset(); // Clear form fields
+        $('#fixModal').modal('hide'); // Optionally, close the modal
+        $('#serviceTable').DataTable().ajax.reload();
+    } else {
+        toastr.error('Unexpected response format', 'Error', { positionClass: 'toast-top-right' });
+       
+    }
+},
+error: function(xhr, status, error) {
+    console.error(xhr.responseText);
+    toastr.error('Something went wrong!', 'Error', { positionClass: 'toast-top-right' });
+}
+
+    });
+});
+    });     
 
 </script>
 @endpush

@@ -28,6 +28,7 @@ class AdminController extends Controller
         'category_id' => 'required|exists:categories,category_id',
         'subcat_id' => 'required|exists:subcategories,subcat_id',
         'product_id' => 'required|exists:products,product_id',
+        'filter_change_on' =>'required',
         'assigned_to' => 'nullable|string|max:255',
         'remarks' => 'nullable|string|max:500',
     ], [
@@ -39,6 +40,7 @@ class AdminController extends Controller
         'category_id.required' => 'Please select a category',
         'subcat_id.required' => 'Please select a category',
         'product_id.required' => 'Please select a category',
+        'filter_change_on.required' =>'Please select Filter Change',
         'assigned_to.required' => 'Staff name is required',
         'remarks.required' => 'Please add remarks',
     ]);
@@ -59,6 +61,7 @@ class AdminController extends Controller
         'category_id' => $request->input('category_id'),
         'subcat_id' => $request->input('subcat_id'),
         'product_id' => $request->input('product_id'),
+        'filter_change_on' =>$request->input('filter_change_on'),
         'assigned_to' => $request->input('assigned_to'),
         'remarks' => $request->input('remarks'),
         'created_at' => Carbon::now(),  // Add current timestamp
@@ -236,11 +239,13 @@ class AdminController extends Controller
         'category_id' =>'required',
         'subcategoryId' =>'required',
         'product_name' =>'required',
+        'remarks' =>'nullable',
     ]);
     Product::create([
         'category_id' =>$request->category_id,
         'subcategoryId' =>$request->subcategoryId,
         'product_name' =>$request->product_name,
+        'remarks' =>$request->remarks,
     ]);
     return response()->json([
         'status' =>1,
@@ -253,7 +258,7 @@ class AdminController extends Controller
      $purchase = DB::table('products')
          ->join('categories', 'products.category_id', '=', 'categories.category_id')
          ->join('subcategories', 'products.subcategoryId', '=', 'subcategories.subcat_id') // Assuming subcategory_id is the correct column name
-         ->select('products.product_id', 'products.product_name', 'categories.category_name', 'subcategories.subcategory_name')
+         ->select('products.product_id', 'products.product_name','products.remarks', 'categories.category_name', 'subcategories.subcategory_name')
          ->get();
    
                        $totalRecords = count($purchase); // Total records in your data source

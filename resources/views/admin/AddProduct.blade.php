@@ -37,6 +37,7 @@
                                 <th class="text-light">Category</th>
                                 <th class="text-light">Sub Category</th>
                                 <th class="text-light">Product Name</th>
+                                <th class="text-light">Remarks</th>
                                 <th class="text-light">Action</th>                                                
                             </tr>
                         </thead>
@@ -45,6 +46,7 @@
                             
                             <td></td>
                             <td class="text-wrap"></td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -88,7 +90,7 @@
               </select><br>
                 </div>
                 <div class="col-1 text-start mt-3">
-                <button type="button" class="btn btn-primary add-user-btn" data-bs-toggle="modal" data-bs-target="#CategoryDetailsModal">
+                <button type="button" class="btn btn-primary add-user-btn mt-2" data-bs-toggle="modal" data-bs-target="#CategoryDetailsModal">
                 <span class="plus-symbol">+</span>
             </button>
                 </div>
@@ -103,7 +105,7 @@
             </select>
         </div>
         <div class="col-1 text-start mt-3">
-            <button type="button" class="btn btn-primary add-user-btn" data-bs-toggle="modal" data-bs-target="#SubCategoryDetailsModal">
+            <button type="button" class="btn btn-primary add-user-btn mt-2" data-bs-toggle="modal" data-bs-target="#SubCategoryDetailsModal">
                 <span class="plus-symbol">+</span>
             </button>
             
@@ -117,8 +119,23 @@
     <div class="col-1 text-start mt-3">
     
     </div>
-</div>    
-        <button type="submit" class="btn btn-primary mt-2" style="margin-left:290px">Submit</button>
+</div>
+    <div class="row align-items-start justify-content-start">
+        <div class="col-12">
+        <label>Remarks:</label>
+                <input type="text" name="remarks" class="form-control" >
+        </div>
+       
+</div>   
+<div class="row">
+    <div class="col-5">  </div>
+        <div class="col-2">
+            <button type="submit" class="btn btn-primary mt-2 w-100" >Submit</button>
+        </div>    
+      
+</div>
+ 
+    
             </form>
             </div>
         </div>
@@ -220,6 +237,13 @@
     
     </div>
 </div>    
+<div class="row align-items-start justify-content-start">
+    <div class="col-12">
+    <label>Remarks:</label>
+            <input type="text" name="remarks" id="remarkon" class="form-control" >
+    </div>
+   
+</div>   
         <input type="hidden" name="productId" id="editProductId">
         <button type="submit" class="btn btn-primary mt-2" style="margin-left:290px">Submit</button>
             </form>
@@ -329,6 +353,7 @@
             { data: 'category_name' },
             { data: 'subcategory_name' },
             { data: 'product_name' },
+            { data: 'remarks'},
             {
                 data: null,
                 name: 'action',
@@ -480,7 +505,8 @@ $("#productData").on("click", ".edit-product", function(e){
                   {               
                     $('#editProductId').val(res.product_id);
                     $('#category-edit option[value="'+res.category_id+'"]').attr("selected", "selected"); 
-                    $('#product-edit').val(res.product_name);               
+                    $('#product-edit').val(res.product_name);  
+                    $('#remarkon').val(res.remarks);             
                    $('#EditProductDetailsModal').modal('show');
                   }
 

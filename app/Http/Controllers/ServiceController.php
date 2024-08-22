@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Part;
 use App\Models\Service;
+use App\Models\ServiceHistory;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 class ServiceController extends Controller
@@ -16,56 +17,75 @@ class ServiceController extends Controller
         return view('admin.service');
     } 
     
-    public function viewServices(Request $request)
+ public function viewServices(Request $request)
 {
     if ($request->ajax()) {
-        
-        $insDetails = DB::table('individuals')
-                      ->join('products','individuals.product_id','=','products.product_id') 
-                      ->join('installations','individuals.individual_id','=','installations.customer_id')                   
-                      ->select('individuals.*','products.product_name','installations.nextService')
-                      ->whereIn('individuals.status', ['completed'])
-                      ->get();
-        $totalRecords = count($insDetails); // Total records in your data source
-        $filteredRecords = count($insDetails); // Number of records after applying filters
-   
-        return response()->json(['draw' => request()->get('draw'),
-                                'recordsTotal' => $totalRecords,
-                                'recordsFiltered' => $filteredRecords,
-                                'data' => $insDetails]);
-    }
-    return response()->json(['error' => 'Invalid request'], 400);
-} 
-
-public function getFixService(Request $request,$id)
-{
-    $stId = Auth::user()->id;
-    if ($request->ajax()) { 
-        $insDetails = DB::table('individuals')
+        // Fetch the most recent service record
+        $recentService = DB::table('services')
+            ->join('individuals', 'services.customer_id', '=', 'individuals.individual_id')
+            ->join('installations', 'installations.customer_id', '=', 'services.customer_id')
             ->join('products', 'individuals.product_id', '=', 'products.product_id')
-            ->join('installations','individuals.individual_id','=','installations.customer_id')
-            ->where('individuals.individual_id', $id)
-            ->select('individuals.*', 'products.product_name','installations.nextService')
-            ->first();
+            ->select('services.*', 'individuals.p_name', 'individuals.mobile', 'products.product_name', 'installations.created_at as installation_date')
+            ->whereIn('individuals.status', ['completed'])
+            ->orderBy('services.created_at', 'desc') // Order by services.created_at in descending order
+            ->first(); // Fetch only the most recent record
 
-        return response()->json(['insDetails'=>$insDetails,'staff_id'=>$stId]);
+        if ($recentService) {
+            return response()->json([
+                'draw' => request()->get('draw'),
+                'recordsTotal' => 1, // Only one record
+                'recordsFiltered' => 1, // Only one record
+                'data' => [$recentService] // Return as an array
+            ]);
+        }
+
+        return response()->json([
+            'draw' => request()->get('draw'),
+            'recordsTotal' => 0,
+            'recordsFiltered' => 0,
+            'data' => []
+        ]);
     }
+
+    return response()->json(['error' => 'Invalid request'], 400);
 }
 
+public function details($id) {
+    $service = Service::find($id);
+    $custId = $service->customer_id; 
+       // Fetch the data from the database
+       $data = DB::table('services')
+       ->join('individuals', 'services.customer_id', '=', 'individuals.individual_id')
+       ->join('installations', 'installations.customer_id', '=', 'services.customer_id')
+       ->join('products', 'individuals.product_id', '=', 'products.product_id')
+       ->select('services.*', 'individuals.p_name', 'individuals.mobile', 'products.product_name', 'installations.created_at as installation_date')
+       ->where('individuals.status', 'completed')
+       ->orderBy('services.created_at', 'desc') // Order by services.created_at in descending order
+       ->get()
+       ->map(function ($item) {
+           // Format the dates as DD-MM-YYYY hh:mm A
+           $item->created_at = Carbon::parse($item->created_at)->format('d-m-Y h:i A');
+           $item->installation_date = Carbon::parse($item->installation_date)->format('d-m-Y h:i A');
+           // Format nextServices if it exists
+           $item->nextService = isset($item->nextService) ? Carbon::parse($item->nextService)->format('d-m-Y') : null;
+           return $item;
+       });
+    return response()->json($data);
+}
 
-
-
-
-
-public function doService(Request $request)
+public function douserService(Request $request)
 {
-   
+    // Create a new validator instance
     $validator = Validator::make($request->all(), [
-        'tos' => 'required',
-        'partsChanged' => 'required',
-        'nextService' => 'required',
-    ], 
-    [
+        'tos' => 'required|string',
+        'partsChanged' => 'required|array',
+        'partsChanged.*' => 'exists:parts,parts_id',
+        'nextService' => 'required_if:duration,null|date',
+        'amount' => 'nullable|numeric',
+        'remarks' => 'nullable|string',
+        'customer_id' => 'required|exists:individuals,individual_id',
+        'staff_id' => 'required|exists:users,id',
+    ], [
         'tos.required' => 'Type of Service is required.',
         'partsChanged.required' => 'Parts changed is required',
         'nextService.required' => 'Next Service is required',
@@ -78,21 +98,33 @@ public function doService(Request $request)
             'status' => 0,
             'error' => $validator->errors()
         ]);
-    }   
-    $service =new Service;
-    $service->tos =$request->input('tos');
-    $service->partsChanged = $request->input('partsChanged');
-    $service->nextService = $request->input('nextService');
-    $service->save();
+    }
 
+    // Retrieve validated data
+    $validatedData = $validator->validated();
+
+    // Create a new instance of your model and assign values
+    $service = new Service();
+    $service->tos = $validatedData['tos'];
+    $service->partsChanged = json_encode($validatedData['partsChanged']); // Convert array to JSON
+    $service->nextService = $validatedData['nextService'];
+    $service->amount = $validatedData['amount'];
+    $service->remarks = $validatedData['remarks'];
+    $service->customer_id = $validatedData['customer_id'];
+    $service->staff_id = $validatedData['staff_id'];
+    
+    // Save the model instance to the database
+    $service->save(); 
+
+
+    // Return a success response
     return response()->json([
         'status' => 1,
         'message' => 'Service created successfully!',
     ]);
+}
 
 
-
-}  
 //add new parts by admin 
 public function partsViewPage()
 {
@@ -133,6 +165,11 @@ public function doParts(Request $request)
             'message' => 'Something went wrong!', 
         ]);
     }  
+} 
+public function getFeedback($id)
+{
+    $service_id = Service::find($id);
+    return response()->json($service_id);
 }
 
 
@@ -155,9 +192,8 @@ public function getuserServicePage()
     if ($request->ajax()) {
         
         $insDetails = DB::table('individuals')
-                      ->join('products','individuals.product_id','=','products.product_id') 
-                      ->join('installations','individuals.individual_id','=','installations.customer_id')                   
-                      ->select('individuals.*','products.product_name','installations.nextService')
+                      ->join('products','individuals.product_id','=','products.product_id')                                        
+                      ->select('individuals.*','products.product_name')
                       ->whereIn('individuals.status', ['completed'])
                       ->get();
         $totalRecords = count($insDetails); // Total records in your data source

@@ -26,6 +26,11 @@
                             <th class="text-light">Contact Person</th>
                             <th class="text-light">Contact Mobile</th>
                             <th class="text-light">Contact Address</th>
+                            <th class="text-light">Category</th>
+                            <th class="text-light">Sub Category</th>
+                            <th class="text-light">Product</th>
+                            <th class="text-light">Assigned To</th>
+                            <th class="text-light">Filter Change On</th>
                             <th class="text-light">Action</th>
                           
                         </tr>
@@ -33,6 +38,11 @@
                     </thead>
                     <tbody>
                         <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -62,10 +72,6 @@
             <button type="button" class="btn-close text-light" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body p-5">
-    
-
-
-
                                         <form id="submitApplication" method="POST">
                                         @csrf 
                                         <div id="formErrors" class="alert alert-danger d-none"></div> <!-- Error container -->
@@ -94,7 +100,66 @@
 
                                         <br><label for="center_address">Center Address</label>
                                         <textarea name="center_address" id="center_address" cols="30" rows="5" placeholder="Center Address" class="form-control"></textarea>
-                                        <span class="error center_address_error text-danger"></span>
+                                        <span class="error center_address_error text-danger"></span> 
+                                        <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Product Details</h3>
+                                        <div class="form-group mb-2">
+                                            <label for="category">Category:</label>
+                                            <select id="category-select" name="category_id" class="form-select fixed-width"
+                                                style="width:725px !important;">
+                                                <option value="">Select Category</option>
+                                                @foreach($categories as $category)
+                                                <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="error text-danger" id="category-error"></span>
+                                        </div>
+                                        <div class="single-row d-flex justify-content-between">
+                    
+                                            <div class="form-group mb-2">
+                                                <label for="category">Sub Category:</label>
+                                                <select id="sub-category-select" name="subcat_id" class="form-select fixed-width"
+                                                    style="width:350px !important;">
+                    
+                                                    <option value="">Select subcategory</option>
+                    
+                                                </select>
+                                                <span class="error text-danger" id="category-error"></span>
+                                            </div>
+                    
+                                            <div class="form-group mb-2">
+                                                <label for="product">Product:</label>
+                                                <select id="product-select" name="product_id" class="form-select fixed-width"
+                                                    style="width:350px !important;">
+                    
+                                                    <option value="">Select Product</option>
+                                                    <!-- Products will be loaded here -->
+                                                </select>
+                    
+                                                <span class="error text-danger" id="product-error"></span>
+                                            </div>
+                                        </div>
+
+                                        <h3 class="text-center text-light p-1 rounded-1 w-50" style="margin-left:170px">Installation Details</h3>
+                                        <div class="form-group mb-2">
+                                            <label for=""> Filter change on </label>
+                                            <select name="filter_change" id="filterchangeon" class="form-select">
+                                                <option value="">Select Filter Change On</option>
+                                                <option value="4 Months">4 Months</option>
+                                                <option value="8 Months">8 Months</option>
+                                                <option value="12 Months">12 Months</option>
+                                            </select>
+                                            <input type="text" id="filterchange" name="filter_change_on">
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label for="assigned_to">Assigned to:</label>
+                                            <select id="assigned_to1" name="assigned_to" class="form-control">
+                                                @foreach($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="error text-danger" id="assigned_to-error"></span>
+                                        </div>
+                                     
                                     </form>
           </div>
           <div class="modal-footer">
@@ -155,7 +220,7 @@
     <script src="{{ asset('assets/vendor/datatables.net-select/js/dataTables.select.min.js') }}"></script>
 
 <script>
-    //data table view 
+    //data table view ,
     $(document).ready(function() {
     $('#corporateTable').DataTable({
         processing: true,
@@ -173,7 +238,7 @@
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions:{
-                    columns: [0,1,2,3,4,5,6] // Update columns to include the new serial number column
+                    columns: [0,1,2,3,4,5,6,7,8,9,10] // Update columns to include the new serial number column
                 }
             }
         ],
@@ -203,6 +268,27 @@
             { data: 'contact_person', name: 'contact_person' },
             { data: 'contact_mobile', name: 'contact_mobile' },
             { data: 'center_address', name: 'center_address' },
+            { data: 'category_name', name: 'category_name' },
+            { data: 'subcategory_name', name: 'subcategory_name' },
+            { data: 'product_name', name: 'product_name' },
+            { data: 'name', name: 'name' },
+            { data: 'filter_change_on', name: 'filter_change_on',
+            render: function(data, type, row) {
+                    try {
+                        const date = new Date(data);
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        const hours = date.getHours() % 12 || 12;
+                        const minutes = String(date.getMinutes()).padStart(2, '0');
+                        const ampm = date.getHours() >= 12 ? 'pm' : 'am';
+                        return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
+                    } catch (e) {
+                        console.error('Date formatting error:', e);
+                        return data; // Fallback to raw data if there's an error
+                    }
+                }
+             },
             {
                 data: null,
                 name: 'action',
@@ -221,12 +307,62 @@
                         </button>
                     `;
                 }
-            }
+            },
         ],
-        columnDefs: [{ visible: false, targets: [3, 5] }],
+        columnDefs: [{ visible: false, targets: [2,3,4,6,7,8,10] }],
     });
 });
+//product relevent 
+$('#category-select').change(function() {
+        var categoryId = $(this).val();
+        if (categoryId) { // Check if a valid category ID is selected
+            $.get(`{{ url('/admin/products') }}/` + categoryId, function(products) {
+                var $productSelect = $('#product-select');
+                $productSelect.empty();
+                // $productSelect.append('<option value="">Select Product</option>');
+                $.each(products, function(index, product) {
+                    $productSelect.append('<option value="' + product.product_id + '">' + product.product_name + '</option>');
+                });
+            }).fail(function() {
+                console.log('Failed to fetch products.'); // Handle any errors
+            });
+        } else {
+            $('#product-select').empty().append('<option value="">Select Product</option>'); // Clear products if no category is selected
+        }
+    });
+//sub category field change 
+$('#category-select').change(function() {
+        var categoryId = $(this).val();
+        if (categoryId) { // Check if a valid category ID is selected
+            $.get(`{{ url('/admin/subcategory/change') }}/` + categoryId, function(sub) {
+                var $subcatSelect = $('#sub-category-select');
+                $subcatSelect.empty();
+                // $productSelect.append('<option value="">Select Product</option>');
+                $.each(sub, function(index, subcat) {
+                    $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
+                });
+            }).fail(function() {
+                console.log('Failed to fetch products.'); // Handle any errors
+            });
+        } else {
+            $('#sub-category-select').empty().append('<option value="">Select sub category</option>'); // Clear products if no category is selected
+        }
+    });
+//filter change on to date 
+function updateNextService() {
+            const filterchangeonValue = $('#filterchangeon').val();
+            const today = new Date();
+            const result = $('#result');
+            let endDate;
 
+            if (filterchangeonValue) {
+                // Calculate the end date based on the selected filterchangeon
+                endDate = new Date(today.setMonth(today.getMonth() + parseInt(filterchangeonValue, 10)));
+                $('#filterchange').val(`${endDate.toISOString().split('T')[0]}`);
+            }
+           }
+
+        $('#filterchangeon').on('change', updateNextService);
 
 //submit corporate company
     $(document).ready(function() {
@@ -281,15 +417,25 @@ $(document).on('click', '.view-company', function() {
         $.get(`{{ url('/admin/purchase/company') }}/${companyId}`, function(data) {
             console.log('Response data:', data);
 
-            if (data && data.company_name && data.center_name && data.sub_center && data.contact_person && data.contact_mobile && data.center_address) {
+            if (data && data.companyPurchase) {
+                const company = data.companyPurchase;
+
                 let corporateDetails = `
-                    <p><strong>Company Name:</strong> ${data.company_name}</p>
-                    <p><strong>Center Name:</strong> ${data.center_name}</p>
-                    <p><strong>Sub center:</strong> ${data.sub_center}</p>
-                    <p><strong>Contact Person:</strong> ${data.contact_person}</p>
-                    <p><strong>Contact Mobile:</strong> ${data.contact_mobile}</p>
-                    <p><strong>Center Address:</strong> ${data.center_address}</p>
+                    <ul class="list-group">
+                        <li class="list-group-item"><p class="m-0"><strong>Company Name:</strong> ${company.company_name}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Center Name:</strong> ${company.center_name}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Sub center:</strong> ${company.sub_center}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Contact Person:</strong> ${company.contact_person}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Contact Mobile:</strong> ${company.contact_mobile}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Center Address:</strong> ${company.center_address}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Category:</strong> ${company.category_name}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Sub Category:</strong> ${company.subcategory_name}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Product:</strong> ${company.product_name}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Filter Change On:</strong> ${data.formattedDate}</p></li>
+                        <li class="list-group-item"><p class="m-0"><strong>Assigned To:</strong> ${company.name}</p></li>
+                    </ul>
                 `;
+
                 $('#corporateDetails').html(corporateDetails);
                 $('#corporateDetailsModal').modal('show');
             } else {
@@ -303,6 +449,7 @@ $(document).on('click', '.view-company', function() {
         console.error('Company ID is undefined.');
     }
 });
+
 //edit corporate companies  
 
 $(document).on('click', '.edit-company', function() {
@@ -313,6 +460,7 @@ $(document).on('click', '.edit-company', function() {
         const formHtml = `
             <form id="editCompanyForm" data-id="${data.corporate_id}">
             @csrf
+            <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Corporate Company</h3>
                 <div class="mb-3">
                     <label for="company_name" class="form-label">Company Name</label>
                     <input type="text" class="form-control" id="edit_company_name" name="company_name" value="${data.company_name}">
@@ -325,6 +473,7 @@ $(document).on('click', '.edit-company', function() {
                     <label for="sub_center" class="form-label">Sub Center</label>
                     <input type="text" class="form-control" id="edit_sub_center" name="sub_center" value="${data.sub_center}">
                 </div>
+                       <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Contact Person</h3>
                  <div class="mb-3">
                     <label for="contact_person" class="form-label">Contact Person</label>
                     <input type="text" class="form-control" id="edit_contact_person" name="contact_person" value="${data.contact_person}">
@@ -336,9 +485,65 @@ $(document).on('click', '.edit-company', function() {
                  <div class="mb-3">
                     <label for="center_address" class="form-label">Center Address</label>
                     <input type="text" class="form-control" id="edit_center_address" name="center_address" value="${data.center_address}">
-                </div>
-        
-                <button type="submit" class="btn btn-primary" style="margin-left:260px;">Save changes</button>
+                     <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Product Details</h3>
+                </div>  <div class="form-group mb-2">
+                                            <label for="category">Category:</label>
+                                            <select id="edit-category-select" name="category_id" class="form-select fixed-width"
+                                                style="width:725px !important;">
+                                                <option value="${data.category_name}">${data.category_name}</option>
+                                                @foreach($categories as $category)
+                                                <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="error text-danger" id="category-error"></span>
+                                        </div>
+                                        <div class="single-row d-flex justify-content-between">
+                    
+                                            <div class="form-group mb-2">
+                                                <label for="category">Sub Category:</label>
+                                                <select id="edit-sub-category-select" name="subcat_id" class="form-select fixed-width"
+                                                    style="width:350px !important;">
+                    
+                                                    <option value="${data.subcategory_name}">${data.subcategory_name}</option>
+                    
+                                                </select>
+                                                <span class="error text-danger" id="category-error"></span>
+                                            </div>
+                    
+                                            <div class="form-group mb-2">
+                                                <label for="product">Product:</label>
+                                                <select id="edit-product-select" name="product_id" class="form-select fixed-width"
+                                                    style="width:350px !important;">
+                    
+                                                    <option value="${data.product_name}">${data.product_name}</option>
+                                                    <!-- Products will be loaded here -->
+                                                </select>
+                    
+                                                <span class="error text-danger" id="product-error"></span>
+                                            </div>
+                                        </div>
+
+                                        <h3 class="text-center text-light p-1 rounded-1 w-50" style="margin-left:170px">Installation Details</h3>
+                                        <div class="form-group mb-2">
+                                            <label for=""> Filter change on </label>
+                                            <select name="filter_change_on" id="edit-filter-change" class="form-select">
+                                                <option value="${data.filter_change_on}">${data.filter_change_on}</option>
+                                                <option value="4 Months">4 Months</option>
+                                                <option value="8 Months">8 Months</option>
+                                                <option value="4 Months">12 Months</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <label for="assigned_to">Assigned to:</label>
+                                            <select id="edit-assigned_to1" name="assigned_to" class="form-control">
+                                                <option>${data.name}</option>
+                                                @foreach($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <span class="error text-danger" id="assigned_to-error"></span>
+                                        </div>           
+                                            <button type="submit" class="btn btn-primary" style="margin-left:260px;">Save changes</button>
             </form>
         `;
         
@@ -347,7 +552,46 @@ $(document).on('click', '.edit-company', function() {
 
         // Show the modal
         $('#editDetailsModal').modal('show');
+        $('#edit-category-select').change(function() {
+        var categoryId = $(this).val();
+        if (categoryId) { // Check if a valid category ID is selected
+            $.get(`{{ url('/admin/products') }}/` + categoryId, function(products) {
+                var $productSelect = $('#edit-product-select');
+                $productSelect.empty();
+                // $productSelect.append('<option value="">Select Product</option>');
+                $.each(products, function(index, product) {
+                    $productSelect.append('<option value="' + product.product_id + '">' + product.product_name + '</option>');
+                });
+            }).fail(function() {
+                console.log('Failed to fetch products.'); // Handle any errors
+            });
+        } else {
+            $('#edit-product-select').empty().append('<option value="">Select Product</option>'); // Clear products if no category is selected
+        }
     });
+//sub category field change 
+$('#edit-category-select').change(function() {
+        var categoryId = $(this).val();
+        if (categoryId) { // Check if a valid category ID is selected
+            $.get(`{{ url('/admin/subcategory/change') }}/` + categoryId, function(sub) {
+                var $subcatSelect = $('#edit-sub-category-select');
+                $subcatSelect.empty();
+                // $productSelect.append('<option value="">Select Product</option>');
+                $.each(sub, function(index, subcat) {
+                    $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
+                });
+            }).fail(function() {
+                console.log('Failed to fetch products.'); // Handle any errors
+            });
+        } else {
+            $('#edit-sub-category-select').empty().append('<option value="">Select sub category</option>'); // Clear products if no category is selected
+        }
+    });
+
+
+    });
+
+    
 }); 
 // update company purchase 
 

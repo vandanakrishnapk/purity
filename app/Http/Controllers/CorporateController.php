@@ -6,11 +6,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\Corporate;
+use Carbon\Carbon;
 class CorporateController extends Controller
 {
     public function getCorporatePurchase()
     {
-        return view('admin.corporate');
+        $users = DB::table('users')->where('role','=','1')->get();
+        $categories = DB::table('categories')->get(); 
+        $subcat = DB::table('subcategories')->get();
+        return view('admin.corporate',['users' => $users, 'categories' => $categories,'subcat' => $subcat]);
     } 
     public function doCorporatePurchase(Request $request)
     {
@@ -22,6 +26,8 @@ class CorporateController extends Controller
             'contact_person' => 'required',
             'contact_mobile' => 'required|digits:10',
             'center_address' =>'required',
+            'filter_change_on' =>'required',
+          
                 ], 
                 [
                     'company_name.required' => 'Name is required.',
@@ -32,6 +38,7 @@ class CorporateController extends Controller
                     'contact_mobile.required' => 'Contact Mobile is required',
                     'contact_mobile.digits' => 'Mobile Number must be 10 digits',
                     'center_address.required' => 'Center Address is required',
+                    'filter_change_on.required' =>'Filter change required',
                 ]);
     
         // Check if validation fails
@@ -49,7 +56,12 @@ class CorporateController extends Controller
             'sub_center' =>$request->input('sub_center'),
             'contact_person' =>$request->input('contact_person'),
             'contact_mobile' =>$request->input('contact_mobile'),
-            'center_address' =>$request->input('center_address'),      
+            'center_address' =>$request->input('center_address'),
+            'category_id' => $request->input('category_id'),
+            'subcat_id' => $request->input('subcat_id'),
+            'product_id' => $request->input('product_id'),
+            'filter_change_on' =>$request->input('filter_change_on'),
+            'assigned_to' => $request->input('assigned_to'),      
         ];  
         if (DB::table('corporates')->insert($data))
         {
@@ -70,7 +82,15 @@ class CorporateController extends Controller
     public function viewCorporatePurchase(Request $request)
     {
         if ($request->ajax()) {
-            $companyPurchase = Corporate::select(['corporate_id','company_name','center_name','sub_center','contact_person','contact_mobile','center_address',])->get();
+            $companyPurchase = DB::table('corporates')
+            ->join('categories', 'corporates.category_id', '=', 'categories.category_id')
+            ->join('subcategories','corporates.subcat_id','=','subcategories.subcat_id')
+            ->join('products', 'corporates.product_id', '=', 'products.product_id')
+            ->join('users','corporates.assigned_to','=','users.id')
+            ->select('corporates.corporate_id','corporates.company_name', 'corporates.center_address','corporates.center_name','corporates.sub_center','corporates.contact_person','corporates.contact_mobile','corporates.filter_change_on','categories.category_name', 'subcategories.subcategory_name','products.product_name','users.name')
+            ->get();
+            
+            
             $totalRecords = count($companyPurchase); // Total records in your data source
             $filteredRecords = count($companyPurchase); // Number of records after applying filters
         
@@ -86,7 +106,18 @@ class CorporateController extends Controller
     public function show($id)
     {
         $company = Corporate::findOrFail($id);
-        return response()->json($company);
+        $comid = $company->corporate_id;
+        $companyPurchase = DB::table('corporates')
+        ->join('categories', 'corporates.category_id', '=', 'categories.category_id')
+        ->join('subcategories','corporates.subcat_id','=','subcategories.subcat_id')
+        ->join('products', 'corporates.product_id', '=', 'products.product_id')
+        ->join('users','corporates.assigned_to','=','users.id')
+        ->select('corporates.corporate_id','corporates.company_name', 'corporates.center_address','corporates.center_name','corporates.sub_center','corporates.contact_person','corporates.contact_mobile','corporates.filter_change_on','categories.category_name', 'subcategories.subcategory_name','products.product_name','users.name')
+        ->where('corporates.corporate_id','=',$comid)
+        ->first();
+        $date =  $companyPurchase->filter_change_on;
+        $formattedDate = Carbon::parse($date)->format('d-m-Y');
+        return response()->json(['companyPurchase'=>$companyPurchase,'formattedDate'=>$formattedDate]);
     }
 
     public function edit($id)

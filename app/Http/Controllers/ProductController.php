@@ -48,6 +48,7 @@ public function edit($id)
             'category_id' => $request->category_id,
             'subcategoryId' => $request->subcategoryId, // Make sure this field exists in your table
             'product_name' => $request->product_edit,
+            'remarks' =>$request->remarks,
         ]);
 
         if ($query) {

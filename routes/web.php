@@ -78,7 +78,7 @@ Route::get('/installations/view/data',[InstallationController::class,'getInstall
 //service routes 
 Route::get('/service/view',[ServiceController::class,'getServicePage'])->name('admin.getServicePage'); 
 
-Route::get('/service/view/data',[ServiceController::class,'viewuserServices'])->name('admin.viewServices');  
+Route::get('/service/view/data',[ServiceController::class,'viewServices'])->name('admin.viewServices');  
 Route::get('/service/parts/view',[ServiceController::class,'partsViewPage'])->name('admin.partsViewPage');
 Route::post('/service/parts/new',[ServiceController::class,'doParts'])->name('admin.doParts');
 Route::get('/service/getPartsData',[ServiceController::class,'getPartsData'])->name('admin.getPartsData');
@@ -86,7 +86,8 @@ Route::get('/service/getPartsData',[ServiceController::class,'getPartsData'])->n
 Route::get('/service/parts/edit/{id}', [ServiceController::class, 'edit'])->name('admin.parts.edit');
 Route::post('/service/parts/update/{id}', [ServiceController::class, 'update'])->name('admin.parts.update');
 Route::delete('/service/parts/delete/{id}', [ServiceController::class, 'destroy'])->name('admin.parts.destroy');
-
+Route::get('service/view/details/{id}', [ServiceController::class, 'details']);
+Route::get('/service/feedback/view/{id}',[ServiceController::class,'getfeedback']);
 });
 
 //user routes
@@ -102,10 +103,11 @@ Route::post('/installation/new',[InstallationController::class,'doInstallation']
 
 //service routes 
 Route::get('/service/view',[ServiceController::class,'getuserServicePage'])->name('user.getServicePage'); 
-Route::post('/service/new',[ServiceController::class,'douserService'])->name('user.doService');
 Route::get('/service/view/data',[ServiceController::class,'viewuserServices'])->name('user.viewServices'); 
 Route::get('/service/view/fix/{id}',[ServiceController::class,'getuserFixService'])->name('user.getFixService');
 Route::get('/service/parts/load',[ServiceController::class,'getParts'])->name('user.service.getParts');
+Route::post('/service/new',[ServiceController::class,'douserService'])->name('user.doService');
+
 
 });
 

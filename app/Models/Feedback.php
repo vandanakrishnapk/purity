@@ -5,12 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Service extends Model
+class Feedback extends Model
 {
     use HasFactory; 
     protected $guarded = [];
-    protected $primaryKey = 'serviceId';
-    protected $casts = [
-        'partsChanged' => 'array',
-    ];
+    protected $primaryKey = 'feedback_id';
 }

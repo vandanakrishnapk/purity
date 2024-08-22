@@ -10,6 +10,47 @@
 
 @endsection
 
+@section('data_table')
+<div class="card">
+    <div class="card-header">
+        <h3 class="text-start mt-3 rounded-3">PERSONAL PURCHASES</h3>
+    </div>
+    <div class="card-body P-2">
+
+        <table id="example" class="table table-striped dt-responsive nowrap w-100">
+            <thead class="bg-dark">
+                <tr>
+                    <th class="text-light">S.No</th>
+                    <th class="text-light">Name</th>
+                    <th class="text-light">Address</th>
+                    <th class="text-light">Mobile</th>
+                    <th class="text-light">Whatsapp</th>
+                    <th class="text-light">Landmark</th>
+                    <th class="text-light">Category</th>
+                    <th class="text-light">Sub Category</th>
+                    <th class="text-light">Product</th>
+                    <th class="text-light">Assigned To</th>
+                    <th class="text-light">Remarks</th>
+                    <th class="text-light">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection
+
 @section('modal')
 <button type="button" class="btn btn-primary float-end add-user-btn" data-bs-toggle="modal"
     data-bs-target="#exampleModal" style="margin-left:138px">
@@ -101,6 +142,15 @@
 
                             <span class="error text-danger" id="product-error"></span>
                         </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for=""> Filter change on </label>
+                        <select name="filter_change_on" id="" class="form-select">
+                            <option value="">Select Filter Change On</option>
+                            <option value="4 Months">4 Months</option>
+                            <option value="8 Months">8 Months</option>
+                            <option value="4 Months">12 Months</option>
+                        </select>
                     </div>
 
                     <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Installation Details</h3>
@@ -233,6 +283,15 @@
 
                     <h3 class="text-center text-light p-1 rounded-1 w-50" style="margin-left:170px">Installation Details</h3>
                     <div class="form-group mb-2">
+                        <label for=""> Filter change on </label>
+                        <select name="filter_change_on" id="filteron" class="form-select">
+                            <option value="">Select Filter Change On</option>
+                            <option value="4 Months">4 Months</option>
+                            <option value="8 Months">8 Months</option>
+                            <option value="4 Months">12 Months</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-2">
                         <label for="assigned_to">Assigned to:</label>
                         <select id="assigned_to1" name="assigned_to" class="form-control">
                             @foreach($users as $user)
@@ -258,47 +317,6 @@
 </div>
 </div>
 
-@endsection
-
-@section('data_table')
-<div class="card">
-    <div class="card-header">
-        <h3 class="text-start mt-3 rounded-3">PERSONAL PURCHASES</h3>
-    </div>
-    <div class="card-body P-2">
-
-        <table id="example" class="table table-striped dt-responsive nowrap w-100">
-            <thead class="bg-dark">
-                <tr>
-                    <th class="text-light">S.No</th>
-                    <th class="text-light">Name</th>
-                    <th class="text-light">Address</th>
-                    <th class="text-light">Mobile</th>
-                    <th class="text-light">Whatsapp</th>
-                    <th class="text-light">Landmark</th>
-                    <th class="text-light">Category</th>
-                    <th class="text-light">Sub Category</th>
-                    <th class="text-light">Product</th>
-                    <th class="text-light">Assigned To</th>
-                    <th class="text-light">Remarks</th>
-                    <th class="text-light">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tbody>
-        </table>
-    </div>
-</div>
 @endsection
 @push('scripts')
 
@@ -340,7 +358,7 @@
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions:{
-                    columns: [0,1,2,3,4,5,6,7,8]
+                    columns: [0,1,2,3,4,5,6,7,8,9,10]
                 }
             }
         ],
@@ -486,15 +504,18 @@ $(document).on('click', '.more-purchase', function() {
 
             if (data && data.p_name && data.address && data.mobile && data.whatsapp && data.landmark && data.category_name && data.product_name && data.name && data.remarks) {
                 let purchaseDetails = `
-                    <p><strong>Name:</strong> ${data.p_name}</p>
-                    <p><strong>Address:</strong> ${data.address}</p>
-                    <p><strong>Mobile:</strong> ${data.mobile}</p>
-                    <p><strong>Whatsapp:</strong> ${data.whatsapp}</p>
-                    <p><strong>Landmark:</strong> ${data.landmark}</p>
-                    <p><strong>Category_name:</strong> ${data.category_name}</p>
-                    <p><strong>Product_name:</strong> ${data.product_name}</p>
-                    <p><strong>Staff:</strong> ${data.name}</p>
-                    <p><strong>Remarks:</strong> ${data.remarks}</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><p class="m-0"><strong>Name:</strong> ${data.p_name}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Address:</strong> ${data.address}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Mobile:</strong> ${data.mobile}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Whatsapp:</strong> ${data.whatsapp}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Landmark:</strong> ${data.landmark}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Category_name:</strong> ${data.category_name}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Product_name:</strong> ${data.product_name}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Staff:</strong> ${data.name}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Remarks:</strong> ${data.remarks}</p></li>
+ 
+                </ul>
                 `;
                 $('#purchaseDetails').html(purchaseDetails);
                 $('#purchaseDetailsModal').modal('show');
@@ -545,6 +566,7 @@ $("#example").on("click", ".edit-purchase", function(e){
                     $('#whatsapp1').val(res.whatsapp);
                     $('#landmark1').val(res.landmark);
                    $('#category-select1 option[value="'+res.category_id+'"]').attr("selected", "selected"); 
+                   $('#filteron option[value="'+res.filter_change_on+'"]').attr("selected", "selected");
                    $('#assigned_to1 option[value="'+res.id+'"]').attr("selected", "selected");
                    $('#remarks1').val(res.remarks);                 
                    $('#editDetailsModal').modal('show');

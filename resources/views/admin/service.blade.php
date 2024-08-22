@@ -23,8 +23,10 @@
           <th class="text-light">Client Name</th>
           <th class="text-light">Mobile</th>
           <th class="text-light">Product</th>
+          <th class="text-light">Installation Date</th>
           <th class="text-light">Last Service</th>
           <th class="text-light">Next Service</th>
+          <th class="text-light">Action</th>
           
         </tr>                      
       </thead>
@@ -42,6 +44,37 @@
       </tbody>                      
     </table>
   </div>
+</div>
+
+
+<!-- Bootstrap Modal for displaying all services -->
+<div class="modal fade" id="serviceDetailsModal" tabindex="-1" aria-labelledby="serviceDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="serviceDetailsModalLabel">Service History</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="serviceDetails">
+                <!-- service details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--feedback -->
+<div class="modal fade" id="feedbackDetailsModal" tabindex="-1" aria-labelledby="feedbackDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="feedbackDetailsModalLabel">Send Feedback</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="feedbackDetails">
+                <!-- feedback details will be loaded here -->
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -67,8 +100,7 @@
 <script src="{{ asset('assets/js/pages/datatable.init.js') }}"></script> 
 
 <!-- Load parts to select -->
-<script>
-$(document).ready(function() {
+<script>$(document).ready(function() {
     $('#serviceTable').DataTable({
         processing: true,
         serverSide: true,
@@ -108,8 +140,8 @@ $(document).ready(function() {
             { data: 'mobile', name: 'mobile' },
             { data: 'product_name', name: 'product_name' },
             {
-                data: 'created_at',
-                name: 'created_at',
+                data: 'installation_date',
+                name: 'installation_date',
                 render: function(data, type, row) {
                     try {
                         const date = new Date(data);
@@ -127,25 +159,131 @@ $(document).ready(function() {
                 }
             },
             {
-              data:'nextService',name:'nextService',
+                data: 'created_at', name: 'created_at',
+                render: function(data, type, row) {
+                    try {
+                        const date = new Date(data);
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        const hours = date.getHours() % 12 || 12;
+                        const minutes = String(date.getMinutes()).padStart(2, '0');
+                        const ampm = date.getHours() >= 12 ? 'pm' : 'am';
+                        return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
+                    } catch (e) {
+                        console.error('Date formatting error:', e);
+                        return data; // Fallback to raw data if there's an error
+                    }
+                }
             },
-            
-           
+            {
+              data:'nextService', name:'nextService',
+              render: function(data, type, row) {
+                    try {
+                        const date = new Date(data);
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const year = date.getFullYear();
+                        return `${day}-${month}-${year}`;
+                    } catch (e) {
+                        console.error('Date formatting error:', e);
+                        return data; // Fallback to raw data if there's an error
+                    }
+                  }
+            },
+            {
+                // Adding the "View More" button column
+                data: null,
+                name: 'view_more',
+                render: function(data, type, row) {
+                    return `<button class="btn btn-primary ps-1 pe-1 pt-0 pb-0 view-more me-2" data-id="${row.serviceId}"><i class="ri-folder-history-line"></i>
+                        </button>
+                        <button class="btn btn-warning ps-1 pe-1 pt-0 pb-0 feedback" data-id="${row.serviceId}"><i class="ri-message-line"></i>
+                        </button>                        
+                        `;
+                }
+            }
         ]
     });
-});
 
-// Helper function to format the date
-function formatDate(dateStr) {
-    const date = new Date(dateStr);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = date.getHours() % 12 || 12;
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const ampm = date.getHours() >= 12 ? 'pm' : 'am';
-    return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
-}
+    // Event delegation to handle the "View More" button click
+    $('#serviceTable').on('click', '.view-more', function() {
+        var id = $(this).data('id');
+        // Fetch and display more details based on the id
+        $.ajax({
+            url: `{{ url('/admin/service/view/details') }}/${id}`,
+            type: 'GET',
+            success: function(response) {
+                let tableHtml = `
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                            <th>Client Name</th>
+                            <th>Mobile</th>
+                            <th>Product</th>
+                            <th>Installation Date</th>
+                            <th>Last Service</th>
+                            <th>Next Service</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                // Iterate over the response data and create table rows
+                response.forEach(item => {
+                    tableHtml += `
+                        <tr>
+                             <td>${item.p_name}</td>
+                              <td>${item.mobile}</td>
+                               <td>${item.product_name}</td>
+                                <td>${item.installation_date}</td>
+                                 <td>${item.created_at}</td>
+                            <td>${item.nextService}</td>
+                        </tr>
+                    `;
+                });
+
+                // Close table HTML
+                tableHtml += `
+                        </tbody>
+                    </table>
+                `;
+                $('#serviceDetails').html(tableHtml);
+                $('#serviceDetailsModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching details:', error);
+                // Optionally show an error message to the user
+            }
+        });
+    });
+});
+//send feedback 
+$(document).on('click', '.feedback', function() {
+    const service_Id = $(this).data('id');
+    
+   $.get(`{{ url('/admin/service/feedback/view') }}/${service_Id}`, function(data) {
+       
+        const formHtml = `
+           <form id="feedbackForm" action="" method="POST">
+            @csrf
+            <div class="form-group">
+                <label for="feedback">Feedback:</label>
+                <textarea id="feedback" name="feedback" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2 mx-5">Send</button>
+        </form>
+        `;
+        
+        // Inject the form HTML into the modal
+        $('#feedbackDetails').html(formHtml);
+
+        // Show the modal
+        $('#feedbackDetailsModal').modal('show');
+    });
+}); 
+
+
 
 
 </script>

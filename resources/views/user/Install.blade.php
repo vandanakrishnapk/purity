@@ -20,6 +20,8 @@
                         <th class="text-light">SlNo</th>
                           <th class="text-light">Client Name</th>
                           <th class="text-light">Mobile</th>
+                          <th class="text-light">Category</th>
+                          <th class="text-light">Sub Category</th>
                           <th class="text-light">Product</th>
                           <th class="text-light">Requested On</th>
                           <th class="text-light">Action</th>
@@ -73,13 +75,20 @@
             </div>
 
             <br>
-            <label for="nextService">Next Service</label>
-            <select name="nextService" class="form-control">
-                <option value="">Select Next Service</option>
-                <option value="4 Months">4 Months</option>
-                <option value="6 Months">6 Months</option>
-                <option value="12 Months">12 Months</option>
+            <label for="nextService">Select Next Service Duration:</label>
+            <select id="duration" name="duration" class="form-control">
+                <option value="">Select Option</option>
+                <option value="4">4 Months</option>
+                <option value="6">6 Months</option>
+                <option value="12">12 Months</option>
             </select>
+    
+            <label for="specificDate">Or, select a specific date:</label>
+            <input type="date" id="specificDate" name="specificDate" class="form-control">
+            
+        <!--date  will attach the below input -->
+        <input type="hidden" id="nextService" name="nextService">
+     
             <span class="error nextService_error text-danger"></span>
 
             <br>
@@ -162,6 +171,8 @@
             },
             { data: 'p_name', name: 'p_name' },
             { data: 'mobile', name: 'mobile' },
+            { data: 'category_name', name: 'category_name' },
+            { data: 'subcategory_name', name: 'subcategory_name' },
             { data: 'product_name', name: 'product_name' },
             {
                 data: 'created_at',
@@ -237,10 +248,38 @@ $('#installTable').on('click', '.bid-button', function() {
             }
         });
     });
+    function updateNextService() {
+            const durationValue = $('#duration').val();
+            const dateValue = $('#specificDate').val();
+            const today = new Date();
+            const result = $('#result');
+            let endDate;
+
+            if (durationValue) {
+                // Calculate the end date based on the selected duration
+                endDate = new Date(today.setMonth(today.getMonth() + parseInt(durationValue, 10)));
+                $('#nextService').val(`${endDate.toISOString().split('T')[0]}`);
+          
+            } else if (dateValue) {
+                // Display the selected specific date
+                $('#nextService').val(`${new Date(dateValue).toISOString().split('T')[0]}`);
+             
+            } else {
+                // Clear the result and hidden input if neither option is selected
+                $('#nextService').val('');
+                result.text('');
+            }
+        }
+
+        $('#duration').on('change', updateNextService);
+        $('#specificDate').on('change', updateNextService);
+    
     $(".submit-installation").click(function(e) {
         e.preventDefault();
         let form = $('#submitInstall')[0];
         let data = new FormData(form);
+        const durationValue = $('#duration').val();
+        const dateValue = $('#specificDate').val();
 
         $.ajax({
             url: `{{ url('/user/installation/new') }}`,
@@ -251,7 +290,7 @@ $('#installTable').on('click', '.bid-button', function() {
             contentType: false,
             success: function(response) {
             console.log(response); // Log response for debugging
-          
+            $('#nextService').val(response.data);
     // Clear previous error messages
     $('.error').text('');
 

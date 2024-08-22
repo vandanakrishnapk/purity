@@ -276,10 +276,12 @@ $(document).on('click', '.more-user', function() {
 
             if (data && data.name && data.email && data.mobile && data.designation) {
                 let userDetails = `
-                    <p><strong>Name:</strong> ${data.name}</p>
-                    <p><strong>Email:</strong> ${data.email}</p>
-                    <p><strong>Mobile:</strong> ${data.mobile}</p>
-                    <p><strong>Designation:</strong> ${data.designation}</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><p class="m-0"><strong>Email:</strong> ${data.name}</p></li>
+                    <li class="list-group-item"><p class="m-0"><strong>Email:</strong> ${data.email}</p></li>
+                     <li class="list-group-item"><p class="m-0"><strong>Mobile:</strong> ${data.mobile}</p></li>
+                     <li class="list-group-item"><p class="m-0"><strong>Designation:</strong> ${data.designation}</p></li>
+                </ul>                 
                 `;
                 $('#userDetails').html(userDetails);
                 $('#userDetailsModal').modal('show');
