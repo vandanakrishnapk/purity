@@ -15,7 +15,7 @@ use App\Http\Controllers\ServiceController;
 |--------------------------------------------------------------------------
 */
 //login routes
-Route::get('/',[LoginController::class,'view_login'])->name('view.login');
+Route::get('/',[LoginController::class,'view_login'])->name('login');
 Route::post('/doLogin',[LoginController::class,'doLogin'])->name('do.login');
 Route::get('/logout',[LoginController::class,'logout'])->name('logout');
 Route::get('/forgotPwd',[LoginController::class,'forgot_pwd'])->name('forgot.pwd');
@@ -25,7 +25,7 @@ Route::get('/changePasswordForm/{token}',[LoginController::class,'change_passwor
 Route::post('/submitResetPasswordForm',[LoginController::class,'submitResetPasswordForm'])->name('submitResetPasswordForm');
 
 //admin routes 
-Route::middleware(['auth', 'role:0'])->prefix('admin')->group(function ()
+Route::middleware(['auth','role:0'])->prefix('admin')->group(function ()
  {
 Route::get('/index',[AdminController::class,'index'])->name('admin.index');
 Route::post('/individual/new',[AdminController::class,'doIndividual'])->name('doIndividual');
@@ -87,7 +87,7 @@ Route::get('/service/parts/edit/{id}', [ServiceController::class, 'edit'])->name
 Route::post('/service/parts/update/{id}', [ServiceController::class, 'update'])->name('admin.parts.update');
 Route::delete('/service/parts/delete/{id}', [ServiceController::class, 'destroy'])->name('admin.parts.destroy');
 Route::get('service/view/details/{id}', [ServiceController::class, 'details']);
-Route::get('/service/feedback/view/{id}',[ServiceController::class,'getfeedback']);
+
 });
 
 //user routes

@@ -72,7 +72,7 @@ public function doLogin(Request $request)
 public function logout()
 {
     Auth::logout();
-    return redirect()->route('view.login');
+    return redirect()->route('login');
 }
 public function forgot_pwd()
 {
@@ -150,6 +150,6 @@ public function change_password_form($token)
   
       DB::table('password_reset_tokens')->where(['email' => $request->email])->delete();
   
-      return redirect()->route('view.login')->with('message', 'Password has been changed!');
+      return redirect()->route('login')->with('message', 'Password has been changed!');
   } 
 }

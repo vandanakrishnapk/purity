@@ -757,7 +757,15 @@
 
 	<!-- App js -->
 	<script src="{{ asset('assets/js/app.min.js') }}"></script>
-    
+    <script>
+     axios.interceptors.response.use(null, function (error) {
+    if (error.response.status === 401) {
+        window.location.href = '/';
+    }
+    return Promise.reject(error);
+});
+
+    </script>
 	@stack('scripts')
    
 </body>

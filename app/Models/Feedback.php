@@ -9,5 +9,6 @@ class Feedback extends Model
 {
     use HasFactory; 
     protected $guarded = [];
-    protected $primaryKey = 'feedback_id';
+    protected $primaryKey = 'feedback_id'; 
+    
 }

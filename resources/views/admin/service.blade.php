@@ -62,20 +62,6 @@
     </div>
 </div>
 
-<!--feedback -->
-<div class="modal fade" id="feedbackDetailsModal" tabindex="-1" aria-labelledby="feedbackDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="feedbackDetailsModalLabel">Send Feedback</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4" id="feedbackDetails">
-                <!-- feedback details will be loaded here -->
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 
@@ -197,9 +183,7 @@
                 name: 'view_more',
                 render: function(data, type, row) {
                     return `<button class="btn btn-primary ps-1 pe-1 pt-0 pb-0 view-more me-2" data-id="${row.serviceId}"><i class="ri-folder-history-line"></i>
-                        </button>
-                        <button class="btn btn-warning ps-1 pe-1 pt-0 pb-0 feedback" data-id="${row.serviceId}"><i class="ri-message-line"></i>
-                        </button>                        
+                        </button>                     
                         `;
                 }
             }
@@ -258,32 +242,6 @@
         });
     });
 });
-//send feedback 
-$(document).on('click', '.feedback', function() {
-    const service_Id = $(this).data('id');
-    
-   $.get(`{{ url('/admin/service/feedback/view') }}/${service_Id}`, function(data) {
-       
-        const formHtml = `
-           <form id="feedbackForm" action="" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="feedback">Feedback:</label>
-                <textarea id="feedback" name="feedback" class="form-control" rows="4" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary mt-2 mx-5">Send</button>
-        </form>
-        `;
-        
-        // Inject the form HTML into the modal
-        $('#feedbackDetails').html(formHtml);
-
-        // Show the modal
-        $('#feedbackDetailsModal').modal('show');
-    });
-}); 
-
-
 
 
 </script>

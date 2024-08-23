@@ -166,11 +166,6 @@ public function doParts(Request $request)
         ]);
     }  
 } 
-public function getFeedback($id)
-{
-    $service_id = Service::find($id);
-    return response()->json($service_id);
-}
 
 
 //user service functions
