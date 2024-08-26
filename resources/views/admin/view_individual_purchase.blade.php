@@ -393,6 +393,8 @@
                 orderable: false,
                 searchable: false,
                 render: function(data, type, row, meta) {
+                    const url = baseUrl.replace('ID_PLACEHOLDER', row.individual_id);
+                     const isCompleted = row.status === 'completed';
                     return `
                     <div class="dd d-flex">
                         <button class="btn btn-secondary btn-sm more-purchase me-1" data-id="${row.individual_id}">
@@ -404,7 +406,11 @@
                         <button class="btn btn-danger btn-sm delete-purchase" data-id="${row.individual_id}">
                             <i class="bi bi-trash"></i>
                         </button>
-                    </div>
+                        
+                        <a href="${url}" class="btn btn-info ms-1">
+                        <i class="ri-folder-history-line"></i>
+                        </a>                        
+                        </div>
                     `;
                 }
             },
@@ -667,7 +673,10 @@ $(document).on('click', '.delete-purchase', function() {
     }
 });
 
+//history 
 
 </script>
-
+<script>
+    const baseUrl = "{{ route('admin.getPurchaseHistoryView', ['id' => 'ID_PLACEHOLDER']) }}";
+</script>
 @endpush

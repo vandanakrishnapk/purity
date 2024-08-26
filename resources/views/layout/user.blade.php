@@ -751,15 +751,7 @@
 
 	<!-- App js -->
 	<script src="{{ asset('assets/js/app.min.js') }}"></script>
-    <script>
-        axios.interceptors.response.use(null, (error) => {
-    if(error.response && error.response.status == 419) {
-        // session timed out | not authenticated
-        window.location.href = '/';
-    }
-    return Promise.reject(error);
-});
-    </script>
+    
 
    
 </body>

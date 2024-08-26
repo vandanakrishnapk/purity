@@ -25,8 +25,8 @@ class InstallationController extends Controller
             $staffId = Auth::user()->id;
             $insDetails = DB::table('individuals')
                           ->join('products','individuals.product_id','=','products.product_id')
-                          ->join('categories','categories.category_id','=','products.category_id')
-                          ->join('subcategories','subcategories.subcat_id','=','products.subcategoryId')
+                          ->join('categories','categories.category_id','=','individuals.category_id')
+                          ->join('subcategories','subcategories.subcat_id','=','individuals.subcat_id')
                           ->where('individuals.assigned_to','=',$staffId)
                           ->select('individuals.*','products.product_name','categories.category_name','subcategories.subcategory_name')
                           ->get();

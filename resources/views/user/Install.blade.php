@@ -34,7 +34,9 @@
                           <td></td>
                           <td></td>
                           <td></td>  
-                          <td></td>                        
+                          <td></td> 
+                          <td></td>  
+                          <td></td>                     
                       </tr>
                   </tbody>                      
               </table>
@@ -195,25 +197,37 @@
 
             },
             {
-                data: null,
-                name: 'action',
-                orderable: false,
-                searchable: false,
-                render: function(data, type, row) {
-                    return `
-                        <button class="btn btn-success btn-sm bid-button" data-id="${row.individual_id}">
-                           BID
-                        </button>
-                        
-                    `;
-                }
-            }
-        ]
+    data: null,
+    name: 'action',
+    orderable: false,
+    searchable: false,
+    render: function(data, type, row) {
+        let buttonClass = 'btn btn-success btn-sm bid-button';
+        let buttonText = 'BID';
+        let buttonDisabled = false;
+
+        // Check the status from the row data
+        if (row.status === 'completed') {
+            buttonClass = 'btn btn-warning btn-sm'; // Change to a different color
+            buttonText = 'DONE'; // Change text to 'COMPLETED'
+            buttonDisabled = true; // Disable the button
+        }
+
+        return `
+            <button class="${buttonClass}" ${buttonDisabled ? 'disabled' : ''} data-id="${row.individual_id}">
+                ${buttonText}
+            </button>
+        `;
+    }
+}
+
+        ],
+        columnDefs: [{ visible: false, targets: [4] }],
     });
 });
 // more when bid 
 $(document).ready(function() {
-$('#installTable').on('click', '.bid-button', function() {
+$('#installTable').on('click','.bid-button:not([disabled])', function() {
         var id = $(this).data('id');
         console.log(id)
         // Make an AJAX request to fetch the details

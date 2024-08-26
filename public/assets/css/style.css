@@ -382,7 +382,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 
 li.side-nav-item {
-    border-bottom: 1px solid #121212;
+    border-bottom: 1px solid #323232;
 }
 
 .side-nav .side-nav-item .side-nav-link {
@@ -428,3 +428,27 @@ div.dataTables_wrapper div.dataTables_length label {
 }
 
 }
+
+.logo {
+    background-color: #0087cb;
+}
+
+.side-nav {
+    padding: 0;
+} 
+.accordion-header {
+    border-radius: 0 !important;
+    background-color: #103052 !important;
+    padding: 15px 30px;
+    display: flex !important;
+    justify-content: center !important; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+   
+} 
+.accordion-button 
+{
+    border-radius: 0 !important;
+    background-color: #103052 !important;
+    padding: 15px 30px; 
+    text-align: center !important;
+} 

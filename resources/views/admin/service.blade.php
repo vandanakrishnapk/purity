@@ -197,8 +197,10 @@
         $.ajax({
             url: `{{ url('/admin/service/view/details') }}/${id}`,
             type: 'GET',
+           
             success: function(response) {
                 let tableHtml = `
+                 <div class="table-responsive"> <!-- Make table responsive -->
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -214,15 +216,15 @@
                 `;
 
                 // Iterate over the response data and create table rows
-                response.forEach(item => {
+                response.history.forEach(item => {
                     tableHtml += `
                         <tr>
                              <td>${item.p_name}</td>
-                              <td>${item.mobile}</td>
-                               <td>${item.product_name}</td>
-                                <td>${item.installation_date}</td>
-                                 <td>${item.created_at}</td>
-                            <td>${item.nextService}</td>
+                             <td>${item.mobile}</td>
+                             <td>${item.product_name}</td>
+                             <td>${item.installation_date}</td>
+                             <td>${item.created_at}</td>
+                             <td>${item.nextService}</td>
                         </tr>
                     `;
                 });
@@ -231,6 +233,7 @@
                 tableHtml += `
                         </tbody>
                     </table>
+                    </div>
                 `;
                 $('#serviceDetails').html(tableHtml);
                 $('#serviceDetailsModal').modal('show');

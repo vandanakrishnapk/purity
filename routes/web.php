@@ -8,7 +8,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\InstallationController; 
-use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ServiceController; 
+use App\Http\Controllers\HistoryController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -74,10 +75,8 @@ Route::post('/purchase/company/{id}', [CorporateController::class, 'update'])->n
 Route::delete('/purchase/company/{id}', [CorporateController::class, 'destroy'])->name('company.destroy'); 
 Route::get('/installations/view',[InstallationController::class,'getInstallationPage'])->name('admin.getInstallationPage');
 Route::get('/installations/view/data',[InstallationController::class,'getInstallations'])->name('admin.getInstallations'); 
-
 //service routes 
 Route::get('/service/view',[ServiceController::class,'getServicePage'])->name('admin.getServicePage'); 
-
 Route::get('/service/view/data',[ServiceController::class,'viewServices'])->name('admin.viewServices');  
 Route::get('/service/parts/view',[ServiceController::class,'partsViewPage'])->name('admin.partsViewPage');
 Route::post('/service/parts/new',[ServiceController::class,'doParts'])->name('admin.doParts');
@@ -86,8 +85,9 @@ Route::get('/service/getPartsData',[ServiceController::class,'getPartsData'])->n
 Route::get('/service/parts/edit/{id}', [ServiceController::class, 'edit'])->name('admin.parts.edit');
 Route::post('/service/parts/update/{id}', [ServiceController::class, 'update'])->name('admin.parts.update');
 Route::delete('/service/parts/delete/{id}', [ServiceController::class, 'destroy'])->name('admin.parts.destroy');
-Route::get('service/view/details/{id}', [ServiceController::class, 'details']);
-
+Route::get('service/view/details/{id}', [ServiceController::class, 'details']); 
+//history routes 
+Route::get('/purchase/history/view/{id}',[HistoryController::class,'getPurchaseHistoryView'])->name('admin.getPurchaseHistoryView');
 });
 
 //user routes

@@ -17,61 +17,68 @@ class ServiceController extends Controller
         return view('admin.service');
     } 
     
- public function viewServices(Request $request)
-{
-    if ($request->ajax()) {
-        // Fetch the most recent service record
-        $recentService = DB::table('services')
+    public function viewServices(Request $request)
+    {
+        if ($request->ajax()) {
+            // Subquery to get the latest service record for each individual
+            $latestServiceSubquery = DB::table('services')
+                ->select('customer_id', DB::raw('MAX(created_at) as latest_service_date'))
+                ->groupBy('customer_id');
+    
+            // Fetch the latest service records for all individuals
+            $recentServices = DB::table('services')
+                ->joinSub($latestServiceSubquery, 'latest_services', function ($join) {
+                    $join->on('services.customer_id', '=', 'latest_services.customer_id')
+                         ->on('services.created_at', '=', 'latest_services.latest_service_date');
+                })
+                ->join('individuals', 'services.customer_id', '=', 'individuals.individual_id')
+                ->join('installations', 'installations.customer_id', '=', 'services.customer_id')
+                ->join('products', 'individuals.product_id', '=', 'products.product_id')
+                ->select('services.*', 'individuals.p_name', 'individuals.mobile', 'products.product_name', 'installations.created_at as installation_date')
+                ->whereIn('individuals.status', ['completed'])
+                ->orderBy('services.created_at', 'desc') // Order by services.created_at in descending order
+                ->get(); // Fetch all records
+    
+            return response()->json([
+                'draw' => request()->get('draw'),
+                'recordsTotal' => $recentServices->count(),
+                'recordsFiltered' => $recentServices->count(),
+                'data' => $recentServices // Return the data
+            ]);
+        }
+    }
+    
+    public function details($id) {
+        $service = Service::find($id);
+    
+        if (!$service) {
+            return response()->json(['error' => 'Service not found'], 404);
+        }
+    
+        $custId = $service->customer_id; 
+    
+        // Fetch the data from the database for the specific customer_id
+        $history = DB::table('services')
             ->join('individuals', 'services.customer_id', '=', 'individuals.individual_id')
             ->join('installations', 'installations.customer_id', '=', 'services.customer_id')
             ->join('products', 'individuals.product_id', '=', 'products.product_id')
             ->select('services.*', 'individuals.p_name', 'individuals.mobile', 'products.product_name', 'installations.created_at as installation_date')
-            ->whereIn('individuals.status', ['completed'])
+            ->where('services.customer_id', $custId) // Filter by the specific customer_id
+            ->where('individuals.status', 'completed')
             ->orderBy('services.created_at', 'desc') // Order by services.created_at in descending order
-            ->first(); // Fetch only the most recent record
-
-        if ($recentService) {
-            return response()->json([
-                'draw' => request()->get('draw'),
-                'recordsTotal' => 1, // Only one record
-                'recordsFiltered' => 1, // Only one record
-                'data' => [$recentService] // Return as an array
-            ]);
-        }
-
-        return response()->json([
-            'draw' => request()->get('draw'),
-            'recordsTotal' => 0,
-            'recordsFiltered' => 0,
-            'data' => []
-        ]);
+            ->get()
+            ->map(function ($item) {
+                // Format the dates as DD-MM-YYYY hh:mm A
+                $item->created_at = Carbon::parse($item->created_at)->format('d-m-Y h:i A');
+                $item->installation_date = Carbon::parse($item->installation_date)->format('d-m-Y h:i A');
+                // Format nextService if it exists
+                $item->nextService = isset($item->nextService) ? Carbon::parse($item->nextService)->format('d-m-Y') : 'N/A';
+                return $item;
+            });
+    
+        return response()->json(['history' => $history]);
     }
-
-    return response()->json(['error' => 'Invalid request'], 400);
-}
-
-public function details($id) {
-    $service = Service::find($id);
-    $custId = $service->customer_id; 
-       // Fetch the data from the database
-       $data = DB::table('services')
-       ->join('individuals', 'services.customer_id', '=', 'individuals.individual_id')
-       ->join('installations', 'installations.customer_id', '=', 'services.customer_id')
-       ->join('products', 'individuals.product_id', '=', 'products.product_id')
-       ->select('services.*', 'individuals.p_name', 'individuals.mobile', 'products.product_name', 'installations.created_at as installation_date')
-       ->where('individuals.status', 'completed')
-       ->orderBy('services.created_at', 'desc') // Order by services.created_at in descending order
-       ->get()
-       ->map(function ($item) {
-           // Format the dates as DD-MM-YYYY hh:mm A
-           $item->created_at = Carbon::parse($item->created_at)->format('d-m-Y h:i A');
-           $item->installation_date = Carbon::parse($item->installation_date)->format('d-m-Y h:i A');
-           // Format nextServices if it exists
-           $item->nextService = isset($item->nextService) ? Carbon::parse($item->nextService)->format('d-m-Y') : null;
-           return $item;
-       });
-    return response()->json($data);
-}
+    
 
 public function douserService(Request $request)
 {
