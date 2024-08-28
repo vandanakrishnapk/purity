@@ -66,6 +66,14 @@
             <div class="card">
                 <div class="card-body fs-4">
                     
+                  <div class="row mt-1">
+                    <div class="col-2"></div>
+                      <div class="col-4">Requested On</div>
+                     <div class="col-1">:</div>
+                      <div class="col-4 text-start"><strong>{{ $requested_on }}</strong></div>
+                  </div>
+                 
+                    
                     <div class="row mt-1">
                         <div class="col-2"></div>
                           <div class="col-4">Category</div>
@@ -85,13 +93,13 @@
                           <div class="col-4">Product Name</div>
                          <div class="col-1">:</div>
                           <div class="col-4 text-start"><strong>{{ $purchase->product_name }}</strong></div>
-                      </div> 
-
+                      </div>   
+   
                       <div class="row mt-1">
                         <div class="col-2"></div>
                           <div class="col-4">Filter Change On</div>
                          <div class="col-1">:</div>
-                          <div class="col-4 text-start"><strong>{{ $purchase->filter_change_on }}</strong></div>
+                          <div class="col-4 text-start"><strong>{{ $filter_change_on }}</strong></div>
                       </div>
 
 
@@ -140,7 +148,18 @@
                         <div class="col-2"></div>
                           <div class="col-4">Source Of Water</div>
                          <div class="col-1">:</div>
-                          <div class="col-4 text-start"><strong>{{ $purchase->sow }}</strong></div>
+                          <div class="col-4 text-start"> <ul>
+                            @if(isset($sow) && is_array($sow))
+                           <strong>
+                            <ul type="disc" class="p-0 m-0">
+                                @foreach($sow as $type)
+                                    <li>{{ $type }}</li>
+                                @endforeach
+                            </ul>
+                          </strong>
+                        @endif
+                    
+                        </ul></div>
                       </div> 
 
                       <div class="row mt-1">
@@ -166,6 +185,14 @@
           @foreach($services as $service)
                 <div class="card">
                     <div class="card-body fs-4">
+
+
+                      <div class="row mt-1">
+                        <div class="col-2"></div>
+                          <div class="col-4">Date of Service</div>
+                         <div class="col-1">:</div>
+                          <div class="col-4 text-start"><strong>{{ $service['last_service'] }}</strong></div>
+                      </div>  
 
                         <div class="row mt-1">
                             <div class="col-2"></div>
@@ -194,13 +221,7 @@
                            
                           </div>  
 
-                         <div class="row mt-1">
-                            <div class="col-2"></div>
-                              <div class="col-4">Last Service</div>
-                             <div class="col-1">:</div>
-                              <div class="col-4 text-start"><strong>{{ $service['last_service'] }}</strong></div>
-                          </div> 
-
+                 
 
                           <div class="row mt-1">
                             <div class="col-2"></div>
@@ -212,9 +233,13 @@
 
                           <div class="row mt-1">
                             <div class="col-2"></div>
+                            @if($service['amount'] == true)
                               <div class="col-4">Amount Paid</div>
                              <div class="col-1">:</div>
-                              <div class="col-4 text-start"><strong>{{ $service['amount'] }}</strong></div>
+                              <div class="col-4 text-start">
+                               
+                                <strong>{{ $service['amount'] }}</strong></div>
+                               @endif
                           </div> 
 
                          

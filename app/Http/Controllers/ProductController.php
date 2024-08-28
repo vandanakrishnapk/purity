@@ -16,9 +16,9 @@ class ProductController extends Controller
         $categories = Category::all();
         return response()->json($categories);
     }
-    public function getProductsByCategory($category_id)
+    public function getProductsByCategory($subcategory_id)
 {
-    $products = Product::where('category_id', $category_id)->get();
+    $products = Product::where('category_id', $subcategory_id)->get();
     return response()->json($products);
 }
 

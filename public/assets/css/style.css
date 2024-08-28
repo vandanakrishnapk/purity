@@ -431,6 +431,7 @@ div.dataTables_wrapper div.dataTables_length label {
 
 .logo {
     background-color: #0087cb;
+  
 }
 
 .side-nav {
@@ -452,3 +453,8 @@ div.dataTables_wrapper div.dataTables_length label {
     padding: 15px 30px; 
     text-align: center !important;
 } 
+.chart-container {
+    width: 80%;
+    margin: 20px auto;
+    text-align: left; /* Align the chart to the left */
+}

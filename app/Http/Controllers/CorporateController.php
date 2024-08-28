@@ -26,11 +26,16 @@ class CorporateController extends Controller
             'contact_person' => 'required',
             'contact_mobile' => 'required|digits:10',
             'center_address' =>'required',
+            'category_id' => 'required|exists:categories,category_id',
+            'subcat_id' => 'required|exists:subcategories,subcat_id',
+            'product_id' => 'exists:products,product_id',
             'filter_change_on' =>'required',
+            'assigned_to' => 'required|string',
+         
           
                 ], 
                 [
-                    'company_name.required' => 'Name is required.',
+                    'company_name.required' => 'Company Name is required.',
                     'company_name.min' => 'Name must be at least 2 characters.',
                     'center_name.required' => 'Center Name is required',
                     'sub_center.required' => 'Sub Center is required',
@@ -38,7 +43,10 @@ class CorporateController extends Controller
                     'contact_mobile.required' => 'Contact Mobile is required',
                     'contact_mobile.digits' => 'Mobile Number must be 10 digits',
                     'center_address.required' => 'Center Address is required',
-                    'filter_change_on.required' =>'Filter change required',
+                    'category_id.required' => 'Please select a Category',
+                    'subcat_id.required' => 'Please select a Sub Category',
+                    'filter_change_on.required' =>'Please select Filter Change',
+                    'assigned_to.required' => 'Staff name is required',
                 ]);
     
         // Check if validation fails
@@ -47,7 +55,7 @@ class CorporateController extends Controller
             // Return validation errors as JSON
             return response()->json([
                 'status' => 0,
-                'error' => $validator->errors()]);
+                'errors' => $validator->errors()]);
         }  
         
         $data = [
@@ -61,7 +69,8 @@ class CorporateController extends Controller
             'subcat_id' => $request->input('subcat_id'),
             'product_id' => $request->input('product_id'),
             'filter_change_on' =>$request->input('filter_change_on'),
-            'assigned_to' => $request->input('assigned_to'),      
+            'assigned_to' => $request->input('assigned_to'),
+            'remarks' => $request->input('remarks'),      
         ];  
         if (DB::table('corporates')->insert($data))
         {
@@ -93,7 +102,11 @@ class CorporateController extends Controller
             
             $totalRecords = count($companyPurchase); // Total records in your data source
             $filteredRecords = count($companyPurchase); // Number of records after applying filters
-        
+            $companyPurchase = $companyPurchase->map(function($item) {
+                $item->filter_change_on = Carbon::parse($item->filter_change_on)->format('d-m-Y');
+                return $item;
+            });
+    
             return response()->json(['draw' => request()->get('draw'),
                                     'recordsTotal' => $totalRecords,
                                      'recordsFiltered' => $filteredRecords,

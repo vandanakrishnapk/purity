@@ -13,7 +13,7 @@
 @section('data_table')
 <div class="card">
     <div class="card-header">
-        <h3 class="text-start mt-3 rounded-3">PERSONAL PURCHASES</h3>
+        <h3 class="text-start mt-3 rounded-3">INDIVIDUAL CUSTOMERS</h3>
     </div>
     <div class="card-body P-2">
 
@@ -60,7 +60,7 @@
     <div class="modal-dialog modal-lg custom-modal">
         <div class="modal-content">
             <div class="modal-header bg-primary text-light">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Personal</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Individual Customer</h1>
                 <button type="button" class="btn-close text-light" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
@@ -107,6 +107,19 @@
                         <span class="error text-danger" id="landmark-error"></span>
                     </div>
                     <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Product Details</h3>
+                    
+                    <div class="form-group mb-2">
+                        <label for="Type of Purchase">Type of Purchase</label> 
+                        <div class="custom-radio mt-2">                       
+                        <input type="radio" name="type_of_purchase" class="form-check-input" value="New Purchase"><span class="ms-1 me-5">New Purchase</span>
+                        <input type="radio" name="type_of_purchase" class="form-check-input" value="Old Purchase"><span class="ms-1 me-5">Old Purchase</span>
+                        <input type="radio" name="type_of_purchase" class="form-check-input" value="Outside Purchase"><span class="ms-1">Outside Purchase</span>
+                        </div>
+                       
+                        <span class="error text-danger" id="type_of_purchase-error"></span>
+                    </div>
+                    
+                    
                     <div class="form-group mb-2">
                         <label for="category">Category:</label>
                         <select id="category-select" name="category_id" class="form-select fixed-width"
@@ -116,7 +129,7 @@
                             <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
                             @endforeach
                         </select>
-                        <span class="error text-danger" id="category-error"></span>
+                        <span class="error text-danger" id="category_id-error"></span>
                     </div>
                     <div class="single-row d-flex justify-content-between">
 
@@ -128,7 +141,7 @@
                                 <option value="">Select subcategory</option>
 
                             </select>
-                            <span class="error text-danger" id="category-error"></span>
+                            <span class="error text-danger" id="subcat_id-error"></span>
                         </div>
 
                         <div class="form-group mb-2">
@@ -140,7 +153,7 @@
                                 <!-- Products will be loaded here -->
                             </select>
 
-                            <span class="error text-danger" id="product-error"></span>
+                            {{-- <span class="error text-danger" id="product_id-error"></span> --}}
                         </div>
                     </div>
                     <div class="form-group mb-2">
@@ -151,12 +164,15 @@
                             <option value="8 Months">8 Months</option>
                             <option value="4 Months">12 Months</option>
                         </select>
+                        
+                        <span class="error text-danger" id="filter_change_on-error"></span>
                     </div>
 
                     <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Installation Details</h3>
                     <div class="form-group mb-2">
                         <label for="assigned_to">Assigned to:</label>
-                        <select id="assigned_to" name="assigned_to" class="form-control">
+                        <select id="" name="assigned_to" class="form-control">
+                            <option value="">Select Staff</option>
                             @foreach($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
@@ -185,7 +201,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="purchaseDetailsModalLabel">purchase Details</h1>
+                <h1 class="modal-title fs-5 text-light" id="purchaseDetailsModalLabel">Customer Details</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="purchaseDetails">
@@ -245,6 +261,18 @@
                         <span class="error text-danger" id="landmark-error"></span>
                     </div>
                     <h3 class="text-center  text-light p-1 rounded-1 w-50" style="margin-left:170px">Product Details</h3>
+                    
+                    <div class="form-group mb-2">
+                        <label for="landmark">Type of Purchase</label> 
+                        <div class="custom-radio mt-2">                      
+                        <input type="radio" name="type_of_purchase" class="form-check-input" value="New Purchase"><span class="ms-1 me-5">New Purchase</span>
+                        <input type="radio" name="type_of_purchase" class="form-check-input" value="Old Purchase"><span class="ms-1 me-5">Old Purchase</span>
+                        <input type="radio" name="type_of_purchase" class="form-check-input" value="Outside Purchase"><span class="ms-1">Outside Purchase</span>
+                        </div>
+                       
+                        <span class="error text-danger" id="landmark-error"></span>
+                    </div>
+                    
                     <div class="form-group mb-2">
                         <label for="category">Category:</label>
                         <select id="category-select1" name="category_id" class="form-select cat-select"
@@ -273,11 +301,11 @@
                             <select id="product-select1" name="product_id" class="form-select fixed-width"
                                 style="width:350px !important;">
 
-                                <option value="">Select Product</option>
+                                <option value=""></option>
                                 <!-- Products will be loaded here -->
                             </select>
 
-                            <span class="error text-danger" id="product-error"></span>
+                            {{-- <span class="error text-danger" id="product-error"></span> --}}
                         </div>
                     </div>
 
@@ -415,7 +443,9 @@
                 }
             },
         ],
-        columnDefs: [{ visible: false, targets: [2,3, 4, 8, 9] }],
+
+     
+        columnDefs: [{ visible: false, targets: [4,5,6,7,10] }],
     });
 });
 
@@ -424,14 +454,39 @@
 do individual form -->
 <script>
     // Load products based on selected category
-    $('#category-select').change(function() {
+    
+//sub category field change 
+$('#category-select').change(function() {
         var categoryId = $(this).val();
         if (categoryId) { // Check if a valid category ID is selected
-            $.get(`{{ url('/admin/products') }}/` + categoryId, function(products) {
+            $.get(`{{ url('/admin/subcategory/change') }}/` + categoryId, function(sub) {
+                var $subcatSelect = $('#sub-category-select');
+                $subcatSelect.empty();
+                // $productSelect.append('<option value="">Select Product</option>');
+                $subcatSelect.append('<option>Select Sub Category</option>');
+                $.each(sub, function(index, subcat) {
+                   
+                    $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
+                });
+            }).fail(function() {
+                console.log('Failed to fetch products.'); // Handle any errors
+            });
+        } else {
+            $('#sub-category-select').empty().append('<option value="">Select sub category</option>'); // Clear products if no category is selected
+        }
+    });  
+
+    $('#sub-category-select').change(function() {
+        var subcategoryId = $(this).val();
+        if (subcategoryId) { // Check if a valid category ID is selected
+            $.get(`{{ url('/admin/products') }}/` + subcategoryId, function(products) {
                 var $productSelect = $('#product-select');
                 $productSelect.empty();
                 // $productSelect.append('<option value="">Select Product</option>');
-                $.each(products, function(index, product) {
+                $productSelect.append('<option> Select product</option>');
+                $.each(products, function(index, product)
+                 {
+                    
                     $productSelect.append('<option value="' + product.product_id + '">' + product.product_name + '</option>');
                 });
             }).fail(function() {
@@ -441,24 +496,8 @@ do individual form -->
             $('#product-select').empty().append('<option value="">Select Product</option>'); // Clear products if no category is selected
         }
     });
-//sub category field change 
-$('#category-select').change(function() {
-        var categoryId = $(this).val();
-        if (categoryId) { // Check if a valid category ID is selected
-            $.get(`{{ url('/admin/subcategory/change') }}/` + categoryId, function(sub) {
-                var $subcatSelect = $('#sub-category-select');
-                $subcatSelect.empty();
-                // $productSelect.append('<option value="">Select Product</option>');
-                $.each(sub, function(index, subcat) {
-                    $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
-                });
-            }).fail(function() {
-                console.log('Failed to fetch products.'); // Handle any errors
-            });
-        } else {
-            $('#sub-category-select').empty().append('<option value="">Select sub category</option>'); // Clear products if no category is selected
-        }
-    });
+
+
 
 // form submission individual 
 $(document).ready(function() {
@@ -511,16 +550,138 @@ $(document).on('click', '.more-purchase', function() {
             if (data && data.p_name && data.address && data.mobile && data.whatsapp && data.landmark && data.category_name && data.product_name && data.name && data.remarks) {
                 let purchaseDetails = `
                 <ul class="list-group">
-                    <li class="list-group-item"><p class="m-0"><strong>Name:</strong> ${data.p_name}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Address:</strong> ${data.address}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Mobile:</strong> ${data.mobile}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Whatsapp:</strong> ${data.whatsapp}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Landmark:</strong> ${data.landmark}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Category_name:</strong> ${data.category_name}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Product_name:</strong> ${data.product_name}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Staff:</strong> ${data.name}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Remarks:</strong> ${data.remarks}</p></li>
- 
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Customer Name</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.p_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Address</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.address}                          
+                        </div>
+                    </div>
+                    </li> 
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Mobile</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.mobile}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Whatsapp</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.whatsapp}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Landmark</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.landmark}                          
+                        </div>
+                    </div>
+                    </li>
+                    
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Category</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.category_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Subcategory</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.subcategory_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Product</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.product_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                     <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Type of Purchase</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.type_of_purchase}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Assigned To</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Remarks</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.remarks}                          
+                        </div>
+                    </div>
+                    </li>
+                    
                 </ul>
                 `;
                 $('#purchaseDetails').html(purchaseDetails);
@@ -573,6 +734,7 @@ $("#example").on("click", ".edit-purchase", function(e){
                     $('#landmark1').val(res.landmark);
                    $('#category-select1 option[value="'+res.category_id+'"]').attr("selected", "selected"); 
                    $('#filteron option[value="'+res.filter_change_on+'"]').attr("selected", "selected");
+                   $('input[name="type_of_purchase"][value="' + res.type_of_purchase + '"]').prop('checked', true);           
                    $('#assigned_to1 option[value="'+res.id+'"]').attr("selected", "selected");
                    $('#remarks1').val(res.remarks);                 
                    $('#editDetailsModal').modal('show');

@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('sub_center');
             $table->string('contact_person');
             $table->bigInteger('contact_mobile');
-            $table->string('center_address');            
+            $table->string('center_address');  
+            $table->string('remarks')->nullable()->after('assigned_to');          
             $table->timestamps();
         });
     }

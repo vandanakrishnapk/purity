@@ -89,7 +89,7 @@ public function doInstallation(Request $request)
     $installation->save();
     $individual = Individual::find($request->input('customer_id'));
     if ($individual) {
-        $individual->status = 'completed'; // Update status as needed
+        $individual->status = 'Completed'; // Update status as needed
         $individual->save();
     }
 

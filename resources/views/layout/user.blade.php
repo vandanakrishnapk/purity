@@ -70,11 +70,13 @@
             </button>
 
             <!-- Page Title -->
-            <h4 class="page-title d-none d-sm-block">Staff</h4>
+            @if(Auth::check())
+            <h4 class="page-title d-none d-sm-block">{{  Auth::user()->name }}</h4>
+            @endif
         </div>
 
         <ul class="topbar-menu d-flex align-items-center gap-3">
-            <li class="dropdown d-lg-none">
+            {{-- <li class="dropdown d-lg-none">
                 <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     <i class="mdi mdi-magnify fs-2"></i>
                 </a>
@@ -83,34 +85,34 @@
                         <input type="search" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
                     </form>
                 </div>
-            </li>
+            </li> --}}
 
-            <li class="dropdown">
+            {{-- <li class="dropdown">
                 <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     <img src="{{ asset('assets/images/flags/us.jpg') }}" alt="user-image" class="me-0 me-sm-1" height="12">
                     <span class="align-middle d-none d-lg-inline-block">English</span>
                     <span class="mdi mdi-chevron-down fs-22 d-none d-sm-inline-block align-middle"></span>
 
                 </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated">
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated"> --}}
 
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item">
+                    {{-- <a href="javascript:void(0);" class="dropdown-item">
                         <img src="{{ asset('assets/images/flags/germany.jpg') }}" alt="user-image" class="me-1" height="12"> <span class="align-middle">German</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item">
+                    {{-- <a href="javascript:void(0);" class="dropdown-item">
                         <img src="{{ asset('assets/images/flags/italy.jpg') }}" alt="user-image" class="me-1" height="12"> <span class="align-middle">Italian</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item">
+                    {{-- <a href="javascript:void(0);" class="dropdown-item">
                         <img src="{{ asset('assets/images/flags/spain.jpg') }}" alt="user-image" class="me-1" height="12"> <span class="align-middle">Spanish</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item">
+                    {{-- <a href="javascript:void(0);" class="dropdown-item">
                         <img src="{{ asset('assets/images/flags/russia.jpg') }}" alt="user-image" class="me-1" height="12"> <span class="align-middle">Russian</span>
                     </a>
 
@@ -137,10 +139,10 @@
                         </div>
                     </div>
 
-                    <div style="max-height: 300px;" data-simplebar>
+                    <div style="max-height: 300px;" data-simplebar> --}}
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
+                        {{-- <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
@@ -155,10 +157,10 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
+                        {{-- <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
@@ -172,10 +174,10 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
+                        {{-- <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
@@ -189,10 +191,10 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
+                        {{-- <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
@@ -207,10 +209,10 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                        </a> --}}
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
+                        {{-- <a href="javascript:void(0);" class="dropdown-item p-0 notify-item read-noti card m-0 shadow-none">
                             <div class="card-body">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
@@ -225,10 +227,10 @@
                                 </div>
                             </div>
                         </a>
-                    </div>
+                    </div> --}}
 
                     <!-- All-->
-                    <a href="javascript:void(0);" class="dropdown-item text-center text-primary text-decoration-underline fw-bold notify-item border-top border-light py-2">
+                    {{-- <a href="javascript:void(0);" class="dropdown-item text-center text-primary text-decoration-underline fw-bold notify-item border-top border-light py-2">
                         View All
                     </a>
 
@@ -321,19 +323,19 @@
                     </a>
 
                 </div>
-            </li>
+            </li> --}}
 
-            <li class="d-none d-sm-inline-block">
+            {{-- <li class="d-none d-sm-inline-block">
                 <a class="nav-link" data-bs-toggle="offcanvas" href="#theme-settings-offcanvas">
                     <span class="ri-settings-3-line fs-22"></span>
                 </a>
-            </li>
+            </li> --}}
 
-            <li class="d-none d-sm-inline-block">
+            {{-- <li class="d-none d-sm-inline-block">
                 <div class="nav-link" id="light-dark-mode">
                     <i class="ri-moon-line fs-22"></i>
                 </div>
-            </li>
+            </li> --}}
 
             <li class="dropdown">
                 <a class="nav-link dropdown-toggle arrow-none nav-user" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
@@ -353,28 +355,29 @@
                     </div>
 
                     <!-- item-->
-                    <a href="pages-profile.html" class="dropdown-item">
-                        <i class="ri-account-pin-circle-line fs-16 align-middle me-1 "></i>
+                    <a href="javascript:void(0);" class="dropdown-item profile" data-id="{{ Auth::user()->id }}" id="profile-link">
+                        <i class="ri-account-pin-circle-line fs-16 align-middle me-1"></i>
                         <span>My Account</span>
                     </a>
+                    
 
                     <!-- item-->
-                    <a href="pages-profile.html" class="dropdown-item">
+                    {{-- <a href="pages-profile.html" class="dropdown-item">
                         <i class="ri-settings-4-line fs-16 align-middle me-1"></i>
                         <span>Settings</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
-                    <a href="pages-faq.html" class="dropdown-item">
+                    {{-- <a href="pages-faq.html" class="dropdown-item">
                         <i class="ri-customer-service-2-line fs-16 align-middle me-1"></i>
                         <span>Support</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
-                    <a href="auth-lock-screen.html" class="dropdown-item">                
+                    {{-- <a href="auth-lock-screen.html" class="dropdown-item">                
                         <i class="ri-lock-line fs-16 align-middle me-1"></i>
                         <span>Lock Screen</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
                     <a href="{{ route('logout') }}" class="dropdown-item">
@@ -433,7 +436,7 @@
                   
                     <li class="side-nav-item">
 		                <a href="{{ route('user.viewInstallation') }}" class="side-nav-link">
-                        <i class="ri-corner-right-down-line 3x"></i>
+                        <i class="ri-install-line"></i>
 		                    <span> Installation </span>
 		                    <span class="badge bg-success float-end"></span>
 		                </a>
@@ -441,7 +444,7 @@
 	                </li>
                     <li class="side-nav-item">
 		                <a href="{{ route('user.getServicePage') }}" class="side-nav-link">
-                        <i class="ri-playstation-fill 3x"></i>
+                        <i class=" ri-tools-fill"></i>
 		                    <span> Service </span>
 		                    <span class="badge bg-success float-end"></span>
 		                </a>
@@ -722,6 +725,25 @@
 	        </div>
 	    </div>
 	</div>
+
+    {{-- //profile modal  --}}
+    <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h1 class="modal-title fs-5 text-light" id="userDetailsModalLabel">Profile</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="userDetails">
+                    <!-- User details will be loaded here -->
+                    
+                </div>
+                {{-- <div class="modal-footer">
+                    <button class="btn btn-primary">Update Profile</button>
+                </div> --}}
+            </div>
+        </div>
+    </div>
   
 	<!-- Vendor js -->
 	<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
@@ -730,7 +752,80 @@
 
 
 
+<script>
+$(document).on('click', '.profile', function() {
+    const userId = $(this).data('id');
+    console.log('Clicked user ID:', userId);
+    if (userId !== undefined) {
+        $.get(`{{ url('/user/userHome/profile') }}/${userId}`, function(data) {
+            console.log('Response data:', data);
 
+            if (data && data.name && data.email && data.mobile && data.designation) {
+                let userDetails = `
+                <ul class="list-group">
+                    <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Name</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.name}                          
+                        </div>
+                    </div>
+                    </li>
+                       <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Email</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.email}                          
+                        </div>
+                    </div>
+                    </li>
+                       <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Mobile</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.mobile}                          
+                        </div>
+                    </div>
+                    </li>
+                       <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Designation</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.designation}                          
+                        </div>
+                    </div>
+                    </li>
+                 </ul>                 
+                `;
+                $('#userDetails').html(userDetails);
+                $('#userDetailsModal').modal('show');
+            } else {
+                $('#userDetails').html('<p>No user details available.</p>');
+                $('#userDetailsModal').modal('show');
+            }
+        }).fail(function() {
+            alert('Error retrieving user details.');
+        });
+    } else {
+        console.error('User ID is undefined.');
+    }
+});
+
+
+
+</script>
 
 
 

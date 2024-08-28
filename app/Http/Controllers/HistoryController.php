@@ -19,10 +19,11 @@ class HistoryController extends Controller
             ->leftJoin('installations', 'installations.customer_id', '=', 'individuals.individual_id')
             ->leftJoin('services', 'services.customer_id', '=', 'individuals.individual_id')
             ->leftJoin('users', 'installations.staff_id', '=', 'users.id')
-            ->select('individuals.*', 'products.*', 'categories.*', 'subcategories.*', 'installations.*', 'services.*', 'users.name', 'installations.created_at as installation_date', 'installations.nextService as first_service', 'services.nextService as next_service', 'services.created_at as last_service')
+            ->select('individuals.*', 'products.*', 'categories.*', 'subcategories.*', 'installations.*', 'services.*', 'users.name', 'installations.created_at as installation_date', 'installations.nextService as first_service', 'services.nextService as next_service', 'services.created_at as last_service','individuals.created_at as requested_on')
             ->where('individuals.individual_id', '=', $id)
             ->first();
-    
+            $formattedRequestedOn = Carbon::parse($purchase->requested_on)->format('d-m-Y h:i A');
+            $formattedFilterOn = Carbon::parse($purchase->filter_change_on)->format('d-m-Y');
         if (!$purchase) {
             return view('admin.history')->withErrors('Purchase details not found');
         }
@@ -34,15 +35,18 @@ class HistoryController extends Controller
                 ->join('subcategories', 'subcategories.subcat_id', '=', 'individuals.subcat_id')
                 ->where('individual_id', '=', $id)
                 ->first();
-    
-            return view('admin.history', ['purchase' => $purchase]);
+              
+     
+            return view('admin.history', ['purchase' => $purchase,
+                                            'requested_on' =>$requested_on]);
         }
     
         if ($purchase->status === "completed") {
             $formattedInstallationDate = Carbon::parse($purchase->installation_date)->format('d-m-Y h:i A');
             $formattedFirstServiceDate = Carbon::parse($purchase->first_service)->format('d-m-Y');
-    
-            $services = DB::table('services')
+           
+          
+            $services = DB::table('services') 
                 ->where('customer_id', $id)
                 ->get()
                 ->map(function ($service) {
@@ -65,6 +69,7 @@ class HistoryController extends Controller
                             ->whereIn('parts_id', $test)
                             ->pluck('parts_name', 'parts_id');
                     // Retrieve parts data for this service
+                          
                     }
                    
                     return [
@@ -73,15 +78,19 @@ class HistoryController extends Controller
                         'last_service' => Carbon::parse($service->created_at)->format('d-m-Y h:i A'),
                         'amount' => $service->amount,
                         'tos' => $service->tos,
-                        'partsData' => $partsData, // Include parts data for this service
+                        'partsData' => $partsData, // Include parts data for this service 
+                        
                     ];
-                });
-    
+                }); 
+                $sowArray = json_decode($purchase->sow, true) ?? []; 
             return view('admin.history', [
                 'purchase' => $purchase,
+                'requested_on' => $formattedRequestedOn,
+                'filter_change_on' => $formattedFilterOn,
                 'installation_date' => $formattedInstallationDate,
                 'first_service' => $formattedFirstServiceDate,
                 'services' => $services,
+                'sow' => $sowArray, // Pass `sow` as an array
             ]);
         }
     

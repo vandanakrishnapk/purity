@@ -20,7 +20,21 @@ class UserController extends Controller
     public function viewUser()
     {
         return view('admin.view_user');
-    } 
+    }  
+
+    //view user profile 
+    public function userProfile(Request $request,$id)
+    {
+        $user = User::where('role', 1)->find($id);
+
+    // Check if the user exists
+    if (!$user) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+
+    // Return the user data as JSON
+    return response()->json($user);
+    }
     //creates users in to users table
     public function doAddUser(Request $request)
     {

@@ -9,7 +9,7 @@
 <body>
 <h1>Forget Password Email</h1>
 You can reset password from bellow link: <br><br>
-<a href="{{ route('change_password_form',['token' => $token]) }}" style="background-color:blue;padding:10px;border:none;color:white;text-decoration:none;border-radius:0.5rem;display:inline-block;">Reset Password</a>
+<a href="{{ route('change_password_form',['token' => $token]) }}" style="background-color:#103052;padding:10px;border:none;color:white;text-decoration:none;border-radius:0.5rem;display:inline-block;">Reset Password</a>
 
 
 </body>

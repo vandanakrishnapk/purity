@@ -27,9 +27,10 @@ class AdminController extends Controller
         'landmark' => 'required|string|max:255',
         'category_id' => 'required|exists:categories,category_id',
         'subcat_id' => 'required|exists:subcategories,subcat_id',
-        'product_id' => 'required|exists:products,product_id',
+        'product_id' => 'exists:products,product_id',
         'filter_change_on' =>'required',
-        'assigned_to' => 'nullable|string|max:255',
+        'assigned_to' => 'required|string',
+        'type_of_purchase' =>'required|string',
         'remarks' => 'nullable|string|max:500',
     ], [
         'p_name.required' => 'Person name is required',
@@ -37,11 +38,11 @@ class AdminController extends Controller
         'mobile.required' => 'Mobile is required',
         'whatsapp.required' => 'WhatsApp is required',
         'landmark.required' => 'Landmark is required',
-        'category_id.required' => 'Please select a category',
-        'subcat_id.required' => 'Please select a category',
-        'product_id.required' => 'Please select a category',
+        'category_id.required' => 'Please select a Category',
+        'subcat_id.required' => 'Please select a Sub Category',
         'filter_change_on.required' =>'Please select Filter Change',
         'assigned_to.required' => 'Staff name is required',
+        'type_of_purchase.required' =>'Type of Purchase is Required',
         'remarks.required' => 'Please add remarks',
     ]);
 
@@ -63,6 +64,7 @@ class AdminController extends Controller
         'product_id' => $request->input('product_id'),
         'filter_change_on' =>$request->input('filter_change_on'),
         'assigned_to' => $request->input('assigned_to'),
+        'type_of_purchase' =>$request->input('type_of_purchase'),
         'remarks' => $request->input('remarks'),
         'created_at' => Carbon::now(),  // Add current timestamp
         'updated_at' => Carbon::now(),
@@ -112,9 +114,10 @@ class AdminController extends Controller
        
         $purchase = DB::table('individuals')
         ->join('categories', 'individuals.category_id', '=', 'categories.category_id')
+        ->join('subcategories','individuals.subcat_id','=','subcategories.subcat_id')
         ->join('products', 'individuals.product_id', '=', 'products.product_id')
         ->join('users', 'individuals.assigned_to', '=', 'users.id')
-        ->select('individuals.individual_id', 'individuals.p_name', 'individuals.address', 'individuals.mobile', 'individuals.whatsapp', 'individuals.landmark', 'categories.category_name', 'products.product_name', 'users.name', 'individuals.remarks')
+        ->select('individuals.individual_id', 'individuals.p_name', 'individuals.address', 'individuals.mobile', 'individuals.whatsapp', 'individuals.landmark', 'individuals.type_of_purchase','categories.category_name', 'subcategories.subcategory_name','products.product_name', 'users.name', 'individuals.remarks')
         ->where('individuals.individual_id', $id)
         ->first();
         
@@ -161,6 +164,7 @@ class AdminController extends Controller
                 'category_id' =>$request->category_id,
                 'product_id' =>$request->product_id,
                 'assigned_to' =>$request->assigned_to,
+                'type_of_purchase' =>$request->type_of_purchase,
                 'remarks' =>$request->remarks,
                 'subcat_id' =>$request->subcat_id,               
 

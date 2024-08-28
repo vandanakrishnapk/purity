@@ -127,7 +127,21 @@
     
                 },
                 {
-                    data: 'status', name: 'status'
+                    data: 'status', name: 'status',
+                    render: function(data, type, row) {
+                    // Determine text color based on the status
+                    var color;
+                    if (data === 'completed') {
+                        color = 'green';
+                    } else if (data === 'assigned') {
+                        color = 'blue';
+                    } else {
+                        color = 'black'; // Default color
+                    }
+                    
+                    // Return the status with the appropriate color
+                    return '<span style="color: ' + color + ';">' + data + '</span>';
+                }
                 },
               
             ],

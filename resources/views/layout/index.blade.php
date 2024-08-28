@@ -27,7 +27,7 @@
 	<link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <!--toaster -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
-   
+
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     
     @yield('css')
@@ -87,7 +87,7 @@
                     </form>
                 </div>
             </li>
-
+{{-- 
             <li class="dropdown">
                 <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     <img src="{{ asset('assets/images/flags/us.jpg') }}" alt="user-image" class="me-0 me-sm-1" height="12">
@@ -242,8 +242,8 @@
                 <a class="nav-link dropdown-toggle arrow-none" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                     <i class="ri-notification-3-line fs-22"></i>
                     <span class="noti-icon-badge badge text-bg-pink">3</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg py-0">
+                </a> --}}
+                {{-- <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated dropdown-lg py-0">
                     <div class="p-2 border-top-0 border-start-0 border-end-0 border-dashed border">
                         <div class="row align-items-center">
                             <div class="col">
@@ -323,10 +323,10 @@
                         View All
                     </a>
 
-                </div>
+                </div> --}}
             </li>
 
-            <li class="d-none d-sm-inline-block">
+            {{-- <li class="d-none d-sm-inline-block">
                 <a class="nav-link" data-bs-toggle="offcanvas" href="#theme-settings-offcanvas">
                     <span class="ri-settings-3-line fs-22"></span>
                 </a>
@@ -336,7 +336,7 @@
                 <div class="nav-link" id="light-dark-mode">
                     <i class="ri-moon-line fs-22"></i>
                 </div>
-            </li>
+            </li> --}}
 
             <li class="dropdown">
                 <a class="nav-link dropdown-toggle arrow-none nav-user" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
@@ -350,33 +350,33 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
                     <!-- item-->
-                    <div class=" dropdown-header noti-title">
+                    {{-- <div class=" dropdown-header noti-title">
                         <h6 class="text-overflow m-0">Welcome !</h6>
-                    </div>
+                    </div> --}}
 
                     <!-- item-->
-                    <a href="pages-profile.html" class="dropdown-item">
+                    {{-- <a href="pages-profile.html" class="dropdown-item">
                         <i class="ri-account-pin-circle-line fs-16 align-middle me-1 "></i>
                         <span>My Account</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
-                    <a href="pages-profile.html" class="dropdown-item">
+                    {{-- <a href="pages-profile.html" class="dropdown-item">
                         <i class="ri-settings-4-line fs-16 align-middle me-1"></i>
                         <span>Settings</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
-                    <a href="pages-faq.html" class="dropdown-item">
+                    {{-- <a href="pages-faq.html" class="dropdown-item">
                         <i class="ri-customer-service-2-line fs-16 align-middle me-1"></i>
                         <span>Support</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
-                    <a href="auth-lock-screen.html" class="dropdown-item">                
+                    {{-- <a href="auth-lock-screen.html" class="dropdown-item">                
                         <i class="ri-lock-line fs-16 align-middle me-1"></i>
                         <span>Lock Screen</span>
-                    </a>
+                    </a> --}}
 
                     <!-- item-->
                     <a href="{{ route('logout') }}" class="dropdown-item">
@@ -444,15 +444,15 @@
 
     <li class="side-nav-item">
 		                <a data-bs-toggle="collapse" href="#sidebarPagesinvoice" aria-expanded="false" aria-controls="sidebarPagesinvoice" class="side-nav-link">
-		                    <i class="ri-article-line"></i>
-		                    <span>Purchase</span>
+		                    <i class=" ri-team-line"></i>
+		                    <span>Customers</span>
 		                    <span class="menu-arrow"></span>
 
 		                </a>
 		                <div class="collapse" id="sidebarPagesinvoice">
 		                    <ul class="side-nav-second-level">
 		                        <li class="side-nav-item">
-		                            <a class="side-nav-link" href="{{ route('viewIndividualPurchase') }}">Personal</a>
+		                            <a class="side-nav-link" href="{{ route('viewIndividualPurchase') }}">Individual</a>
 		                        </li>
 		                        <li class="side-nav-item">
 		                            <a class="side-nav-link" href="{{ route('admin.corporate.purchase') }}">Corporate</a>
@@ -478,7 +478,7 @@
 	</li>
     <li class="side-nav-item">
         <a href="{{ route('admin.getInstallationPage') }}" class="side-nav-link">
-        <i class="ri-article-line"></i>
+        <i class=" ri-install-line"></i>
             <span> Installations </span>
             <span class="badge bg-success float-end"></span>
         </a>
@@ -487,15 +487,15 @@
   
     <li class="side-nav-item">
 		                <a href="{{ route('admin.getServicePage')}}" class="side-nav-link">
-                        <i class="ri-article-line"></i>
-		                    <span> Services </span>
+                        <i class=" ri-tools-fill"></i>
+		                    <span> Requested Services </span>
 		                    <span class="badge bg-success float-end"></span>
 		                </a>
                        
 	</li>
     <li class="side-nav-item">
 		                <a href="{{ route('admin.partsViewPage')}}" class="side-nav-link">
-                        <i class="ri-article-line"></i>
+                        <i class="ri-box-3-line"></i>
 		                    <span> Parts </span>
 		                    <span class="badge bg-success float-end"></span>
 		                </a>

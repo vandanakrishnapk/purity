@@ -8,7 +8,8 @@ use App\Models\Part;
 use App\Models\Service;
 use App\Models\ServiceHistory;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use Carbon\Carbon; 
+use App\Models\User;
 class ServiceController extends Controller
 {
     public function getServicePage()
@@ -34,7 +35,8 @@ class ServiceController extends Controller
                 ->join('individuals', 'services.customer_id', '=', 'individuals.individual_id')
                 ->join('installations', 'installations.customer_id', '=', 'services.customer_id')
                 ->join('products', 'individuals.product_id', '=', 'products.product_id')
-                ->select('services.*', 'individuals.p_name', 'individuals.mobile', 'products.product_name', 'installations.created_at as installation_date')
+                ->join('users','services.staff_id','=','users.id')
+                ->select('services.*', 'individuals.p_name', 'individuals.mobile', 'products.product_name', 'installations.created_at as installation_date','users.name')
                 ->whereIn('individuals.status', ['completed'])
                 ->orderBy('services.created_at', 'desc') // Order by services.created_at in descending order
                 ->get(); // Fetch all records
@@ -271,5 +273,78 @@ public function edit($id)
         'status' =>1,
         'data' =>$parts,
      ]);
+    }   
+
+
+   
+    public function changeStaff($id)
+    {
+        $service = Service::find($id);
+        $users = User::where('role','=',1)->get(); // Get all users
+        
+        return response()->json([
+            'serviceId' => $service->serviceId,
+            'currentStaff' => $service->staff_id, // Adjust based on your relationship
+            'users' => $users
+        ]);
     } 
+
+    public function updateStaff(Request $request,$id)
+    {
+        $request->validate([
+         
+            'assigned_to' => 'required|exists:users,id', // Assuming 'users' is the table for staff
+        ]);
+
+        // Find the service by ID
+        $service = Service::find($id);
+
+        // Update the assigned staff
+        $service->staff_id = $request->input('assigned_to'); // Adjust field names as needed
+        
+        $service->save(); // Save changes to the database
+
+        // Return a success response
+        return response()->json(['status' => 1, 'message' => 'Staff updated successfully']);
+    
+        
+    } 
+
+    //change next service view 
+    public function changeNextService($id)
+    {
+        $service = Service::find($id);
+             
+        return response()->json([
+            'serviceId' => $service->serviceId,
+            'currentnextService' => $service->nextService, // Adjust based on your relationship
+            
+        ]);
+    } 
+
+    //update next service 
+
+    public function updateNextService(Request $request,$id)
+    {
+    
+        $request->validate([
+         
+            'nextService' => 'required', // Assuming 'users' is the table for staff
+        ]);
+
+        // Find the service by ID
+        $service = Service::find($id);
+
+        // Update the assigned staff
+    
+        
+        $service->nextService = $request->input('nextService'); // Adjust field names as needed
+        
+        $service->save(); // Save changes to the database
+
+        // Return a success response
+        return response()->json(['status' => 1, 'message' => 'Next Service updated successfully']);
+    
+         
+    }
 }

@@ -13,7 +13,7 @@
 @section('data_table')
 <div class="card"> 
     <div class="card-header">
-        <h3 class="text-start mt-3 rounded-3">CORPORATE PURCHASES</h3>
+        <h3 class="text-start mt-3 rounded-3">CORPORATE CUSTOMERS</h3>
     </div>
             <div class="card-body">
                 <table id="corporateTable" class="table table-striped dt-responsive nowrap w-100">
@@ -78,86 +78,93 @@
                                         <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Corporate Company</h3>
                                         <br><label for="name">Company Name</label>
                                         <input type="text" name="company_name" id="company_name" placeholder="Company Name" class="form-control">
-                                        <span class="error company_name_error text-danger"></span>
+                                        <span class="error  text-danger" id="company_name-error"></span>
                                         
                                         <br><label for="center_name">Center Name</label>
                                         <input type="email" name="center_name" id="center_name" placeholder="Center Name" class="form-control">
-                                        <span class="error center_name_error text-danger"></span>
+                                        <span class="error  text-danger" id="center_name-error"></span>
                                         
                                         <br><label for="sub_center">Sub Center</label>
                                         <input type="text" name="sub_center" id="sub_center" placeholder="Sub Center" class="form-control">
-                                        <span class="error sub_center_error text-danger"></span>
+                                        <span class="error text-danger" id="sub_center-error"></span>
                                       
                                         <br>
                                         <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Contact Person</h3>
                                         <label for="contact_person">Name</label>
                                         <input type="text" name="contact_person" id="contact_person" placeholder="Name" class="form-control">
-                                        <span class="error contact_person_error text-danger"></span>
+                                        <span class="error text-danger" id="contact_person-error"></span>
                                         
                                         <br><label for="contact_mobile">Mobile</label>
                                         <input type="text" name="contact_mobile" id="contact_mobile" placeholder="Mobile" class="form-control">
-                                        <span class="error contact_mobile_error text-danger"></span>
+                                        <span class="error text-danger" id="contact_mobile-error"></span>
 
                                         <br><label for="center_address">Center Address</label>
                                         <textarea name="center_address" id="center_address" cols="30" rows="5" placeholder="Center Address" class="form-control"></textarea>
-                                        <span class="error center_address_error text-danger"></span> 
+                                        <span class="error text-danger" id="center_address-error"></span> 
                                         <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Product Details</h3>
-                                        <div class="form-group mb-2">
-                                            <label for="category">Category:</label>
-                                            <select id="category-select" name="category_id" class="form-select fixed-width"
-                                                style="width:725px !important;">
-                                                <option value="">Select Category</option>
-                                                @foreach($categories as $category)
-                                                <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <span class="error text-danger" id="category-error"></span>
-                                        </div>
-                                        <div class="single-row d-flex justify-content-between">
+                                          
                     
-                                            <div class="form-group mb-2">
-                                                <label for="category">Sub Category:</label>
-                                                <select id="sub-category-select" name="subcat_id" class="form-select fixed-width"
-                                                    style="width:350px !important;">
-                    
-                                                    <option value="">Select subcategory</option>
-                    
-                                                </select>
-                                                <span class="error text-danger" id="category-error"></span>
-                                            </div>
-                    
-                                            <div class="form-group mb-2">
-                                                <label for="product">Product:</label>
-                                                <select id="product-select" name="product_id" class="form-select fixed-width"
-                                                    style="width:350px !important;">
-                    
-                                                    <option value="">Select Product</option>
-                                                    <!-- Products will be loaded here -->
-                                                </select>
-                    
-                                                <span class="error text-danger" id="product-error"></span>
-                                            </div>
-                                        </div>
+                    <div class="form-group mb-2">
+                        <label for="category">Category:</label>
+                        <select id="category-select" name="category_id" class="form-select fixed-width"
+                            style="width:725px !important;">
+                            <option value="">Select Category</option>
+                            @foreach($categories as $category)
+                            <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
+                            @endforeach
+                        </select>
+                        <span class="error text-danger" id="category_id-error"></span>
+                    </div>
+                    <div class="single-row d-flex justify-content-between">
 
+                        <div class="form-group mb-2">
+                            <label for="category">Sub Category:</label>
+                            <select id="sub-category-select" name="subcat_id" class="form-select fixed-width"
+                                style="width:350px !important;">
+
+                                <option value="">Select subcategory</option>
+
+                            </select>
+                            <span class="error text-danger" id="subcat_id-error"></span>
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <label for="product">Product:</label>
+                            <select id="product-select" name="product_id" class="form-select fixed-width"
+                                style="width:350px !important;">
+
+                                <option value="">Select Product</option>
+                                <!-- Products will be loaded here -->
+                            </select>
+
+                            {{-- <span class="error text-danger" id="product_id-error"></span> --}}
+                        </div>
+                    </div>
                                         <h3 class="text-center text-light p-1 rounded-1 w-50" style="margin-left:170px">Installation Details</h3>
                                         <div class="form-group mb-2">
                                             <label for=""> Filter change on </label>
-                                            <select name="filter_change" id="filterchangeon" class="form-select">
+                                            <select name="filter_change_on" id="" class="form-select">
                                                 <option value="">Select Filter Change On</option>
                                                 <option value="4 Months">4 Months</option>
                                                 <option value="8 Months">8 Months</option>
                                                 <option value="12 Months">12 Months</option>
                                             </select>
-                                            <input type="text" id="filterchange" name="filter_change_on">
+                                            <span class="error text-danger" id="filter_change_on-error"></span>
                                         </div>
                                         <div class="form-group mb-2">
                                             <label for="assigned_to">Assigned to:</label>
-                                            <select id="assigned_to1" name="assigned_to" class="form-control">
+                                            <select id="" name="assigned_to" class="form-control">
+                                                <option value="">Select Staff</option>
                                                 @foreach($users as $user)
                                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
                                             </select>
-                                            <span class="error text-danger" id="assigned_to-error"></span>
+                                            <span class="error text-danger " id="assigned_to-error"></span>
+                                        </div>
+                                          <div class="form-group mb-2">
+                                            <label for="remarks">Remarks:</label>
+                                            <textarea id="remarks" name="remarks" class="form-control">{{ old('remarks') }}</textarea>
+                                            <span class="error text-danger" id="remarks-error "></span>
                                         </div>
                                      
                                     </form>
@@ -272,23 +279,7 @@
             { data: 'subcategory_name', name: 'subcategory_name' },
             { data: 'product_name', name: 'product_name' },
             { data: 'name', name: 'name' },
-            { data: 'filter_change_on', name: 'filter_change_on',
-            render: function(data, type, row) {
-                    try {
-                        const date = new Date(data);
-                        const day = String(date.getDate()).padStart(2, '0');
-                        const month = String(date.getMonth() + 1).padStart(2, '0');
-                        const year = date.getFullYear();
-                        const hours = date.getHours() % 12 || 12;
-                        const minutes = String(date.getMinutes()).padStart(2, '0');
-                        const ampm = date.getHours() >= 12 ? 'pm' : 'am';
-                        return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
-                    } catch (e) {
-                        console.error('Date formatting error:', e);
-                        return data; // Fallback to raw data if there's an error
-                    }
-                }
-             },
+            { data: 'filter_change_on', name: 'filter_change_on' },
             {
                 data: null,
                 name: 'action',
@@ -311,16 +302,39 @@
         ],
         columnDefs: [{ visible: false, targets: [2,3,4,6,7,8,10] }],
     });
-});
-//product relevent 
+}); 
+//sub category field change 
 $('#category-select').change(function() {
         var categoryId = $(this).val();
         if (categoryId) { // Check if a valid category ID is selected
-            $.get(`{{ url('/admin/products') }}/` + categoryId, function(products) {
+            $.get(`{{ url('/admin/subcategory/change') }}/` + categoryId, function(sub) {
+                var $subcatSelect = $('#sub-category-select');
+                $subcatSelect.empty();
+                // $productSelect.append('<option value="">Select Product</option>');
+                $subcatSelect.append('<option>Select Sub Category</option>');
+                $.each(sub, function(index, subcat) {
+                   
+                    $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
+                });
+            }).fail(function() {
+                console.log('Failed to fetch products.'); // Handle any errors
+            });
+        } else {
+            $('#sub-category-select').empty().append('<option value="">Select sub category</option>'); // Clear products if no category is selected
+        }
+    }); 
+    
+    $('#sub-category-select').change(function() {
+        var subcategoryId = $(this).val();
+        if (subcategoryId) { // Check if a valid category ID is selected
+            $.get(`{{ url('/admin/products') }}/` + subcategoryId, function(products) {
                 var $productSelect = $('#product-select');
                 $productSelect.empty();
                 // $productSelect.append('<option value="">Select Product</option>');
-                $.each(products, function(index, product) {
+                $productSelect.append('<option> Select product</option>');
+                $.each(products, function(index, product)
+                 {
+                    
                     $productSelect.append('<option value="' + product.product_id + '">' + product.product_name + '</option>');
                 });
             }).fail(function() {
@@ -330,24 +344,9 @@ $('#category-select').change(function() {
             $('#product-select').empty().append('<option value="">Select Product</option>'); // Clear products if no category is selected
         }
     });
-//sub category field change 
-$('#category-select').change(function() {
-        var categoryId = $(this).val();
-        if (categoryId) { // Check if a valid category ID is selected
-            $.get(`{{ url('/admin/subcategory/change') }}/` + categoryId, function(sub) {
-                var $subcatSelect = $('#sub-category-select');
-                $subcatSelect.empty();
-                // $productSelect.append('<option value="">Select Product</option>');
-                $.each(sub, function(index, subcat) {
-                    $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
-                });
-            }).fail(function() {
-                console.log('Failed to fetch products.'); // Handle any errors
-            });
-        } else {
-            $('#sub-category-select').empty().append('<option value="">Select sub category</option>'); // Clear products if no category is selected
-        }
-    });
+
+
+
 //filter change on to date 
 function updateNextService() {
             const filterchangeonValue = $('#filterchangeon').val();
@@ -382,12 +381,16 @@ function updateNextService() {
             console.log(response); // Log response for debugging
 
     // Clear previous error messages
-    $('.error').text('');
+   
+  
+        $('.error').text('');
 
     if (response.status === 0) {
-        $.each(response.error, function(key, value) {
-            $('#' + key).next('.error').text(value);
-        });
+    $.each(response.errors, function(key, value) {
+        $('#' + key + '-error').text(value[0]);
+    });
+
+
         toastr.error('Please fix the errors and try again.', 'Validation Error', { positionClass: 'toast-top-right' });
     } else if (response.status === 1) {
         toastr.success(response.message, 'Success', { positionClass: 'toast-top-right' });
@@ -422,17 +425,139 @@ $(document).on('click', '.view-company', function() {
 
                 let corporateDetails = `
                     <ul class="list-group">
-                        <li class="list-group-item"><p class="m-0"><strong>Company Name:</strong> ${company.company_name}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Center Name:</strong> ${company.center_name}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Sub center:</strong> ${company.sub_center}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Contact Person:</strong> ${company.contact_person}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Contact Mobile:</strong> ${company.contact_mobile}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Center Address:</strong> ${company.center_address}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Category:</strong> ${company.category_name}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Sub Category:</strong> ${company.subcategory_name}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Product:</strong> ${company.product_name}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Filter Change On:</strong> ${data.formattedDate}</p></li>
-                        <li class="list-group-item"><p class="m-0"><strong>Assigned To:</strong> ${company.name}</p></li>
+                            <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Company Name</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.company_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Center Name</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.center_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Sub Center</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.sub_center}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Contact Person</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.contact_person}                          
+                        </div>
+                    </div>
+                    </li>
+                      
+                    
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Contact Mobile</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.contact_mobile}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Center Address</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.center_address}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Category</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.category_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Sub category</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.subcategory_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Product</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.product_name}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Filter Change On</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.formattedDate}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Assigned</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.name}                          
+                        </div>
+                    </div>
+                    </li>
+                       
                     </ul>
                 `;
 

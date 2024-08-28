@@ -277,11 +277,52 @@ $(document).on('click', '.more-user', function() {
             if (data && data.name && data.email && data.mobile && data.designation) {
                 let userDetails = `
                 <ul class="list-group">
-                    <li class="list-group-item"><p class="m-0"><strong>Email:</strong> ${data.name}</p></li>
-                    <li class="list-group-item"><p class="m-0"><strong>Email:</strong> ${data.email}</p></li>
-                     <li class="list-group-item"><p class="m-0"><strong>Mobile:</strong> ${data.mobile}</p></li>
-                     <li class="list-group-item"><p class="m-0"><strong>Designation:</strong> ${data.designation}</p></li>
-                </ul>                 
+                    <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Name</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.name}                          
+                        </div>
+                    </div>
+                    </li>
+                       <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Email</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.email}                          
+                        </div>
+                    </div>
+                    </li>
+                       <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Mobile</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.mobile}                          
+                        </div>
+                    </div>
+                    </li>
+                       <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-4">
+                              <strong>Designation</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${data.designation}                          
+                        </div>
+                    </div>
+                    </li>
+                 </ul>                 
+                               
                 `;
                 $('#userDetails').html(userDetails);
                 $('#userDetailsModal').modal('show');

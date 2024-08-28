@@ -10,6 +10,7 @@ use App\Http\Controllers\CorporateController;
 use App\Http\Controllers\InstallationController; 
 use App\Http\Controllers\ServiceController; 
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -88,13 +89,26 @@ Route::delete('/service/parts/delete/{id}', [ServiceController::class, 'destroy'
 Route::get('service/view/details/{id}', [ServiceController::class, 'details']); 
 //history routes 
 Route::get('/purchase/history/view/{id}',[HistoryController::class,'getPurchaseHistoryView'])->name('admin.getPurchaseHistoryView');
+
+//index blade graph view 
+Route::get('/dashboard/customer/count', [DashboardController::class, 'getCustomerCount']);
+Route::get('dashboard/installations/count', [DashboardController::class, 'getInstallationCounts']); 
+Route::get('/dashboard/services/count', [DashboardController::class, 'getServicesCount']);
+
+
+Route::get('/service/change/staff/{id}',[ServiceController::class,'changeStaff'])->name('admin.changeStaff');
+Route::post('/service/update/staff/{id}',[ServiceController::class,'updateStaff'])->name('admin.updateStaff');
+
+
+Route::get('/service/change/nextService/{id}',[ServiceController::class,'changeNextService']);
+Route::post('/service/update/nextService/{id}',[ServiceController::class,'updateNextService']);
 });
 
 //user routes
 Route::middleware(['auth', 'role:1'])->prefix('user')->group(function ()
  {
 Route::get('/userHome',[UserController::class,'userHome'])->name('user.home');
-
+Route::get('/userHome/profile/{id}',[UserController::class,'userProfile'])->name('user.profile');
 //installation routes
 Route::get('/installation/view',[InstallationController::class,'viewInstallation'])->name('user.viewInstallation');
 Route::get('/installation/view/data',[InstallationController::class,'getInstallationData'])->name('user.getInstallationData');
@@ -109,5 +123,9 @@ Route::get('/service/parts/load',[ServiceController::class,'getParts'])->name('u
 Route::post('/service/new',[ServiceController::class,'douserService'])->name('user.doService');
 
 
+
+Route::get('/dashboard/customer/count', [DashboardController::class, 'getCustomerCount']);
+Route::get('dashboard/installations/count', [DashboardController::class, 'getInstallationCounts']); 
+Route::get('/dashboard/services/count', [DashboardController::class, 'getServicesCount']);
 });
 

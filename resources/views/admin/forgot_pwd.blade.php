@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <!-- Icons css -->
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 
 <body class="authentication-bg position-relative">
@@ -32,13 +32,13 @@
                 <div class="card overflow-hidden">
                     <div class="bg-primary">
                         <div class="text-primary text-center">
-                            <h4 class="text-white font-size-20 p-2">Reset Password</h4>
+                            <h4 class="text-white font-size-20 p-2 bg-primary">Reset Password</h4>
                             <a href="index" class="logo logo-admin">
                             <img src="https://cdn3.vectorstock.com/i/1000x1000/60/82/user-icon-white-silhouette-on-blue-round-vector-20326082.jpg" height="50px" alt="logo">
                             </a>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body ">
                         <div class="p-1">
                         @if (session('message'))
                         <div class="alert alert-success">
