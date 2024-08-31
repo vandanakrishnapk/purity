@@ -383,6 +383,7 @@
             {
                 extend: 'csvHtml5',
                 text: 'Download Excel',
+                title:'Individual Customers',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions:{
@@ -733,16 +734,32 @@ $("#example").on("click", ".edit-purchase", function(e){
                     $('#whatsapp1').val(res.whatsapp);
                     $('#landmark1').val(res.landmark);
                    $('#category-select1 option[value="'+res.category_id+'"]').attr("selected", "selected"); 
+                   
+                   $('#sub-category option[value="'+res.subcat_id+'"]').attr("selected", "selected"); 
+                  
+                   
+                   $('#product-select1 option[value="'+res.product_id+'"]').attr("selected", "selected"); 
+                  
                    $('#filteron option[value="'+res.filter_change_on+'"]').attr("selected", "selected");
                    $('input[name="type_of_purchase"][value="' + res.type_of_purchase + '"]').prop('checked', true);           
-                   $('#assigned_to1 option[value="'+res.id+'"]').attr("selected", "selected");
+                   $('#assigned_to1 option[value="'+res.assigned_to+'"]').attr("selected", "selected");
                    $('#remarks1').val(res.remarks);                 
                    $('#editDetailsModal').modal('show');
                   }
 
               })
               $('#category-select1').change(function(){
-        $.ajax({
+                $.ajax({
+                url: "{{ url('/admin/subcatSelect') }}?category_id=" + $(this).val(),
+                method: 'GET',
+                success: function(data) {
+                    $('#sub-category').find('option').remove().end();
+                    $('#sub-category').html(data.html);
+                }
+            });  
+      });
+        $('#sub-category').change(function(){
+            $.ajax({
                 url: "{{ url('/admin/productSelect') }}?category_id=" + $(this).val(),
                 method: 'GET',
                 success: function(data) {
@@ -750,14 +767,7 @@ $("#example").on("click", ".edit-purchase", function(e){
                     $('#product-select1').html(data.html);
                 }
             });
-            $.ajax({
-                url: "{{ url('/admin/subcatSelect') }}?category_id=" + $(this).val(),
-                method: 'GET',
-                success: function(data) {
-                    $('#sub-category').find('option').remove().end();
-                    $('#sub-category').html(data.html);
-                }
-            });            
+               
         
         });
       

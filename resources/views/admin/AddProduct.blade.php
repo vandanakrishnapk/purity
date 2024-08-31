@@ -330,6 +330,7 @@
             {
                 extend: 'csvHtml5',
                 text: 'Download Excel',
+                title:'Products',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
             }

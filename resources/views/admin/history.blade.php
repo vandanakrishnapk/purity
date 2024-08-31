@@ -110,7 +110,7 @@
         </div>
       </div>
     </div>
-    @if($purchase->status==="completed")
+    @if($purchase->status==="Completed")
     <div class="accordion-item">
       <h1 class="accordion-header p-1">
         <button class="accordion-button collapsed bg-secondary text-light fs-3" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">

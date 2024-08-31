@@ -99,6 +99,9 @@
 								</div><!-- end card-body -->
 							</div><!-- end card -->
 						</div><!-- end col -->
+<div id="reminderContainer" class="mt-4">
+
+</div> 
 
 @endsection 
 
@@ -120,7 +123,7 @@
                 data: {
                     labels: ['Total Customers'],
                     datasets: [{
-                        label: 'Customer Count',
+                        label: 'Customers',
                         data: [totalCount],
                         backgroundColor: '#c8dbe9', // Set background color
                         borderColor: '#c8dbe9', // Set border color
@@ -169,40 +172,32 @@ $(document).ready(function() {
         url: `{{ url('/admin/dashboard/installations/count') }}`, // Ensure this URL matches your route
         method: 'GET',
         success: function(data) {
-            const labels = data.labels;
-            const counts = data.counts;
-			$('#inscounts').append(counts);
+            const totalCount = data.total;
+
+            $('#inscounts').text(totalCount); // Use `.text()` to set text content
+
             const ctx = document.getElementById('installationsChart').getContext('2d');
             new Chart(ctx, {
-                type: 'line', // Line chart
+                type: 'bar', // Ensure vertical bars
                 data: {
-                    labels: labels,
+                    labels: ['Total Customers'],
                     datasets: [{
-                        label: 'Installation Count',
-                        data: counts,
-                        backgroundColor: 'rgba(16, 48, 82, 0.2)', // Light color for fill
-                        borderColor: '#103052', // Line color
-                        borderWidth: 2,
-                        tension: 0.1 // Smoothing factor for the line
+                        label: 'Installations',
+                        data: [totalCount],
+                        backgroundColor: '#def4b4', // Set background color
+                        borderColor: '#def4b4', // Set border color
+                        borderWidth: 1
                     }]
                 },
                 options: {
+                    indexAxis: 'y', // Set this to display horizontal bars
                     responsive: true,
-                    maintainAspectRatio: false,
                     scales: {
                         x: {
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Month'
-                            }
                         },
                         y: {
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Count'
-                            },
                             ticks: {
                                 callback: function(value) {
                                     return value.toLocaleString();
@@ -212,79 +207,12 @@ $(document).ready(function() {
                     },
                     plugins: {
                         legend: {
-                            display: true,
-                            position: 'top'
+                            display: true
                         },
                         tooltip: {
                             callbacks: {
                                 label: function(tooltipItem) {
-                                    return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-        }
-    });
-}); 
-
-$(document).ready(function() {
-    $.ajax({
-        url: `{{ url('/admin/dashboard/services/count') }}`, // Ensure this URL matches your route
-        method: 'GET',
-        success: function(data) {
-            const serviceCount = data.count;
-            $('#servicecounts').append(serviceCount);
-            const ctx = document.getElementById('servicesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar', // Column chart
-                data: {
-                    labels: ['Total Services'],
-                    datasets: [{
-                        label: 'Service Count',
-                        data: [serviceCount],
-                        backgroundColor: '#44943b', // Bar color
-                        borderColor: '#44943b', // Border color
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Category' // Adjust as needed
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Count' // Adjust as needed
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toLocaleString(); // Format numbers with commas
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                                    return 'Total: ' + tooltipItem.raw;
                                 }
                             }
                         }
@@ -298,6 +226,88 @@ $(document).ready(function() {
     });
 });
 
+$(document).ready(function() {
+    $.ajax({
+        url: `{{ url('/admin/dashboard/services/count') }}`, // Ensure this URL matches your route
+        method: 'GET',
+        success: function(data) {
+            const totalCount = data.count;
 
+            $('#servicecounts').text(totalCount); // Use `.text()` to set text content
+
+            const ctx = document.getElementById('servicesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Ensure vertical bars
+                data: {
+                    labels: ['Total Customers'],
+                    datasets: [{
+                        label: 'Services',
+                        data: [totalCount],
+                        backgroundColor: '#FBF6E0', // Set background color
+                        borderColor: '#FBF6E0', // Set border color
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Set this to display horizontal bars
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return 'Total: ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+        }
+    });
+});
+
+$(document).ready(function() {
+    // Fetch reminders from the server
+    $.ajax({
+        url: `{{ url('/admin/service/due/reminder')}}`, // Ensure this URL matches your route
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            // Loop through each service and display reminders
+            response.forEach(function(service) {
+                if (service.is_due) {
+                    $('#reminderContainer').append(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Reminder!</strong> The service for <strong>${service.product_name}</strong> (installed on ${service.installation_date}) is due for a checkup. Please schedule an appointment. Reminder date: ${service.reminder_date}.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `);
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching reminders:', xhr.responseText);
+        }
+    });
+});
 </script>
 @endpush

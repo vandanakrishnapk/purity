@@ -135,7 +135,17 @@ class CorporateController extends Controller
 
     public function edit($id)
     {
-        $company = Corporate::findOrFail($id);
+
+        $companyid = Corporate::findOrFail($id);
+        $comid = $companyid->corporate_id;
+        $company = DB::table('corporates')
+        ->join('categories', 'corporates.category_id', '=', 'categories.category_id')
+        ->join('subcategories','corporates.subcat_id','=','subcategories.subcat_id')
+        ->join('products', 'corporates.product_id', '=', 'products.product_id')
+        ->join('users','corporates.assigned_to','=','users.id')
+        ->select('corporates.corporate_id','corporates.company_name', 'corporates.center_address','corporates.center_name','corporates.sub_center','corporates.contact_person','corporates.contact_mobile','corporates.filter_change_on','categories.category_name', 'subcategories.subcategory_name','products.product_name','users.name')
+        ->where('corporates.corporate_id','=', $comid)
+        ->first();
         return response()->json($company);
     }
 

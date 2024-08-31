@@ -28,7 +28,7 @@ class HistoryController extends Controller
             return view('admin.history')->withErrors('Purchase details not found');
         }
     
-        if ($purchase->status === "assigned") {
+        if ($purchase->status === "Assigned") {
             $purchase = DB::table('individuals')
                 ->join('products', 'individuals.product_id', '=', 'products.product_id')
                 ->join('categories', 'categories.category_id', '=', 'individuals.category_id')
@@ -38,10 +38,11 @@ class HistoryController extends Controller
               
      
             return view('admin.history', ['purchase' => $purchase,
-                                            'requested_on' =>$requested_on]);
+                                            'requested_on' =>$formattedRequestedOn,
+                                            'filter_change_on' =>$formattedFilterOn ]);
         }
     
-        if ($purchase->status === "completed") {
+        if ($purchase->status === "Completed") {
             $formattedInstallationDate = Carbon::parse($purchase->installation_date)->format('d-m-Y h:i A');
             $formattedFirstServiceDate = Carbon::parse($purchase->first_service)->format('d-m-Y');
            

@@ -27,6 +27,7 @@
           <th class="text-light">Date of Service</th>
           <th class="text-light">Next Service</th>
           <th class ="text-light">Assigned To</th>
+          <th class ="text-light">Remarks</th>
           <th class="text-light">Action</th>
           
         </tr>                      
@@ -34,6 +35,9 @@
       <tbody>
         <!-- Data will be populated by DataTable -->
         <tr>
+          <td></td>
+          <td></td>
+          <td></td>
           <td></td>
           <td></td>
           <td></td>
@@ -119,7 +123,8 @@
 <script src="{{ asset('assets/js/pages/datatable.init.js') }}"></script> 
 
 <!-- Load parts to select -->
-<script>$(document).ready(function() {
+<script>
+$(document).ready(function() {
     $('#serviceTable').DataTable({
         processing: true,
         serverSide: true,
@@ -132,6 +137,7 @@
             {
                 extend: 'csvHtml5',
                 text: 'Download CSV',
+                title: 'Requested Services',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions: {
@@ -214,6 +220,9 @@
                 data:'name',name:'name',
             },
             {
+            data:'remarks',name:'remarks',
+            },
+            {
                 // Adding the "View More" button column
                 data: null,
                 name: 'Action',
@@ -227,8 +236,11 @@
                         `;
                 }
             }
-        ]
+        ],
+        columnDefs: [{ visible: false, targets: [4,5] }],
+
     });
+
 
     // Event delegation to handle the "View More" button click
     $('#serviceTable').on('click', '.view-more', function() {

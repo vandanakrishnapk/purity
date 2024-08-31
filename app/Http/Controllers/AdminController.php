@@ -27,7 +27,7 @@ class AdminController extends Controller
         'landmark' => 'required|string|max:255',
         'category_id' => 'required|exists:categories,category_id',
         'subcat_id' => 'required|exists:subcategories,subcat_id',
-        'product_id' => 'exists:products,product_id',
+        'product_id' => 'required|exists:products,product_id',
         'filter_change_on' =>'required',
         'assigned_to' => 'required|string',
         'type_of_purchase' =>'required|string',
@@ -40,6 +40,7 @@ class AdminController extends Controller
         'landmark.required' => 'Landmark is required',
         'category_id.required' => 'Please select a Category',
         'subcat_id.required' => 'Please select a Sub Category',
+        'product_id.required' => 'Please select a Product',
         'filter_change_on.required' =>'Please select Filter Change',
         'assigned_to.required' => 'Staff name is required',
         'type_of_purchase.required' =>'Type of Purchase is Required',
@@ -187,7 +188,7 @@ class AdminController extends Controller
         $products = DB::table('products')
                         ->where('category_id','=',$request->category_id)
                         ->get();
-        // $html .= '<option selected disabled>Open this select menu</option>';
+        $html .= '<option selected disabled>Select Product</option>';
             foreach ($products as $product) {
                 $html .= '<option value="'.$product->product_id.'">'.$product->product_name.'</option>';
             }
@@ -200,7 +201,7 @@ class AdminController extends Controller
         $subcats = DB::table('subcategories')
                         ->where('category_id','=',$request->category_id)
                         ->get();
-        // $html .= '<option selected disabled>Open this select menu</option>';
+        $html .= '<option selected disabled>Select Sub Category</option>';
             foreach ($subcats as $subcat) {
                 $html .= '<option value="'.$subcat->subcat_id.'">'.$subcat->subcategory_name.'</option>';
             }

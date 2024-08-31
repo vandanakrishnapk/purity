@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <!-- Icons css -->
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{ asset('/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 <body>
 <div class="home-btn d-none d-sm-block">
@@ -27,11 +27,11 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6 col-xl-4">
                <div class="card overflow-hidden">
-                    <div class="bg-primary">
+                    <div class="card-header chead">
                         <div class="text-primary text-center p-2">
                             <h5 class="text-white font-size-20 p-2">Change Password</h5>
-                            <a href="index" class="logo logo-admin">
-                                <img src="https://cdn3.vectorstock.com/i/1000x1000/60/82/user-icon-white-silhouette-on-blue-round-vector-20326082.jpg" height="60" alt="logo">
+                            <a href="index" class="">
+                                <img src="{{ asset('assets/images/teacher_7162968-removebg-preview.png')}}" height="60" alt="logo">
                             </a>
                         </div>
                     </div>

@@ -501,6 +501,15 @@
 		                </a>
                        
 	</li>
+
+    <li class="side-nav-item">
+        <a href="{{ route('admin.getServiceDuePage') }}" class="side-nav-link">
+        <i class="ri-battery-low-line"></i>
+            <span> Service Due </span>
+            <span class="badge bg-success float-end"></span>
+        </a>
+       
+    </li>
                     
 
 		        </ul>

@@ -145,6 +145,7 @@ $(document).ready(function() {
             {
                 extend: 'csvHtml5',
                 text: 'Download CSV',
+                title:'Service',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions: {

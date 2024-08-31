@@ -118,6 +118,7 @@ public function change_password_form($token)
   */
   public function submitResetPasswordForm(Request $request)
   {
+   
     $validator = Validator::make($request->all(), [
         'email' => 'required|email',
         'password' => 'required|string|min:8',
@@ -130,17 +131,20 @@ public function change_password_form($token)
         'password_confirmation.required' => 'Confirm password is required',
         'password_confirmation.same' => 'The confirm password and password must match',
     ]);
+   
 
       if ($validator->fails()) {
           return back()->withErrors($validator)->withInput();
       }
-  
+      $email = $request->input('email');
+      $token = $request->input('token');
+    
       $updatePassword = DB::table('password_reset_tokens')
           ->where([
-              'email' => $request->email,
-              'token' => $request->token
+              'email' => $email,
+              'token' => $token
           ])->first();
-  
+       
       if (!$updatePassword) {
           return back()->withInput()->with('error', 'Invalid token!');
       }

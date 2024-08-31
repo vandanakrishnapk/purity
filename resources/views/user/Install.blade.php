@@ -148,6 +148,7 @@
             {
                 extend: 'csvHtml5',
                 text: 'Download Excel',
+                title: 'Installation',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions: {
@@ -207,7 +208,7 @@
         let buttonDisabled = false;
 
         // Check the status from the row data
-        if (row.status === 'completed') {
+        if (row.status === 'Completed') {
             buttonClass = 'btn btn-warning btn-sm'; // Change to a different color
             buttonText = 'DONE'; // Change text to 'COMPLETED'
             buttonDisabled = true; // Disable the button

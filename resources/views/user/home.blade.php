@@ -73,199 +73,123 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+ 
 $(document).ready(function() {
-$.ajax({
-url: `{{ url('/user/dashboard/customer/count')}}`, // Ensure this URL is correct
-method: 'GET',
-success: function(data) {
-const totalCount = data.total;
+    $.ajax({
+        url: `{{ url('/user/dashboard/installations/count') }}`, // Ensure this URL matches your route
+        method: 'GET',
+        success: function(data) {
+            const totalCount = data.total;
 
-$('#cuscount').text(totalCount); // Use `.text()` to set text content
+            $('#inscounts').text(totalCount); // Use `.text()` to set text content
 
-const ctx = document.getElementById('customerChart').getContext('2d');
-new Chart(ctx, {
-type: 'bar', // Ensure vertical bars
-data: {
-labels: ['Total Customers'],
-datasets: [{
-    label: 'Customer Count',
-    data: [totalCount],
-    backgroundColor: '#c8dbe9', // Set background color
-    borderColor: '#c8dbe9', // Set border color
-    borderWidth: 1
-}]
-},
-options: {
-indexAxis: 'y', // Set this to display horizontal bars
-responsive: true,
-scales: {
-    x: {
-        beginAtZero: true,
-    },
-    y: {
-        beginAtZero: true,
-        ticks: {
-            callback: function(value) {
-                return value.toLocaleString();
-            }
-        }
-    }
-},
-plugins: {
-    legend: {
-        display: true
-    },
-    tooltip: {
-        callbacks: {
-            label: function(tooltipItem) {
-                return 'Total: ' + tooltipItem.raw;
-            }
-        }
-    }
-}
-}
-});
-},
-error: function(xhr, status, error) {
-console.error('AJAX Error:', status, error);
-}
-});
-});
-
-$(document).ready(function() {
-$.ajax({
-url: `{{ url('/user/dashboard/installations/count') }}`, // Ensure this URL matches your route
-method: 'GET',
-success: function(data) {
-const labels = data.labels;
-const counts = data.counts;
-$('#inscounts').append(counts);
-const ctx = document.getElementById('installationsChart').getContext('2d');
-new Chart(ctx, {
-type: 'line', // Line chart
-data: {
-labels: labels,
-datasets: [{
-    label: 'Installation Count',
-    data: counts,
-    backgroundColor: 'rgba(16, 48, 82, 0.2)', // Light color for fill
-    borderColor: '#103052', // Line color
-    borderWidth: 2,
-    tension: 0.1 // Smoothing factor for the line
-}]
-},
-options: {
-responsive: true,
-maintainAspectRatio: false,
-scales: {
-    x: {
-        beginAtZero: true,
-        title: {
-            display: true,
-            text: 'Month'
-        }
-    },
-    y: {
-        beginAtZero: true,
-        title: {
-            display: true,
-            text: 'Count'
+            const ctx = document.getElementById('installationsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Ensure vertical bars
+                data: {
+                    labels: ['Total Customers'],
+                    datasets: [{
+                        label: 'Installations',
+                        data: [totalCount],
+                        backgroundColor: '#def4b4', // Set background color
+                        borderColor: '#def4b4', // Set border color
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Set this to display horizontal bars
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return 'Total: ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         },
-        ticks: {
-            callback: function(value) {
-                return value.toLocaleString();
-            }
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
         }
-    }
-},
-plugins: {
-    legend: {
-        display: true,
-        position: 'top'
-    },
-    tooltip: {
-        callbacks: {
-            label: function(tooltipItem) {
-                return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
-            }
-        }
-    }
-}
-}
+    });
 });
-},
-error: function(xhr, status, error) {
-console.error('AJAX Error:', status, error);
-}
-});
-}); 
 
 $(document).ready(function() {
-$.ajax({
-url: `{{ url('/user/dashboard/services/count') }}`, // Ensure this URL matches your route
-method: 'GET',
-success: function(data) {
-const serviceCount = data.count;
-$('#servicecounts').append(serviceCount);
-const ctx = document.getElementById('servicesChart').getContext('2d');
-new Chart(ctx, {
-type: 'bar', // Column chart
-data: {
-labels: ['Total Services'],
-datasets: [{
-    label: 'Service Count',
-    data: [serviceCount],
-    backgroundColor: '#44943b', // Bar color
-    borderColor: '#44943b', // Border color
-    borderWidth: 1
-}]
-},
-options: {
-responsive: true,
-maintainAspectRatio: false,
-scales: {
-    x: {
-        beginAtZero: true,
-        title: {
-            display: true,
-            text: 'Category' // Adjust as needed
-        }
-    },
-    y: {
-        beginAtZero: true,
-        title: {
-            display: true,
-            text: 'Count' // Adjust as needed
+    $.ajax({
+        url: `{{ url('/user/dashboard/services/count') }}`, // Ensure this URL matches your route
+        method: 'GET',
+        success: function(data) {
+            const totalCount = data.count;
+
+            $('#servicecounts').text(totalCount); // Use `.text()` to set text content
+
+            const ctx = document.getElementById('servicesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Ensure vertical bars
+                data: {
+                    labels: ['Total Customers'],
+                    datasets: [{
+                        label: 'Services',
+                        data: [totalCount],
+                        backgroundColor: '#FBF6E0', // Set background color
+                        borderColor: '#FBF6E0', // Set border color
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Set this to display horizontal bars
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return 'Total: ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         },
-        ticks: {
-            callback: function(value) {
-                return value.toLocaleString(); // Format numbers with commas
-            }
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
         }
-    }
-},
-plugins: {
-    legend: {
-        display: true,
-        position: 'top'
-    },
-    tooltip: {
-        callbacks: {
-            label: function(tooltipItem) {
-                return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
-            }
-        }
-    }
-}
-}
+    });
 });
-},
-error: function(xhr, status, error) {
-console.error('AJAX Error:', status, error);
-}
-});
-});
-
-
 </script>
 @endpush

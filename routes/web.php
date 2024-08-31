@@ -71,7 +71,7 @@ Route::post('/purchase/corporate/new',[CorporateController::class,'doCorporatePu
 Route::get('/purchase/corporate/view',[CorporateController::class,'viewCorporatePurchase'])->name('admin.viewCorporatePurchase');
 //view more,edit,delete 
 Route::get('/purchase/company/{id}', [CorporateController::class, 'show'])->name('company.show');
-Route::get('/purchase/company/{id}/edit', [CorporateController::class, 'edit'])->name('company.edit');
+Route::get('/purchase/company/edit/{id}', [CorporateController::class, 'edit'])->name('company.edit');
 Route::post('/purchase/company/{id}', [CorporateController::class, 'update'])->name('company.update');
 Route::delete('/purchase/company/{id}', [CorporateController::class, 'destroy'])->name('company.destroy'); 
 Route::get('/installations/view',[InstallationController::class,'getInstallationPage'])->name('admin.getInstallationPage');
@@ -102,6 +102,13 @@ Route::post('/service/update/staff/{id}',[ServiceController::class,'updateStaff'
 
 Route::get('/service/change/nextService/{id}',[ServiceController::class,'changeNextService']);
 Route::post('/service/update/nextService/{id}',[ServiceController::class,'updateNextService']);
+
+Route::get('/service/due/view',[ServiceController::class,'getServiceDuePage'])->name('admin.getServiceDuePage'); 
+Route::get('/service/due/reminder',[ServiceController::class,'getServiceReminder'])->name('admin.getServiceReminder');
+Route::get('/service/due/table',[ServiceController::class,'getServiceReminderTable'])->name('admin.getServiceReminderTable');
+
+
+
 });
 
 //user routes

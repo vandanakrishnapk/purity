@@ -242,6 +242,7 @@
             {
                 extend: 'csvHtml5',
                 text: 'Download Excel',
+                title: 'Corporate Customers',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions:{
@@ -580,10 +581,10 @@ $(document).on('click', '.view-company', function() {
 $(document).on('click', '.edit-company', function() {
     const userId = $(this).data('id');
     
-   $.get(`{{ url('/admin/purchase/company') }}/${userId}`, function(data) {
+   $.get(`{{ url('/admin/purchase/company/edit') }}/${userId}`, function(data) {
        
         const formHtml = `
-            <form id="editCompanyForm" data-id="${data.corporate_id}">
+                       <form id="editCompanyForm" data-id="${data.corporate_id}">
             @csrf
             <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Corporate Company</h3>
                 <div class="mb-3">
@@ -615,7 +616,7 @@ $(document).on('click', '.edit-company', function() {
                                             <label for="category">Category:</label>
                                             <select id="edit-category-select" name="category_id" class="form-select fixed-width"
                                                 style="width:725px !important;">
-                                                <option value="${data.category_name}">${data.category_name}</option>
+                                                <option value="${data.category_id}">${data.category_name}</option>
                                                 @foreach($categories as $category)
                                                 <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
                                                 @endforeach
@@ -629,7 +630,7 @@ $(document).on('click', '.edit-company', function() {
                                                 <select id="edit-sub-category-select" name="subcat_id" class="form-select fixed-width"
                                                     style="width:350px !important;">
                     
-                                                    <option value="${data.subcategory_name}">${data.subcategory_name}</option>
+                                                    <option value="${data.subcategory_id}">${data.subcategory_name}</option>
                     
                                                 </select>
                                                 <span class="error text-danger" id="category-error"></span>
@@ -640,7 +641,7 @@ $(document).on('click', '.edit-company', function() {
                                                 <select id="edit-product-select" name="product_id" class="form-select fixed-width"
                                                     style="width:350px !important;">
                     
-                                                    <option value="${data.product_name}">${data.product_name}</option>
+                                                    <option value="${data.product_id}">${data.product_name}</option>
                                                     <!-- Products will be loaded here -->
                                                 </select>
                     
@@ -661,7 +662,7 @@ $(document).on('click', '.edit-company', function() {
                                         <div class="form-group mb-2">
                                             <label for="assigned_to">Assigned to:</label>
                                             <select id="edit-assigned_to1" name="assigned_to" class="form-control">
-                                                <option>${data.name}</option>
+                                                <option value="">${data.name}</option>
                                                 @foreach($users as $user)
                                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                                                 @endforeach
@@ -677,13 +678,13 @@ $(document).on('click', '.edit-company', function() {
 
         // Show the modal
         $('#editDetailsModal').modal('show');
-        $('#edit-category-select').change(function() {
+        $('#edit-sub-category-select').change(function() {
         var categoryId = $(this).val();
         if (categoryId) { // Check if a valid category ID is selected
             $.get(`{{ url('/admin/products') }}/` + categoryId, function(products) {
                 var $productSelect = $('#edit-product-select');
                 $productSelect.empty();
-                // $productSelect.append('<option value="">Select Product</option>');
+                $productSelect.append('<option value="">Select Product</option>');
                 $.each(products, function(index, product) {
                     $productSelect.append('<option value="' + product.product_id + '">' + product.product_name + '</option>');
                 });
@@ -701,7 +702,7 @@ $('#edit-category-select').change(function() {
             $.get(`{{ url('/admin/subcategory/change') }}/` + categoryId, function(sub) {
                 var $subcatSelect = $('#edit-sub-category-select');
                 $subcatSelect.empty();
-                // $productSelect.append('<option value="">Select Product</option>');
+                $subcatSelect.append('<option value="">Select Sub Category</option>');
                 $.each(sub, function(index, subcat) {
                     $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
                 });

@@ -125,6 +125,7 @@ $(document).ready(function() {
             {
                 extend: 'csvHtml5',
                 text: 'Download Excel',
+                title:'Parts',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions:{

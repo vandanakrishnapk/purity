@@ -13,22 +13,10 @@ public function getCustomerCount()
 }   
 public function getInstallationCounts()
 {
-    $installations = DB::table('installations')
-    ->select(DB::raw('MONTH(created_at) as month'), DB::raw('COUNT(*) as count'))
-    ->groupBy(DB::raw('MONTH(created_at)'))
-    ->orderBy(DB::raw('MONTH(created_at)'))
-    ->get();
-
-// Format the data for the chart
-$data = [
-    'labels' => $installations->pluck('month')->map(function($month) {
-        return \DateTime::createFromFormat('!m', $month)->format('F');
-    }),
-    'counts' => $installations->pluck('count'),
-];
-
+    $totalCount = DB::table('installations')->count();
+    return response()->json(['total' => $totalCount]);
 // Return the data as JSON
-return response()->json($data);
+
 } 
 public function getServicesCount()
 {

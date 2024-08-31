@@ -457,4 +457,10 @@ div.dataTables_wrapper div.dataTables_length label {
     width: 80%;
     margin: 20px auto;
     text-align: left; /* Align the chart to the left */
+} 
+.chead 
+{
+    background-color: #103052 !important;  
+  
+   
 }

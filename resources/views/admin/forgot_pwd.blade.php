@@ -30,11 +30,11 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6 col-xl-4">           
                 <div class="card overflow-hidden">
-                    <div class="bg-primary">
+                    <div class="card-header chead">
                         <div class="text-primary text-center">
-                            <h4 class="text-white font-size-20 p-2 bg-primary">Reset Password</h4>
-                            <a href="index" class="logo logo-admin">
-                            <img src="https://cdn3.vectorstock.com/i/1000x1000/60/82/user-icon-white-silhouette-on-blue-round-vector-20326082.jpg" height="50px" alt="logo">
+                            <h4 class="text-white font-size-20 p-2">Reset Password</h4>
+                            <a href="index" class="">
+                            <img src="{{ asset('assets/images/teacher_7162968-removebg-preview.png')}}" height="50px" alt="logo" >
                             </a>
                         </div>
                     </div>
@@ -59,8 +59,9 @@
                                 </div>
 
                                 <div class="row mb-0">
-                                    <div class="col-12 text-end">
-                                        <button class="btn btn-primary w-md waves-effect waves-light text-light" type="submit">Reset</button>
+                                    <div class="col-3"></div>
+                                    <div class="col-4 text-end">
+                                        <button class="btn btn-primary w-md waves-effect waves-light text-light mt-2" type="submit">Reset</button>
                                     </div>
                                 </div>
                             </form>
