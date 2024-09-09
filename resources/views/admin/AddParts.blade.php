@@ -128,9 +128,12 @@ $(document).ready(function() {
                 title:'Parts',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
-                exportOptions:{
-                    columns: [0,1] // Include the serial number column in export
-                }
+                exportOptions: { 
+                        columns: function (idx, data, node)
+                         {               
+                         return true;
+                         } 
+                           }
             }
         ],
         lengthMenu: [

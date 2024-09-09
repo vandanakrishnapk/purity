@@ -17,12 +17,227 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 @endsection 
 
+
+@section('user_modal')
+<button type="button" class="btn btn-primary float-end add-user-btn" data-bs-toggle="modal" data-bs-target="#CompanysubcentreDetailsModal">
+<span class="plus-symbol">+</span>
+</button>
+
+<div class="modal fade" id="CompanysubcentreDetailsModal" class="subcentreDetail" tabindex="-1" aria-labelledby="CompanysubcentreDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="CompanysubcentreDetailsModalLabel">Add Sub Centre</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="CompanysubcentreDetails">
+            <form id="AddsubcentreForm" method="POST">
+              @csrf
+            <div class="row align-items-start justify-content-start">
+                <div class="col-11">
+                <label>Company</label>
+                <select id="company-select" name="company_id" class="form-select">
+                @foreach($company as $com)
+                <option value="{{ $com->company_id }}">{{ $com->company_name }}</option>
+                @endforeach
+              </select><br>
+                </div>
+                <div class="col-1 text-start mt-3">
+                <button type="button" class="btn btn-primary add-user-btn mt-2" data-bs-toggle="modal" data-bs-target="#CompanyDetailsModal">
+                <span class="plus-symbol">+</span>
+            </button>
+                </div>
+            </div>
+           
+            
+    <div class="row align-items-start justify-content-start">
+        <div class="col-11">
+            <label for="centre-select">Centre</label>
+            <select id="centre-select" name="centre_id" class="form-select">
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="col-1 text-start mt-3">
+            <button type="button" class="btn btn-primary add-user-btn mt-2" data-bs-toggle="modal" data-bs-target="#centreDetailsModal">
+                <span class="plus-symbol">+</span>
+            </button>
+            
+        </div>
+    </div>
+<div class="row align-items-start justify-content-start">
+    <div class="col-11">
+    <label>Subcentre</label>
+            <input type="text" name="subcentre_name" class="form-control" >
+    </div>
+    <div class="col-1 text-start mt-3">
+    
+    </div>
+</div>
+    <div class="row align-items-start justify-content-start">
+        <div class="col-12">
+        <label>Remarks:</label>
+                <input type="text" name="remarks" class="form-control" >
+        </div>
+       
+</div>   
+<div class="row">
+    <div class="col-5">  </div>
+        <div class="col-2">
+            <button type="submit" class="btn btn-primary mt-2 w-100" >Submit</button>
+        </div>    
+      
+</div>
+ 
+    
+            </form>
+            </div>
+        </div>
+    </div>
+</div> 
+<div class="modal fade" id="centreDetailsModal" tabindex="-1" aria-labelledby="centreDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="centreDetailsModalLabel">Add centre</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="centreDetails">
+            <form id="centreForm" method="POST">
+            @csrf
+        
+        <label for="centre">Company:</label>
+        <select id="Company1" name="company_id" class="form-control">      
+        </select><br>
+        
+        <label for="centre">Centre:</label>
+        <input type="text" id="centre" name="centre_name" class="form-control"><br>
+        
+        <button type="submit" class="btn btn-primary" style="margin-left:180px">Submit</button>
+    </form>
+            </div>
+        </div>
+    </div>
+</div> 
+<!-- Company smodal -->
+<div class="modal fade" id="CompanyDetailsModal" tabindex="-1" aria-labelledby="#CompanyDetailsModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="CompanyDetailsModalLabel">Add Company</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="CompanyDetails">
+    <form id="CompanyForm">
+         @csrf      
+        
+        <label for="Company">Company:</label>
+        <input type="text" id="Company" name="company_name" class="form-control"><br>
+        
+        <button type="submit" class="btn btn-primary" style="margin-left:180px">Submit</button>
+    </form>
+            
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+<!--edit subcentre form --> 
+<div class="modal fade EditsubcentreDetails" id="EditsubcentreDetailsModal" tabindex="-1" aria-labelledby="EditsubcentreDetailsModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="EditsubcentreDetailsModal">Edit subcentre</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="EditsubcentreDetails">
+            <form id="EditsubcentreForm" action="" method="POST">
+              @csrf
+            <div class="row align-items-start justify-content-start">
+                <div class="col-11">
+                <label>Company:</label>
+                <select id="Company-edit" name="Company_id" class="form-select">
+                @foreach($company as $com)
+                <option value="{{ $com->Company_id }}">{{ $com->Company_name }}</option>
+                @endforeach
+              </select><br>
+                </div>
+                <div class="col-1 text-start mt-3">
+               
+                </div>
+            </div>
+           
+            
+    <div class="row align-items-start justify-content-start">
+        <div class="col-11">
+            <label for="centre-select">centre:</label>
+            <select id="centre-edit" name="centreId" class="form-select">
+                <option value=""></option>
+            </select>
+        </div>
+        <div class="col-1 text-start mt-3">
+          
+            
+        </div>
+    </div>
+<div class="row align-items-start justify-content-start">
+    <div class="col-11">
+    <label>subcentre:</label>
+            <input type="text" name="subcentre_edit" class="form-control" id="subcentre-edit">
+    </div>
+    <div class="col-1 text-start mt-3">
+    
+    </div>
+</div>    
+<div class="row align-items-start justify-content-start">
+    <div class="col-12">
+    <label>Remarks:</label>
+            <input type="text" name="remarks" id="remarkon" class="form-control" >
+    </div>
+   
+</div>   
+        <input type="hidden" name="subcentreId" id="editsubcentreId">
+        <button type="submit" class="btn btn-primary mt-2" style="margin-left:290px">Submit</button>
+            </form>
+            </div>
+        </div>
+    </div>
+</div> 
+<div class="modal fade" id="centreDetailsModal" tabindex="-1" aria-labelledby="centreDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="centreDetailsModalLabel">Add centre</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="centreDetails">
+            <form id="centreForm" method="POST">
+            @csrf
+        
+        <label for="centre">Company:</label>
+        <select id="Company1" name="Company_id" class="form-control">
+
+        </select><br>
+        
+        <label for="centre">centre:</label>
+        <input type="text" id="centre" name="centre_name" class="form-control"><br>
+        
+        <button type="submit" class="btn btn-primary" style="margin-left:180px">Submit</button>
+    </form>
+            </div>
+        </div>
+    </div>
+</div> 
+
+@endsection  
+
+
 @section('data_table')
 <div class="row">  
     <div class="col-12">
         <div class="card">   
             <div class="card-header">
-                <caption><h3 class="mt-3 rounded-3">PRODUCTS</h3></caption> 
+                <caption><h3 class="mt-3 rounded-3">SUBCENTRES</h3></caption> 
                 </div>  
     <div class="row">
         <div class="col-1"></div>
@@ -30,13 +245,13 @@
                                   
                 <div class="card-body">
                     
-                    <table id="productData" class="table table-striped dt-responsive nowrap w-100">
+                    <table id="subcentreTable" class="table table-striped dt-responsive nowrap w-100">
                         <thead>
                             <tr class="head-color"> 
-                                <th class="text-light">SlNo</th>                                            
-                                <th class="text-light">Category</th>
-                                <th class="text-light">Sub Category</th>
-                                <th class="text-light">Product Name</th>
+                                <th class="text-light">S.No</th>                                            
+                                <th class="text-light">Company</th>
+                                <th class="text-light">Centre</th>
+                                <th class="text-light">Sub Centre</th>
                                 <th class="text-light">Remarks</th>
                                 <th class="text-light">Action</th>                                                
                             </tr>
@@ -64,219 +279,6 @@
    
     </div>
  </div>
-@endsection 
-@section('user_modal')
-<button type="button" class="btn btn-primary float-end add-user-btn" data-bs-toggle="modal" data-bs-target="#CategoryProductDetailsModal">
-<span class="plus-symbol">+</span>
-</button>
-
-<div class="modal fade" id="CategoryProductDetailsModal" class="ProductDetail" tabindex="-1" aria-labelledby="CategoryProductDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="CategoryProductDetailsModalLabel">Add Product</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4" id="CategoryProductDetails">
-            <form id="AddProductForm" method="POST">
-              @csrf
-            <div class="row align-items-start justify-content-start">
-                <div class="col-11">
-                <label>Category:</label>
-                <select id="category-select2" name="category_id" class="form-select">
-                @foreach($categories as $cat)
-                <option value="{{ $cat->category_id }}">{{ $cat->category_name }}</option>
-                @endforeach
-              </select><br>
-                </div>
-                <div class="col-1 text-start mt-3">
-                <button type="button" class="btn btn-primary add-user-btn mt-2" data-bs-toggle="modal" data-bs-target="#CategoryDetailsModal">
-                <span class="plus-symbol">+</span>
-            </button>
-                </div>
-            </div>
-           
-            
-    <div class="row align-items-start justify-content-start">
-        <div class="col-11">
-            <label for="subcategory-select">SubCategory:</label>
-            <select id="subcategory-select" name="subcategoryId" class="form-select">
-                <option value=""></option>
-            </select>
-        </div>
-        <div class="col-1 text-start mt-3">
-            <button type="button" class="btn btn-primary add-user-btn mt-2" data-bs-toggle="modal" data-bs-target="#SubCategoryDetailsModal">
-                <span class="plus-symbol">+</span>
-            </button>
-            
-        </div>
-    </div>
-<div class="row align-items-start justify-content-start">
-    <div class="col-11">
-    <label>Product:</label>
-            <input type="text" name="product_name" class="form-control" >
-    </div>
-    <div class="col-1 text-start mt-3">
-    
-    </div>
-</div>
-    <div class="row align-items-start justify-content-start">
-        <div class="col-12">
-        <label>Remarks:</label>
-                <input type="text" name="remarks" class="form-control" >
-        </div>
-       
-</div>   
-<div class="row">
-    <div class="col-5">  </div>
-        <div class="col-2">
-            <button type="submit" class="btn btn-primary mt-2 w-100" >Submit</button>
-        </div>    
-      
-</div>
- 
-    
-            </form>
-            </div>
-        </div>
-    </div>
-</div> 
-<div class="modal fade" id="SubCategoryDetailsModal" tabindex="-1" aria-labelledby="SubCategoryDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="SubCategoryDetailsModalLabel">Add SubCategory</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4" id="SubCategoryDetails">
-            <form id="SubCategoryForm" method="POST">
-            @csrf
-        
-        <label for="SubCategory">category:</label>
-        <select id="category1" name="category_id" class="form-control">
-
-        </select><br>
-        
-        <label for="SubCategory">SubCategory:</label>
-        <input type="text" id="SubCategory" name="subcategory_name" class="form-control"><br>
-        
-        <button type="submit" class="btn btn-primary" style="margin-left:180px">Submit</button>
-    </form>
-            </div>
-        </div>
-    </div>
-</div> 
-<!-- category smodal -->
-<div class="modal fade" id="CategoryDetailsModal" tabindex="-1" aria-labelledby="#CategoryDetailsModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="categoryDetailsModalLabel">Add category</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4" id="categoryDetails">
-         <form id="categoryForm">
-         @csrf      
-        
-        <label for="category">category:</label>
-        <input type="text" id="category" name="category_name" class="form-control"><br>
-        
-        <button type="submit" class="btn btn-primary" style="margin-left:180px">Submit</button>
-        </form>
-            
-            </div>
-        </div>
-    </div>
-</div> 
-
-
-<!--edit product form --> 
-<div class="modal fade EditProductDetails" id="EditProductDetailsModal" tabindex="-1" aria-labelledby="EditProductDetailsModal" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="EditProductDetailsModal">Edit Product</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4" id="EditProductDetails">
-            <form id="EditProductForm" action="{{ route('admin.products.update') }}" method="POST">
-              @csrf
-            <div class="row align-items-start justify-content-start">
-                <div class="col-11">
-                <label>Category:</label>
-                <select id="category-edit" name="category_id" class="form-select">
-                @foreach($categories as $cat)
-                <option value="{{ $cat->category_id }}">{{ $cat->category_name }}</option>
-                @endforeach
-              </select><br>
-                </div>
-                <div class="col-1 text-start mt-3">
-               
-                </div>
-            </div>
-           
-            
-    <div class="row align-items-start justify-content-start">
-        <div class="col-11">
-            <label for="subcategory-select">SubCategory:</label>
-            <select id="subcategory-edit" name="subcategoryId" class="form-select">
-                <option value=""></option>
-            </select>
-        </div>
-        <div class="col-1 text-start mt-3">
-          
-            
-        </div>
-    </div>
-<div class="row align-items-start justify-content-start">
-    <div class="col-11">
-    <label>Product:</label>
-            <input type="text" name="product_edit" class="form-control" id="product-edit">
-    </div>
-    <div class="col-1 text-start mt-3">
-    
-    </div>
-</div>    
-<div class="row align-items-start justify-content-start">
-    <div class="col-12">
-    <label>Remarks:</label>
-            <input type="text" name="remarks" id="remarkon" class="form-control" >
-    </div>
-   
-</div>   
-        <input type="hidden" name="productId" id="editProductId">
-        <button type="submit" class="btn btn-primary mt-2" style="margin-left:290px">Submit</button>
-            </form>
-            </div>
-        </div>
-    </div>
-</div> 
-<div class="modal fade" id="SubCategoryDetailsModal" tabindex="-1" aria-labelledby="SubCategoryDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="SubCategoryDetailsModalLabel">Add SubCategory</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4" id="SubCategoryDetails">
-            <form id="SubCategoryForm" method="POST">
-            @csrf
-        
-        <label for="SubCategory">category:</label>
-        <select id="category1" name="category_id" class="form-control">
-
-        </select><br>
-        
-        <label for="SubCategory">SubCategory:</label>
-        <input type="text" id="SubCategory" name="subcategory_name" class="form-control"><br>
-        
-        <button type="submit" class="btn btn-primary" style="margin-left:180px">Submit</button>
-    </form>
-            </div>
-        </div>
-    </div>
-</div> 
-
 @endsection 
 
 
@@ -311,12 +313,12 @@
 <script>
  
  $(document).ready(function() {
-    var table = $('#productData').DataTable();
+    var table = $('#subcentreTable').DataTable();
     new $.fn.dataTable.FixedHeader(table);
 });
 
     $(document).ready(function() {
-    $('#productData').DataTable({
+    $('#subcentreTable').DataTable({
         
         processing: true,
         serverSide: true,
@@ -330,17 +332,17 @@
             {
                 extend: 'csvHtml5',
                 text: 'Download Excel',
-                title:'Products',
+                title:'subcentres',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
             }
         ],
         lengthMenu: [
             [10, 25, 50, -1],
-            ['10 Products', '25 Products', '50 Products', 'All Products']
+            ['10 subcentres', '25 subcentres', '50 subcentres', 'All subcentres']
         ],
         ajax: {
-            url: `{{ url('/admin/getProductData') }}`,
+           url: `{{ url('/admin/subcentre/datatable') }}`,
             type: 'GET',
             dataSrc: 'data'
         },
@@ -351,9 +353,9 @@
                     return meta.row + meta.settings._iDisplayStart + 1; // Calculate the serial number
                 }
             },
-            { data: 'category_name' },
-            { data: 'subcategory_name' },
-            { data: 'product_name' },
+            { data: 'company_name' },
+            { data: 'centre_name' },
+            { data: 'subcentre_name' },
             { data: 'remarks'},
             {
                 data: null,
@@ -363,10 +365,10 @@
                 render: function(data, type, row, meta) {
                     return `
                         <div class="dd d-flex">                    
-                            <button class="btn btn-warning btn-sm edit-product me-1" data-id="${row.product_id}">
+                            <button class="btn btn-warning btn-sm edit-subcentre me-1" data-id="${row.subcentre_id}">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-danger btn-sm delete-product" data-id="${row.product_id}">
+                            <button class="btn btn-danger btn-sm delete-subcentre" data-id="${row.subcentre_id}">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -379,32 +381,34 @@
 
     
 //getting the value of search box
-
+///subcentre/select
     $(document).ready(function() {
-    $('#category-select2').change(function(){
+    $('#company-select').change(function(){
         $.ajax({
-                url: "{{ url('/admin/subcatSelect') }}?category_id=" + $(this).val(),
+               url: "{{ url('/admin/centre/select') }}?company_id=" + $(this).val(),
                 method: 'GET',
                 success: function(data) {
-                    $('#subcategory-select').find('option').remove().end();
-                    $('#subcategory-select').html(data.html);
+                    $('#centre-select').find('option').remove().end();
+                    $('#centre-select').html(data.html);
                 }
             });      
+
+
          });
     });
     $(document).ready(function() {
     $.ajax({
-        url: `{{ url('/admin/SubgetCategories') }}`,
+        url: `{{ url('/admin/companies/get')}}`,
         method: 'GET',
         success: function(data) {
             console.log(data); // Log data to ensure it's correctly fetched           
-            var categorySelect = $('#category1');        
-             data.forEach(function(category) {
-                // Create an <option> element with category_name as text and category_id as value
+            var CompanySelect = $('#Company1');        
+             data.forEach(function(Company) {
+                // Create an <option> element with Company_name as text and Company_id as value
                 var option = $('<option></option>')
-                    .val(category.category_id) // Set value attribute
-                    .text(category.category_name); // Set visible text
-                categorySelect.append(option); // Append the option to the select element
+                    .val(Company.company_id) // Set value attribute
+                    .text(Company.company_name); // Set visible text
+                CompanySelect.append(option); // Append the option to the select element
             });
                
         },
@@ -414,52 +418,52 @@
     });
 
 
-//add subcategory 
-$('#SubCategoryForm').on('submit', function(event) {
+//add centre 
+$('#centreForm').on('submit', function(event) {
         event.preventDefault();
         var formData = $(this).serialize();
         // console.log(formData); // Log form data to ensure it's correctly serialized
         
         $.ajax({
-            url: `{{ route('admin.doSubcategory') }}`,
+            url: `{{ url('/admin/centres/new')}}`,
             method: 'POST',
             data: formData,
             success: function(response) {
-                $('#SubCategoryDetailsModal').modal('hide');
+                $('#centreDetailsModal').modal('hide');
                 alert(response.message);
             },
             error: function(error) {
-                console.log("Error submitting product:", error);
+                console.log("Error submitting subcentre:", error);
             }
         });
     });
 });  
 
-$('#categoryForm').on('submit', function(event) {
+$('#CompanyForm').on('submit', function(event) {
         event.preventDefault();
         var formData = $(this).serialize();
               
         $.ajax({
-            url: `{{ route('admin.doAddCategory') }}`,
+            url: `{{ url('/admin/company/new')}}`,
             method: 'POST',
             data: formData,
             success: function(response) { 
-                $('#CategoryDetailsModal').modal('hide');
+                $('#CompanyDetailsModal').modal('hide');
                 alert(response.message);
-                
+                $('#CompanyForm')[0].reset();
             },
             error: function(error) {
-                console.log("Error submitting product:", error);
+                console.log("Error submitting subcentre:", error);
             }
         });
     });
 
-    $('#AddProductForm').on('submit', function(event) {
+    $('#AddsubcentreForm').on('submit', function(event) {
     event.preventDefault();
     var formData = $(this).serialize();
               
     $.ajax({
-        url: `{{ route('admin.doAddProduct') }}`,
+        url: `{{ url('/admin/subcentre/new' )}}`,
         method: 'POST',
         data: formData,
         dataType: 'json',  // Expect JSON response
@@ -472,8 +476,8 @@ $('#categoryForm').on('submit', function(event) {
                     $('#' + prefix + '-error').text(val[0]);
                 });
             } else if (response.status == 1) {
-                $('#CategoryProductDetailsModal').modal('hide');
-                $('#AddProductForm')[0].reset();
+                $('#CompanysubcentreDetailsModal').modal('hide');
+                $('#AddsubcentreForm')[0].reset();
                 toastr.success(response.message);
                 setTimeout(function() {
                     location.reload();
@@ -481,61 +485,61 @@ $('#categoryForm').on('submit', function(event) {
             }
         },
         error: function(error) {
-            console.log("Error submitting product:", error);
+            console.log("Error submitting subcentre:", error);
         }
     });
 });
 
-    //edit product 
-  //id="ProductDetailsModal" class="ProductDetail"
-$("#productData").on("click", ".edit-product", function(e){
+    //edit subcentre 
+  //id="subcentreDetailsModal" class="subcentreDetail"
+$("#subcentreData").on("click", ".edit-subcentre", function(e){
               e.preventDefault();
-              var productId = $(this).data('id');
-              $('.EditProductDetails').find('form')[0].reset();
-              $('.EditProductDetails').find('span.error_text').text('');
-               $('#EditProductDetailsModal').modal('show');
+              var subcentreId = $(this).data('id');
+              $('.EditsubcentreDetails').find('form')[0].reset();
+              $('.EditsubcentreDetails').find('span.error_text').text('');
+               $('#EditsubcentreDetailsModal').modal('show');
               $.ajax({
                   method: "GET",
                   headers: {
                       Accept: "application/json"
                   },
-                  url: `{{ url('/admin/products/${productId}/edit') }}`,
+           
                   data: {
                       "_token": "{{ csrf_token() }}",
-                      id: productId,
+                      id: subcentreId,
                   },
                   dataType: 'json',
                   success: function(res) 
                   {               
-                    $('#editProductId').val(res.product_id);
-                    $('#category-edit option[value="'+res.category_id+'"]').attr("selected", "selected"); 
+                    $('#editsubcentreId').val(res.subcentre_id);
+                    $('#Company-edit option[value="'+res.Company_id+'"]').attr("selected", "selected"); 
                     
-                    $('#subcategory-edit option[value="'+res.subcategoryId+'"]').attr("selected", "selected"); 
+                    $('#centre-edit option[value="'+res.centreId+'"]').attr("selected", "selected"); 
   
-                    $('#product-edit').val(res.product_name);  
+                    $('#subcentre-edit').val(res.subcentre_name);  
                     $('#remarkon').val(res.remarks);             
-                   $('#EditProductDetailsModal').modal('show');
+                   $('#EditsubcentreDetailsModal').modal('show');
                   }
 
               })
-              $('#category-edit').change(function(){
+              $('#Company-edit').change(function(){
    
             $.ajax({
-                url: "{{ url('/admin/subcatSelect') }}?category_id=" + $(this).val(),
+           
                 method: 'GET',
                 success: function(data) {
-                    $('#subcategory-edit').find('option').remove().end();
-                    $('#subcategory-edit').html(data.html);
+                    $('#centre-edit').find('option').remove().end();
+                    $('#centre-edit').html(data.html);
                 }
             });            
         
         });
       
         });
-//update product  
+//update subcentre  
 
 $(document).ready(function() {
-    $('#EditProductForm').on('submit', function(e) {
+    $('#EditsubcentreForm').on('submit', function(e) {
         e.preventDefault();
         var form = this;
         let formData = $(this).serializeArray();
@@ -545,7 +549,7 @@ $(document).ready(function() {
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            url: "{{ route('admin.products.update') }}",
+            url: "",
             data: formData,
             dataType: 'json',
             beforeSend: function() {
@@ -557,8 +561,8 @@ $(document).ready(function() {
                         $('#' + prefix + '-error').text(val[0]);
                     });
                 } else if(data.status == 1) {
-                    $('#EditProductDetailsModal').modal('hide');
-                    $('#EditProductForm')[0].reset();
+                    $('#EditsubcentreDetailsModal').modal('hide');
+                    $('#EditsubcentreForm')[0].reset();
                     toastr.success(data.message);
                     setTimeout(function() {
                         location.reload();
@@ -577,13 +581,13 @@ $(document).ready(function() {
 
 
 
-//delete product
+//delete subcentre
  
-$(document).on('click', '.delete-product', function() {
-    const productId = $(this).data('id');
-    if(confirm('Are you sure you want to delete this product?')) {
+$(document).on('click', '.delete-subcentre', function() {
+    const subcentreId = $(this).data('id');
+    if(confirm('Are you sure you want to delete this subcentre?')) {
         $.ajax({
-            url: `{{ url('/admin/products') }}/${productId}`,
+
             type: 'DELETE',
             data: {
                 _token: '{{ csrf_token() }}'
@@ -598,7 +602,7 @@ $(document).on('click', '.delete-product', function() {
                         positionClass: 'toast-top-right'
                     });
                 }
-                $('#productData').DataTable().ajax.reload();
+                $('#subcentreData').DataTable().ajax.reload();
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);

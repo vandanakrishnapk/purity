@@ -84,9 +84,12 @@
                     title:'installations',
                     titleAttr: 'Export to CSV',
                     className: 'custombutton',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3,4]
-                    }
+                    exportOptions: { 
+                        columns: function (idx, data, node)
+                         {               
+                         return true;
+                         } 
+                           }
                 }
             ],
             lengthMenu: [
@@ -134,16 +137,25 @@
                     render: function(data, type, row) {
         // Determine text color based on the status
         let colorClass;
-        if (data === 'Completed') {
-            colorClass = 'text-bg-success';
-        } else if (data === 'Assigned') {
+        if (data === 'Completed')
+         {
             colorClass = 'text-bg-primary';
-        } else {
+        } 
+        else if (data === 'Assigned')
+         {
+            colorClass = 'text-bg-warning';
+        } 
+        else if (data === 'Service_Completed')
+        {
+            colorClass = 'text-bg-success';
+        }
+         else
+        {
             return "null";
         }
         
         // Return the status with the appropriate color
-        return `<span class="badge ${colorClass}">${data}</span>`;
+        return `<span class="badge ${colorClass} rounded-pill p-1 fst-italic fw-bolder">${data}</span>`;
     }
                 },
               {

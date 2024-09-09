@@ -21,20 +21,28 @@
             <thead class="bg-dark">
                 <tr>
                     <th class="text-light">S.No</th>
+                    <th class="text-light">Customer ID</th>
                     <th class="text-light">Name</th>
                     <th class="text-light">Address</th>
                     <th class="text-light">Mobile</th>
-                    <th class="text-light">Whatsapp</th>
+                    <th class="text-light">Whatsapp</th>                    
+                    <th class="text-light">Premier Customer</th>                    
                     <th class="text-light">Landmark</th>
                     <th class="text-light">Category</th>
                     <th class="text-light">Sub Category</th>
                     <th class="text-light">Product</th>
+                    <th class="text-light">Purchased From</th>
+                    <th class="text-light">Filter Changed On</th>
                     <th class="text-light">Assigned To</th>
                     <th class="text-light">Remarks</th>
                     <th class="text-light">Action</th>
                 </tr>
             </thead>
             <tbody>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -94,11 +102,21 @@
 
 
                     <div class="form-group mb-2">
+                        <label for="whatsapp">Premier Customer</label>
+                        <input type="radio" name="premier_customer" class="form-check-input" value="Yes"><span class="ms-1 me-5">Yes</span>
+                        <input type="radio" name="premier_customer" class="form-check-input" value="No"><span class="ms-1 me-5">No</span>
+                       
+                        <span class="error text-danger" id="premier_customer-error"></span>
+                    </div> 
+
+                    <div class="form-group mb-2">
                         <label for="whatsapp">WhatsApp:</label>
                         <input type="text" id="whatsapp" name="whatsapp" class="form-control"
                             value="{{ old('whatsapp') }}">
                         <span class="error text-danger" id="whatsapp-error"></span>
                     </div>
+
+
 
                     <div class="form-group mb-2">
                         <label for="landmark">Landmark:</label>
@@ -155,7 +173,20 @@
 
                             {{-- <span class="error text-danger" id="product_id-error"></span> --}}
                         </div>
+                        
                     </div>
+                    <div class="form-group">
+                        <label for="">Purchased From</label>
+                        <select name="purchased_from" id="purchasedFrom" class="form-select fixed-width">
+                            <option>Select Purchased From</option>
+                            <option value="Mukkam">Mukkam</option>
+                            <option value="Mavoor">Mavoor</option>
+                            <option value="Calicut">Calicut</option>
+                        </select>
+                    </div>
+                  
+
+                    <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Installation Details</h3>
                     <div class="form-group mb-2">
                         <label for=""> Filter change on </label>
                         <select name="filter_change_on" id="" class="form-select">
@@ -167,8 +198,6 @@
                         
                         <span class="error text-danger" id="filter_change_on-error"></span>
                     </div>
-
-                    <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Installation Details</h3>
                     <div class="form-group mb-2">
                         <label for="assigned_to">Assigned to:</label>
                         <select id="" name="assigned_to" class="form-control">
@@ -224,7 +253,15 @@
                     method="POST">
                     @csrf
                     <input type="hidden" id="purchase_edit_id" name="purchase_edit">
+                    
                     <h3 class="text-center text-light p-1 rounded-1 w-50" style="margin-left:170px">Customer Details</h3>
+                 
+                            <div class="form-group mb-2">
+                                <label for="name">Purchase Date</label>
+                                <input type="date" id="dop" name="purchase_date" class="form-control me-2">
+                                <span class="error text-danger" id="p_name-error"></span>
+                            </div>
+                    
                     <div class="single-row d-flex justify-content-between">                        
                         <div class="form-group mb-2">
                             <label for="name">Name:</label>
@@ -253,6 +290,13 @@
                         <label for="whatsapp">WhatsApp:</label>
                         <input type="text" id="whatsapp1" name="whatsapp" class="form-control">
                         <span class="error text-danger" id="whatsapp-error"></span>
+                    </div> 
+                    <div class="form-group mb-2">
+                        <label for="whatsapp">Premier Customer</label>
+                        <input type="radio" name="premier_customer" class="form-check-input" value="Yes"><span class="ms-1 me-5">Yes</span>
+                        <input type="radio" name="premier_customer" class="form-check-input" value="No"><span class="ms-1 me-5">No</span>
+                       
+                        <span class="error text-danger" id="premier_customer-error"></span>
                     </div>
 
                     <div class="form-group mb-2">
@@ -307,6 +351,15 @@
 
                             {{-- <span class="error text-danger" id="product-error"></span> --}}
                         </div>
+                    </div>   
+                    <div class="form-group">
+                        <label for="">Purchased From</label>
+                        <select name="purchased_from" id="purchasedFrom" class="form-select">
+                            <option>Select Purchased From</option>
+                            <option value="Mukkam">Mukkam</option>
+                            <option value="Mavoor">Mavoor</option>
+                            <option value="Calicut">Calicut</option>
+                        </select>
                     </div>
 
                     <h3 class="text-center text-light p-1 rounded-1 w-50" style="margin-left:170px">Installation Details</h3>
@@ -386,9 +439,12 @@
                 title:'Individual Customers',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
-                exportOptions:{
-                    columns: [0,1,2,3,4,5,6,7,8,9,10]
-                }
+                exportOptions: { 
+                        columns: function (idx, data, node)
+                         {               
+                         return true;
+                         } 
+                           }
             }
         ],
         lengthMenu: [
@@ -406,14 +462,18 @@
                     return meta.row + meta.settings._iDisplayStart + 1; // Serial number
                 }
             },
+            {data:  'customerId'},
             { data: 'p_name' },
             { data: 'address' },
             { data: 'mobile' },
             { data: 'whatsapp' },
+            {data:'premier_customer'},
             { data: 'landmark' },
             { data: 'category_name' },
             { data: 'subcategory_name'},
             { data: 'product_name' },
+            { data: 'purchased_from' },
+            { data: 'filter_change_on' },
             { data: 'name' },
             { data: 'remarks' },
             {
@@ -446,7 +506,7 @@
         ],
 
      
-        columnDefs: [{ visible: false, targets: [4,5,6,7,10] }],
+        columnDefs: [{ visible: false, targets: [3,5,6,7,8,9,11] }],
     });
 });
 
@@ -465,8 +525,7 @@ $('#category-select').change(function() {
                 $subcatSelect.empty();
                 // $productSelect.append('<option value="">Select Product</option>');
                 $subcatSelect.append('<option>Select Sub Category</option>');
-                $.each(sub, function(index, subcat) {
-                   
+                $.each(sub, function(index, subcat) {                   
                     $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
                 });
             }).fail(function() {
@@ -478,13 +537,14 @@ $('#category-select').change(function() {
     });  
 
     $('#sub-category-select').change(function() {
-        var subcategoryId = $(this).val();
+        var subcategoryId = $(this).val(); 
+        console.log(subcategoryId);
         if (subcategoryId) { // Check if a valid category ID is selected
             $.get(`{{ url('/admin/products') }}/` + subcategoryId, function(products) {
                 var $productSelect = $('#product-select');
                 $productSelect.empty();
                 // $productSelect.append('<option value="">Select Product</option>');
-                $productSelect.append('<option> Select product</option>');
+                $productSelect.append('<option value=""> Select product</option>');
                 $.each(products, function(index, product)
                  {
                     
@@ -548,16 +608,32 @@ $(document).on('click', '.more-purchase', function() {
         $.get(`{{ url('/admin/purchases') }}/${purchaseId}`, function(data) {
             console.log('Response data:', data);
 
-            if (data && data.p_name && data.address && data.mobile && data.whatsapp && data.landmark && data.category_name && data.product_name && data.name && data.remarks) {
-                let purchaseDetails = `
-                <ul class="list-group">
+            if (data && data.p_name && data.address && data.mobile && data.whatsapp && data.landmark && data.category_name && data.product_name && data.purchased_from && data.filter_change_on && data.name && data.remarks) {
+                let purchaseDetails = ` 
+
+                 
+                <ul class="list-group"> 
+
+
+                <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-5">
+                              <strong>Customer ID</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-5">
+                             ${data.customerId}                          
+                        </div>
+                    </div>
+                    </li>
+
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Customer Name</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.p_name}                          
                         </div>
                     </div>
@@ -565,11 +641,11 @@ $(document).on('click', '.more-purchase', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Address</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.address}                          
                         </div>
                     </div>
@@ -577,11 +653,11 @@ $(document).on('click', '.more-purchase', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Mobile</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.mobile}                          
                         </div>
                     </div>
@@ -589,23 +665,36 @@ $(document).on('click', '.more-purchase', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Whatsapp</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.whatsapp}                          
                         </div>
                     </div>
+                    </li> 
+
+                      <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-5">
+                              <strong>Premier Customer</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-5">
+                             ${data.premier_customer}                          
+                        </div>
+                    </div>
                     </li>
+                    
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Landmark</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.landmark}                          
                         </div>
                     </div>
@@ -613,11 +702,11 @@ $(document).on('click', '.more-purchase', function() {
                     
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Category</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.category_name}                          
                         </div>
                     </div>
@@ -625,11 +714,11 @@ $(document).on('click', '.more-purchase', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Subcategory</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.subcategory_name}                          
                         </div>
                     </div>
@@ -637,23 +726,45 @@ $(document).on('click', '.more-purchase', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Product</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.product_name}                          
+                        </div>
+                    </div>
+                    </li> 
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-5">
+                              <strong>Purchased From</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-5">
+                             ${data.purchased_from}                          
+                        </div>
+                    </div>
+                    </li>
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-5">
+                              <strong>Filter Change On</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-5">
+                             ${data.filter_change_on}                          
                         </div>
                     </div>
                     </li>
 
                      <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Type of Purchase</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.type_of_purchase}                          
                         </div>
                     </div>
@@ -661,11 +772,11 @@ $(document).on('click', '.more-purchase', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Assigned To</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.name}                          
                         </div>
                     </div>
@@ -673,11 +784,11 @@ $(document).on('click', '.more-purchase', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Remarks</strong>
                         </div>
                         <div class="col-1">:</div>
-                        <div class="col-4">
+                        <div class="col-5">
                              ${data.remarks}                          
                         </div>
                     </div>
@@ -728,18 +839,23 @@ $("#example").on("click", ".edit-purchase", function(e){
                   success: function(res) 
                   {               
                     $('#purchase_edit_id').val(res.individual_id);
+                    $('#dop').val(res.purchase_date);
                     $('#p_name1').val(res.p_name);
                     $('#address1').val(res.address);
                     $('#mobile1').val(res.mobile);
                     $('#whatsapp1').val(res.whatsapp);
+                    
+                   $('input[name="premier_customer"][value="' + res.premier_customer + '"]').prop('checked', true); 
                     $('#landmark1').val(res.landmark);
-                   $('#category-select1 option[value="'+res.category_id+'"]').attr("selected", "selected"); 
+                    $('#category-select1 option[value="'+res.category_id+'"]').attr("selected", "selected"); 
                    
-                   $('#sub-category option[value="'+res.subcat_id+'"]').attr("selected", "selected"); 
+                    $('#sub-category option[value="'+res.subcat_id+'"]').attr("selected", "selected").text(res.subcategory_name);
                   
                    
-                   $('#product-select1 option[value="'+res.product_id+'"]').attr("selected", "selected"); 
-                  
+                   $('#product-select1 option[value="'+res.product_id+'"]').attr("selected", "selected");
+                 
+                   $('#purchasedFrom option[value="'+res.purchased_from+'"]').attr("selected", "selected"); 
+                
                    $('#filteron option[value="'+res.filter_change_on+'"]').attr("selected", "selected");
                    $('input[name="type_of_purchase"][value="' + res.type_of_purchase + '"]').prop('checked', true);           
                    $('#assigned_to1 option[value="'+res.assigned_to+'"]').attr("selected", "selected");
@@ -747,33 +863,68 @@ $("#example").on("click", ".edit-purchase", function(e){
                    $('#editDetailsModal').modal('show');
                   }
 
-              })
-              $('#category-select1').change(function(){
-                $.ajax({
-                url: "{{ url('/admin/subcatSelect') }}?category_id=" + $(this).val(),
-                method: 'GET',
-                success: function(data) {
-                    $('#sub-category').find('option').remove().end();
-                    $('#sub-category').html(data.html);
-                }
-            });  
-      });
-        $('#sub-category').change(function(){
-            $.ajax({
-                url: "{{ url('/admin/productSelect') }}?category_id=" + $(this).val(),
-                method: 'GET',
-                success: function(data) {
-                    $('#product-select1').find('option').remove().end();
-                    $('#product-select1').html(data.html);
-                }
-            });
+              });
+    //          
                
         
         });
       
+        
+ $.get('{{ url('/admin/categories') }}', function(categories) {
+        var $categorySelect = $('#category-select1');
+        $.each(categories, function(index, category) {
+            $categorySelect.append('<option value="' + category.category_id + '">' + category.category_name + '</option>');
         });
 
+        // Set the selected category and trigger change to populate subcategories
+        $categorySelect.val(response.category_id).change();
+    });
 
+    // Handle category change event
+    $('#category-select1').change(function() {
+        var categoryId = $(this).val();
+        if (categoryId) {
+            $.get('{{ url('/admin/subcategory/change') }}/' + categoryId, function(subcategories) {
+                var $subcatSelect = $('#sub-category');
+                $subcatSelect.empty();
+                $subcatSelect.append('<option value="">Select Sub Category</option>');
+                $.each(subcategories, function(index, subcat) {
+                    $subcatSelect.append('<option value="' + subcat.subcat_id + '">' + subcat.subcategory_name + '</option>');
+                });
+
+                // Set the selected subcategory and trigger change to populate products
+                $subcatSelect.val(response.subcat_id).change();
+            }).fail(function() {
+                console.log('Failed to fetch subcategories.');
+            });
+        } else {
+            $('#sub-category').empty().append('<option value="">Select Sub Category</option>');
+        }
+    });
+
+    // Handle subcategory change event
+    $('#sub-category').change(function() {
+        var subcategoryId = $(this).val();
+        if (subcategoryId) {
+            $.get('{{ url('/admin/products') }}/' + subcategoryId, function(products) {
+                var $productSelect = $('#product-select1');
+                $productSelect.empty();
+                $productSelect.append('<option value="">Select Product</option>');
+                $.each(products, function(index, product) {
+                    $productSelect.append('<option value="' + product.product_id + '">' + product.product_name + '</option>');
+                });
+
+                // Set the selected product
+                $productSelect.val(response.product_id);
+            }).fail(function() {
+                console.log('Failed to fetch products.');
+            });
+        } else {
+            $('#product-select1').empty().append('<option value="">Select Product</option>');
+        }
+    });
+    $('#category-select1').trigger('change');
+ 
 $(document).ready(function() {
     $('#editMyForm').on('submit', function(e) {
         e.preventDefault();

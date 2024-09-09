@@ -11,6 +11,7 @@ use App\Http\Controllers\InstallationController;
 use App\Http\Controllers\ServiceController; 
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CompanyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,7 +36,7 @@ Route::get('/getCategories', [ProductController::class, 'getCategories']);
 Route::get('/SubgetCategories', [SubcategoryController::class, 'SubgetCategories']);
 Route::get('/productSelect',[AdminController::class,'productSelect'])->name('productSelect');
 Route::get('/subcatSelect',[AdminController::class,'subcatSelect'])->name('subcatSelect');
-Route::get('/products/{category_id}', [ProductController::class,'getProductsByCategory']);
+Route::get('/products/{id}', [ProductController::class,'getProductsBySubCategory']);
 Route::get('/purchase/individual/view',[AdminController::class,'viewIndividualPurchase'])->name('viewIndividualPurchase');
 Route::get('/purchase/individual',[AdminController::class,'viewIndividualData'])->name('viewIndividualData'); 
 Route::get('/subcategory',[SubcategoryController::class,'subcategory'])->name('admin.subcategory');
@@ -107,7 +108,14 @@ Route::get('/service/due/view',[ServiceController::class,'getServiceDuePage'])->
 Route::get('/service/due/reminder',[ServiceController::class,'getServiceReminder'])->name('admin.getServiceReminder');
 Route::get('/service/due/table',[ServiceController::class,'getServiceReminderTable'])->name('admin.getServiceReminderTable');
 
-
+Route::get('/subcentre/view',[CompanyController::class,'getsubcentreView'])->name('admin.getsubcentreView');
+Route::get('/centre/select',[CompanyController::class,'getcentres'])->name('admin.getcentres'); 
+Route::get('/companies/get', [CompanyController::class, 'getCompanies']); 
+Route::post('/company/new',[CompanyController::class,'doCompany']);
+Route::post('/centres/new',[CompanyController::class,'doCentres']); 
+Route::post('/subcentre/new',[CompanyController::class,'doSubcentre']);
+Route::get('/subcentre/datatable',[CompanyController::class,'getsubcentreData']); 
+Route::get('/subcentre/select',[CompanyController::class,'getsubcentres']);
 
 });
 

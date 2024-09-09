@@ -93,6 +93,14 @@
           <input type="text" name="remarks" id="remark" class="form-control mt-3">
           <span class="error remarks_error text-danger"></span>
 
+    <label for="status">Select Service Status</label>
+          <select id="statusid" name="status" class="form-select">
+              <option value="">Select Status</option>
+              <option value="Committed">Committed</option>
+              <option value="Pending">Pending</option>
+              <option value="Completed">Completed</option>
+          </select>
+
           <input type="hidden" name="customer_id" id="customerId">
           <input type="hidden" name="staff_id" id="staffId">
         <div class="modal-footer">
@@ -200,7 +208,7 @@ $(document).ready(function() {
                 render: function(data, type, row) {
                     return `
                         <button class="btn btn-success btn-sm fix-button" data-id="${row.individual_id}">
-                           Fix
+                           Details
                         </button>
                     `;
                 }

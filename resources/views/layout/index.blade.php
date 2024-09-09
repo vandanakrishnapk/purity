@@ -475,7 +475,8 @@
 		                    <span class="badge bg-success float-end"></span>
 		                </a>
                        
-	</li>
+	</li> 
+    
     <li class="side-nav-item">
         <a href="{{ route('admin.getInstallationPage') }}" class="side-nav-link">
         <i class=" ri-install-line"></i>
@@ -509,7 +510,15 @@
             <span class="badge bg-success float-end"></span>
         </a>
        
-    </li>
+    </li> 
+    <li class="side-nav-item">
+        <a href="{{ route('admin.getsubcentreView') }}" class="side-nav-link">
+        <i class="ri-hotel-line"></i>
+            <span> SubCentres </span>
+            <span class="badge bg-success float-end"></span>
+        </a>
+       
+</li>
                     
 
 		        </ul>

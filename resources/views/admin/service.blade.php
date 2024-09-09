@@ -27,6 +27,7 @@
           <th class="text-light">Date of Service</th>
           <th class="text-light">Next Service</th>
           <th class ="text-light">Assigned To</th>
+          <th class ="text-light">Status</th>
           <th class ="text-light">Remarks</th>
           <th class="text-light">Action</th>
           
@@ -140,9 +141,12 @@ $(document).ready(function() {
                 title: 'Requested Services',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4]
-                }
+                exportOptions: { 
+                        columns: function (idx, data, node)
+                         {               
+                         return true;
+                         } 
+                           }
             }
         ],
         lengthMenu: [
@@ -218,6 +222,9 @@ $(document).ready(function() {
             },
             {
                 data:'name',name:'name',
+            }, 
+            {
+                data:'serviceStatus',name:'serviceStatus',
             },
             {
             data:'remarks',name:'remarks',
@@ -229,7 +236,7 @@ $(document).ready(function() {
                 render: function(data, type, row) {
                     return `<button class="btn btn-primary ps-1 pe-1 pt-0 pb-0 view-more me-2" data-id="${row.serviceId}"><i class="ri-folder-history-line"></i>
                         </button>  
-                        <button class="btn btn-danger ps-1 pe-1 pt-0 pb-0 change-staff me-2" data-id="${row.serviceId}"><i class=" ri-file-add-fill"></i>
+                        <button class="btn btn-danger ps-1 pe-1 pt-0 pb-0 change-staff me-2" data-id="${row.serviceId}" data-user="${row.customer_id}"><i class=" ri-file-add-fill"></i>
                         </button>   
                          <button class="btn btn-info ps-1 pe-1 pt-0 pb-0 change-nextService me-2" data-id="${row.serviceId}"><i class="ri-calendar-2-line"></i>
                         </button>                  
@@ -300,6 +307,7 @@ $(document).ready(function() {
 
 $('#serviceTable').on('click', '.change-staff', function() {
     var id = $(this).data('id');
+    var cust =$(this).data('user');
 
     // Fetch and display more details based on the id
     $.ajax({
@@ -309,6 +317,7 @@ $('#serviceTable').on('click', '.change-staff', function() {
             var users = response.users;
             var currentStaff = response.currentStaff;
             var serviceId = response.serviceId;
+           
 
             // Create the form HTML
             var formHtml = `
@@ -326,8 +335,9 @@ $('#serviceTable').on('click', '.change-staff', function() {
             });
 
             formHtml += `
-                        </select>
+                        </select> 
                     </div>
+                    <input type="hidden" name="customer_id" value="${cust}">
                     <div class="row">
                         <div class="col-4"></div>
                         <div class="col-4">

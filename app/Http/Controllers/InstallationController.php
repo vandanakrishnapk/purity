@@ -112,7 +112,7 @@ public function getInstallations(Request $request)
         $insDetails = DB::table('individuals')
                       ->join('products','individuals.product_id','=','products.product_id')                    
                       ->select('individuals.*','products.product_name')
-                      ->whereIn('individuals.status', ['completed', 'assigned'])
+                      ->whereIn('individuals.status', ['Completed', 'Assigned','Service_Completed'])
                       ->get();
         $totalRecords = count($insDetails); // Total records in your data source
         $filteredRecords = count($insDetails); // Number of records after applying filters

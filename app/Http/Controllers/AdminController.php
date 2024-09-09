@@ -16,31 +16,36 @@ class AdminController extends Controller
     {
         return view('admin.index');
     } 
-   
-    public function doIndividual(Request $request)
+    
+  
+public function doIndividual(Request $request)
 {
     $validator = Validator::make($request->all(), [
+        'customerId' =>'nullable|string',
         'p_name' => 'required|string|max:255',
         'address' => 'required|string|max:500',
         'mobile' => 'required|string|max:15',
         'whatsapp' => 'required|string|max:15',
         'landmark' => 'required|string|max:255',
+        'premier_customer' =>'required|string',
         'category_id' => 'required|exists:categories,category_id',
         'subcat_id' => 'required|exists:subcategories,subcat_id',
-        'product_id' => 'required|exists:products,product_id',
+        'product_id' => 'nullable',
+        'purchased_from'=>'required|string',
         'filter_change_on' =>'required',
         'assigned_to' => 'required|string',
         'type_of_purchase' =>'required|string',
         'remarks' => 'nullable|string|max:500',
-    ], [
+    ], [ 
         'p_name.required' => 'Person name is required',
         'address.required' => 'Address is required',
         'mobile.required' => 'Mobile is required',
         'whatsapp.required' => 'WhatsApp is required',
         'landmark.required' => 'Landmark is required',
+        'premier_customer.required' =>'Please select Premier Customer',
         'category_id.required' => 'Please select a Category',
         'subcat_id.required' => 'Please select a Sub Category',
-        'product_id.required' => 'Please select a Product',
+        'purchased_from.required' =>'Please select Purchased From',
         'filter_change_on.required' =>'Please select Filter Change',
         'assigned_to.required' => 'Staff name is required',
         'type_of_purchase.required' =>'Type of Purchase is Required',
@@ -54,20 +59,62 @@ class AdminController extends Controller
         ]);
     }
 
-    $data = [
+    // Generate Customer ID
+    $branchCodes = [
+        'Mukkam' => 'MK',
+        'Mavoor' => 'MV',
+        'Calicut' => 'CL'
+    ];
+
+    $branchCode = $branchCodes[$request->input('purchased_from')] ?? '';
+    $categoryName = DB::table('categories')->where('category_id', $request->input('category_id'))->value('category_name');
+    $CategoryCode = strtoupper(substr($categoryName, 0, 1)); // Ensure this matches your format
+    $subCategoryName = DB::table('subcategories')->where('subcat_id', $request->input('subcat_id'))->value('subcategory_name');
+    $subCategoryCode = strtoupper(substr($subCategoryName, 0, 2));
+
+    $year = Carbon::now()->format('y');
+    $month = Carbon::now()->format('m');  
+  
+    // Get the last used sequence number
+    $lastRecord = DB::table('individuals')
+                    ->where('customerId', 'LIKE', "P{$branchCode}{$CategoryCode}{$subCategoryCode}{$year}{$month}%")
+                    ->orderBy('customerId', 'desc')
+                    ->first(); 
+                
+// Determine the next sequence number
+if ($lastRecord) {
+    // Extract the last 3-digit number
+    $lastNumber = substr($lastRecord->customerId, -3);
+    $lastNumberInt = (int)$lastNumber; // Convert to integer
+} else {
+    $lastNumberInt = 0; // No records found, start from 0
+}
+
+
+// Increment the number and pad it with zeros
+$nextNumberInt = $lastNumberInt + 1;
+$nextNumber = str_pad($nextNumberInt, 3, '0', STR_PAD_LEFT); // Ensure zero padding
+
+
+    $customerId = "P{$branchCode}{$CategoryCode}{$subCategoryCode}{$year}{$month}{$nextNumber}";
+
+    $data = [ 
+        'customerId' => $customerId,
         'p_name' => $request->input('p_name'),
         'address' => $request->input('address'),
         'mobile' => $request->input('mobile'),
         'whatsapp' => $request->input('whatsapp'),
         'landmark' => $request->input('landmark'),
+        'premier_customer' => $request->input('premier_customer'),
         'category_id' => $request->input('category_id'),
         'subcat_id' => $request->input('subcat_id'),
         'product_id' => $request->input('product_id'),
-        'filter_change_on' =>$request->input('filter_change_on'),
+        'purchased_from' => $request->input('purchased_from'),
+        'filter_change_on' => $request->input('filter_change_on'),
         'assigned_to' => $request->input('assigned_to'),
-        'type_of_purchase' =>$request->input('type_of_purchase'),
+        'type_of_purchase' => $request->input('type_of_purchase'),
         'remarks' => $request->input('remarks'),
-        'created_at' => Carbon::now(),  // Add current timestamp
+        'created_at' => Carbon::now(),
         'updated_at' => Carbon::now(),
     ];
 
@@ -98,11 +145,16 @@ class AdminController extends Controller
         ->join('subcategories','individuals.subcat_id','=','subcategories.subcat_id')
         ->join('products', 'individuals.product_id', '=', 'products.product_id')
         ->join('users','individuals.assigned_to','=','users.id')
-        ->select('individuals.individual_id','individuals.p_name', 'individuals.address','individuals.mobile','individuals.whatsapp','individuals.landmark','categories.category_name', 'subcategories.subcategory_name','products.product_name','users.name','individuals.remarks')
+        ->select('individuals.individual_id','individuals.customerId','individuals.p_name', 'individuals.address','individuals.mobile','individuals.whatsapp','individuals.landmark','individuals.purchased_from','individuals.filter_change_on','individuals.premier_customer','categories.category_name', 'subcategories.subcategory_name','products.product_name','users.name','individuals.remarks')
         ->get();
         $totalRecords = count($purchase); // Total records in your data source
         $filteredRecords = count($purchase); // Number of records after applying filters
-    
+        foreach ($purchase as $item) {
+            if ($item->filter_change_on) {
+                $item->filter_change_on = Carbon::parse($item->filter_change_on)->format('d-m-Y');
+            }
+        }
+        
         return response()->json(['draw' => request()->get('draw'),
                                 'recordsTotal' => $totalRecords,
                                  'recordsFiltered' => $filteredRecords,
@@ -118,10 +170,11 @@ class AdminController extends Controller
         ->join('subcategories','individuals.subcat_id','=','subcategories.subcat_id')
         ->join('products', 'individuals.product_id', '=', 'products.product_id')
         ->join('users', 'individuals.assigned_to', '=', 'users.id')
-        ->select('individuals.individual_id', 'individuals.p_name', 'individuals.address', 'individuals.mobile', 'individuals.whatsapp', 'individuals.landmark', 'individuals.type_of_purchase','categories.category_name', 'subcategories.subcategory_name','products.product_name', 'users.name', 'individuals.remarks')
+        ->select('individuals.individual_id','individuals.customerId', 'individuals.p_name','individuals.premier_customer', 'individuals.address', 'individuals.mobile', 'individuals.whatsapp', 'individuals.landmark', 'individuals.purchased_from','individuals.filter_change_on','individuals.type_of_purchase','categories.category_name', 'subcategories.subcategory_name','products.product_name', 'users.name', 'individuals.remarks')
         ->where('individuals.individual_id', $id)
         ->first();
-        
+        $purchase->filter_change_on = Carbon::parse($purchase->filter_change_on)->format('d-m-Y');
+      
     if ($purchase) {
        
         return response()->json($purchase);
@@ -132,8 +185,18 @@ class AdminController extends Controller
 
     public function edit($id)
      {    
+        $cid = Individual::find($id);
+        $cusId = $cid->individual_id;
    
-        $purchase = Individual::findOrFail($id);   
+        $purchase = DB::table('individuals')
+        ->join('categories', 'individuals.category_id', '=', 'categories.category_id')
+        ->join('subcategories','individuals.subcat_id','=','subcategories.subcat_id')
+        ->join('products', 'individuals.product_id', '=', 'products.product_id')
+        ->join('users', 'individuals.assigned_to', '=', 'users.id')
+        ->select('individuals.individual_id', 'individuals.p_name', 'individuals.address', 'individuals.mobile', 'individuals.whatsapp','individuals.premier_customer', 'individuals.landmark', 'individuals.purchased_from','individuals.filter_change_on','individuals.type_of_purchase','individuals.created_at as purchase_date','categories.category_name','categories.category_id','subcategories.subcategory_name','subcategories.subcat_id','products.product_name','products.product_id', 'users.name', 'individuals.remarks')
+        ->where('individuals.individual_id', $cusId)
+        ->first();
+        $purchase->purchase_date =Carbon::parse($purchase->purchase_date)->format('Y-m-d');
 
         return response()->json($purchase);
         
@@ -157,13 +220,17 @@ class AdminController extends Controller
             {
                
             $query = DB::table('individuals')->where('individual_id','=',$purchaseid)->update([
+                'created_at' =>$request->purchase_date,
                 'p_name' =>$request->p_name,
                 'address' =>$request->address,
                 'mobile' =>$request->mobile,
                 'whatsapp' =>$request->whatsapp,
+                'premier_customer' =>$request->premier_customer,
                 'landmark' =>$request->landmark,
                 'category_id' =>$request->category_id,
                 'product_id' =>$request->product_id,
+                'purchased_from' =>$request->purchased_from,
+                'filter_change_on' =>$request->filter_change_on,
                 'assigned_to' =>$request->assigned_to,
                 'type_of_purchase' =>$request->type_of_purchase,
                 'remarks' =>$request->remarks,
@@ -186,7 +253,7 @@ class AdminController extends Controller
     {
         $html = '';
         $products = DB::table('products')
-                        ->where('category_id','=',$request->category_id)
+                        ->where('subcategoryId','=',$request->category_id)
                         ->get();
         $html .= '<option selected disabled>Select Product</option>';
             foreach ($products as $product) {

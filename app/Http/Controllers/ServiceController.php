@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon; 
 use App\Models\User;
 use App\Models\Installation;
+use App\Models\Individual;
 use Illuminate\Support\Facades\Log;
 class ServiceController extends Controller
 {
@@ -38,11 +39,11 @@ class ServiceController extends Controller
                 ->join('installations', 'installations.customer_id', '=', 'services.customer_id')
                 ->join('products', 'individuals.product_id', '=', 'products.product_id')
                 ->join('users','services.staff_id','=','users.id')
-                ->select('services.*', 'individuals.p_name', 'individuals.mobile','individuals.remarks', 'products.product_name','installations.created_at as installation_date','users.name')
-                ->whereIn('individuals.status', ['completed'])
+                ->select('services.*', 'services.status as serviceStatus','individuals.p_name', 'individuals.mobile','individuals.remarks', 'products.product_name','installations.created_at as installation_date','users.name')
+                ->whereIn('individuals.status', ['Completed','Service_Completed'])
                 ->orderBy('services.created_at', 'desc') // Order by services.created_at in descending order
                 ->get(); // Fetch all records
-    
+           
             return response()->json([
                 'draw' => request()->get('draw'),
                 'recordsTotal' => $recentServices->count(),
@@ -68,7 +69,7 @@ class ServiceController extends Controller
             ->join('products', 'individuals.product_id', '=', 'products.product_id')
             ->select('services.*', 'individuals.p_name', 'individuals.mobile', 'products.product_name', 'installations.created_at as installation_date')
             ->where('services.customer_id', $custId) // Filter by the specific customer_id
-            ->where('individuals.status', 'completed')
+            ->where('individuals.status', 'Service_Completed','Completed')
             ->orderBy('services.created_at', 'desc') // Order by services.created_at in descending order
             ->get()
             ->map(function ($item) {
@@ -95,11 +96,13 @@ public function douserService(Request $request)
         'amount' => 'nullable|numeric',
         'remarks' => 'nullable|string',
         'customer_id' => 'required|exists:individuals,individual_id',
+        'status' =>'required|string',
         'staff_id' => 'required|exists:users,id',
     ], [
         'tos.required' => 'Type of Service is required.',
         'partsChanged.required' => 'Parts changed is required',
         'nextService.required' => 'Next Service is required',
+        'status.required' =>'Status is required',
     ]);
 
     // Check if validation fails
@@ -120,12 +123,20 @@ public function douserService(Request $request)
     $service->partsChanged = json_encode($validatedData['partsChanged']); // Convert array to JSON
     $service->nextService = $validatedData['nextService'];
     $service->amount = $validatedData['amount'];
+    $service->status = $validatedData['status'];
     $service->remarks = $validatedData['remarks'];
     $service->customer_id = $validatedData['customer_id'];
-    $service->staff_id = $validatedData['staff_id'];
+    $service->staff_id = $validatedData['staff_id'];  
+    $service->save(); 
+    $individual = Individual::find($request->input('customer_id'));
+    if($service->status == 'Completed' && $individual) 
+    { 
+        $individual->status = 'Service_Completed'; // Update status as needed
+        $individual->save();
+    }
     
     // Save the model instance to the database
-    $service->save(); 
+ 
 
 
     // Return a success response
@@ -152,12 +163,13 @@ public function doParts(Request $request)
                ]);
 
     // Check if validation fails
-    if ($validator->fails()) {
+    if ($validator->fails()) 
+     {
         // Return validation errors as JSON
         return response()->json([
             'status' => 0,
             'error' => $validator->errors()]);
-    }
+     }
 
     $data = [
         'parts_name' =>$request->input('parts_name'),
@@ -194,25 +206,26 @@ public function getuserServicePage()
      ]);
     } 
     public function viewuserServices(Request $request)
-{
-    if ($request->ajax()) {
+    { 
+         $staffId = Auth::user()->id;
+        if ($request->ajax()) {
         
-        $insDetails = DB::table('individuals')
-                      ->join('products','individuals.product_id','=','products.product_id')                                        
-                      ->select('individuals.*','products.product_name')
-                      ->whereIn('individuals.status', ['completed'])
-                      ->get();
-        $totalRecords = count($insDetails); // Total records in your data source
-        $filteredRecords = count($insDetails); // Number of records after applying filters
-   
-        return response()->json(['draw' => request()->get('draw'),
-                                'recordsTotal' => $totalRecords,
-                                'recordsFiltered' => $filteredRecords,
-                                'data' => $insDetails]);
-    }
-    return response()->json(['error' => 'Invalid request'], 400);
-} 
-
+            $insDetails = DB::table('individuals')
+                          ->join('products','individuals.product_id','=','products.product_id')                                        
+                          ->select('individuals.*','products.product_name')
+                          ->where('individuals.assigned_to','=',$staffId)
+                          ->whereIn('individuals.status', ['Completed'])
+                          ->get();
+            $totalRecords = count($insDetails); // Total records in your data source
+            $filteredRecords = count($insDetails); // Number of records after applying filters
+       
+            return response()->json(['draw' => request()->get('draw'),
+                                    'recordsTotal' => $totalRecords,
+                                    'recordsFiltered' => $filteredRecords,
+                                    'data' => $insDetails]);
+        }
+        return response()->json(['error' => 'Invalid request'], 400);
+    } 
 public function getuserFixService(Request $request,$id)
 {
     $stId = Auth::user()->id;
@@ -281,7 +294,8 @@ public function edit($id)
    
     public function changeStaff($id)
     {
-        $service = Service::find($id);
+        $service = Service::find($id); 
+        $customer = 
         $users = User::where('role','=',1)->get(); // Get all users
         
         return response()->json([
@@ -291,26 +305,36 @@ public function edit($id)
         ]);
     } 
 
-    public function updateStaff(Request $request,$id)
+    public function updateStaff(Request $request,$serviceId)
     {
         $request->validate([
-         
-            'assigned_to' => 'required|exists:users,id', // Assuming 'users' is the table for staff
+            'assigned_to' => 'required|exists:users,id',
+            'customer_id' => 'required' // Validate customer ID if needed
         ]);
-
-        // Find the service by ID
-        $service = Service::find($id);
-
-        // Update the assigned staff
-        $service->staff_id = $request->input('assigned_to'); // Adjust field names as needed
-        
-        $service->save(); // Save changes to the database
-
-        // Return a success response
-        return response()->json(['status' => 1, 'message' => 'Staff updated successfully']);
     
-        
-    } 
+       // You may need to pass service_id too
+        $customerId = $request->input('customer_id');
+    
+        // Find and update the Service model
+        $service = Service::find($serviceId);
+        if (!$service) {
+            return response()->json(['status' => 0, 'message' => 'Service not found'], 404);
+        }
+        $service->staff_id = $request->input('assigned_to');
+        $service->save();
+    
+        // Find and update the Individual model
+        $individual = Individual::where('individual_id', $customerId)->first();
+        if (!$individual) {
+            return response()->json(['status' => 0, 'message' => 'Individual not found'], 404);
+        }
+        $individual->assigned_to = $request->input('assigned_to');
+        $individual->status ='Completed';
+        $individual->save();
+    
+        return response()->json(['status' => 1, 'message' => 'Staff updated successfully']);
+    }
+    
 
     //change next service view 
     public function changeNextService($id)

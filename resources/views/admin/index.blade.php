@@ -13,7 +13,7 @@
 											<p class="mb-0 d-flex">
 											
 												<span class="badge bg-success-subtle text-success fs-3">
-													<i class="bi bi-graph-up-arrow me-1"></i> 
+													
 													<i id="cuscount" class="fw-normal"></i>
 												</span>
 											

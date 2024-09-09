@@ -82,9 +82,12 @@
                     title: 'Service Due',
                     titleAttr: 'Export to CSV',
                     className: 'custombutton',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3] // Ensure the correct column indices
-                    }
+                    exportOptions: { 
+                        columns: function (idx, data, node)
+                         {               
+                         return true;
+                         } 
+                           }
                 }
             ],
             lengthMenu: [

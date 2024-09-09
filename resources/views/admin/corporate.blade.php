@@ -29,6 +29,7 @@
                             <th class="text-light">Category</th>
                             <th class="text-light">Sub Category</th>
                             <th class="text-light">Product</th>
+                            <th class="text-light">Located On</th>
                             <th class="text-light">Assigned To</th>
                             <th class="text-light">Filter Change On</th>
                             <th class="text-light">Action</th>
@@ -77,16 +78,29 @@
                                         <div id="formErrors" class="alert alert-danger d-none"></div> <!-- Error container -->
                                         <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Corporate Company</h3>
                                         <br><label for="name">Company Name</label>
-                                        <input type="text" name="company_name" id="company_name" placeholder="Company Name" class="form-control">
-                                        <span class="error  text-danger" id="company_name-error"></span>
+                                        <select id="company-select" name="company_id" class="form-select">
+                                            <option value="">Select Company</option>
+                                            @foreach($company as $com)
+                                            <option value="{{ $com->company_id }}">{{ $com->company_name }}</option>
+                                            @endforeach
+                                          </select><br><span class="error  text-danger" id="company_name-error"></span>
                                         
                                         <br><label for="center_name">Center Name</label>
-                                        <input type="email" name="center_name" id="center_name" placeholder="Center Name" class="form-control">
-                                        <span class="error  text-danger" id="center_name-error"></span>
+                                        <select id="centre-select" name="centre_id" class="form-select">
+                                            <option value=""></option>
+                                        </select>
+                                         <span class="error  text-danger" id="center_name-error"></span>
                                         
                                         <br><label for="sub_center">Sub Center</label>
-                                        <input type="text" name="sub_center" id="sub_center" placeholder="Sub Center" class="form-control">
-                                        <span class="error text-danger" id="sub_center-error"></span>
+                                        <select id="subcentre-select" name="subcentre_id" class="form-select">
+                                            <option value=""></option>
+                                        </select>
+                                       <span class="error text-danger" id="sub_center-error"></span>
+                                       
+
+                                        <br><label for="sub_center">Located On</label>
+                                        <input type="text" name="located_on" id="locatedon" placeholder="Located On" class="form-control">
+                                        <span class="error text-danger" id="located_on-error"></span>
                                       
                                         <br>
                                         <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Contact Person</h3>
@@ -101,7 +115,7 @@
                                         <br><label for="center_address">Center Address</label>
                                         <textarea name="center_address" id="center_address" cols="30" rows="5" placeholder="Center Address" class="form-control"></textarea>
                                         <span class="error text-danger" id="center_address-error"></span> 
-                                        <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Product Details</h3>
+                    <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Product Details</h3>
                                           
                     
                     <div class="form-group mb-2">
@@ -132,13 +146,21 @@
                             <label for="product">Product:</label>
                             <select id="product-select" name="product_id" class="form-select fixed-width"
                                 style="width:350px !important;">
-
                                 <option value="">Select Product</option>
                                 <!-- Products will be loaded here -->
                             </select>
 
                             {{-- <span class="error text-danger" id="product_id-error"></span> --}}
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Purchased From</label>
+                        <select name="purchased_from" id="purchasedFrom" class="form-select">
+                            <option>Select Purchased From</option>
+                            <option value="Mukkam">Mukkam</option>
+                            <option value="Mavoor">Mavoor</option>
+                            <option value="Calicut">Calicut</option>
+                        </select>
                     </div>
                                         <h3 class="text-center text-light p-1 rounded-1 w-50" style="margin-left:170px">Installation Details</h3>
                                         <div class="form-group mb-2">
@@ -245,9 +267,12 @@
                 title: 'Corporate Customers',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
-                exportOptions:{
-                    columns: [0,1,2,3,4,5,6,7,8,9,10] // Update columns to include the new serial number column
-                }
+                exportOptions: { 
+                        columns: function (idx, data, node)
+                         {               
+                         return true;
+                         } 
+                           }
             }
         ],
         lengthMenu: [
@@ -270,15 +295,18 @@
                     return meta.row + meta.settings._iDisplayStart + 1; // Serial number
                 }
             },
+
+          
             { data: 'company_name', name: 'company_name' },
-            { data: 'center_name', name: 'center_name' },
-            { data: 'sub_center', name: 'sub_center' },
+            { data: 'centre_name', name: 'centre_name' },
+            { data: 'subcentre_name', name: 'subcentre_name' },
             { data: 'contact_person', name: 'contact_person' },
             { data: 'contact_mobile', name: 'contact_mobile' },
             { data: 'center_address', name: 'center_address' },
             { data: 'category_name', name: 'category_name' },
             { data: 'subcategory_name', name: 'subcategory_name' },
             { data: 'product_name', name: 'product_name' },
+            { data: 'located_on', name: 'located_on' },
             { data: 'name', name: 'name' },
             { data: 'filter_change_on', name: 'filter_change_on' },
             {
@@ -303,7 +331,65 @@
         ],
         columnDefs: [{ visible: false, targets: [2,3,4,6,7,8,10] }],
     });
+});  
+
+
+//company load  
+
+$(document).ready(function() {
+    $.ajax({
+        url: `{{ url('/admin/companies/get')}}`,
+        method: 'GET',
+        success: function(data) {
+            console.log(data); // Log data to ensure it's correctly fetched           
+            var CompanySelect = $('#Company1');        
+             data.forEach(function(Company) {
+                // Create an <option> element with Company_name as text and Company_id as value
+                var option = $('<option></option>')
+                    .val(Company.company_id) // Set value attribute
+                    .text(Company.company_name); // Set visible text
+                CompanySelect.append(option); // Append the option to the select element
+            });
+               
+        },
+        error: function(error) {
+            console.log("Error fetching categories:", error);
+        }
+    }); 
 }); 
+
+//company change event for centres 
+$(document).ready(function() {
+    $('#company-select').change(function(){
+        $.ajax({
+               url: "{{ url('/admin/centre/select') }}?company_id=" + $(this).val(),
+                method: 'GET',
+                success: function(data) {
+                    $('#centre-select').find('option').remove().end();
+                    $('#centre-select').html(data.html);
+                }
+            });      
+
+
+         });
+    });  
+//centre change event to select sub centre 
+
+///subcentre/select
+$(document).ready(function() {
+    $('#centre-select').change(function(){
+        $.ajax({
+               url: "{{ url('/admin/subcentre/select') }}?centre_id=" + $(this).val(),
+                method: 'GET',
+                success: function(data) {
+                    $('#subcentre-select').find('option').remove().end();
+                    $('#subcentre-select').html(data.html);
+                }
+            });      
+
+
+         });
+    });
 //sub category field change 
 $('#category-select').change(function() {
         var categoryId = $(this).val();
@@ -421,14 +507,15 @@ $(document).on('click', '.view-company', function() {
         $.get(`{{ url('/admin/purchase/company') }}/${companyId}`, function(data) {
             console.log('Response data:', data);
 
-            if (data && data.companyPurchase) {
+            if (data && data.companyPurchase) 
+            {
                 const company = data.companyPurchase;
 
                 let corporateDetails = `
                     <ul class="list-group">
                             <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Company Name</strong>
                         </div>
                         <div class="col-1">:</div>
@@ -440,31 +527,31 @@ $(document).on('click', '.view-company', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Center Name</strong>
                         </div>
                         <div class="col-1">:</div>
                         <div class="col-4">
-                             ${company.center_name}                          
+                             ${company.centre_name}                          
                         </div>
                     </div>
                     </li>
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Sub Center</strong>
                         </div>
                         <div class="col-1">:</div>
                         <div class="col-4">
-                             ${company.sub_center}                          
+                             ${company.subcentre_name}                          
                         </div>
                     </div>
                     </li>
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Contact Person</strong>
                         </div>
                         <div class="col-1">:</div>
@@ -477,7 +564,7 @@ $(document).on('click', '.view-company', function() {
                     
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Contact Mobile</strong>
                         </div>
                         <div class="col-1">:</div>
@@ -489,7 +576,7 @@ $(document).on('click', '.view-company', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Center Address</strong>
                         </div>
                         <div class="col-1">:</div>
@@ -501,7 +588,7 @@ $(document).on('click', '.view-company', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Category</strong>
                         </div>
                         <div class="col-1">:</div>
@@ -513,7 +600,7 @@ $(document).on('click', '.view-company', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Sub category</strong>
                         </div>
                         <div class="col-1">:</div>
@@ -525,7 +612,7 @@ $(document).on('click', '.view-company', function() {
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-5">
                               <strong>Product</strong>
                         </div>
                         <div class="col-1">:</div>
@@ -533,23 +620,48 @@ $(document).on('click', '.view-company', function() {
                              ${company.product_name}                          
                         </div>
                     </div>
-                    </li>
+                    </li>  
 
-                        <li class="list-group-item"><p class="m-0">
+                            <li class="list-group-item"><p class="m-0">
                     <div class="row">
-                        <div class="col-4">
-                              <strong>Filter Change On</strong>
+                        <div class="col-5">
+                              <strong>Located On</strong>
                         </div>
                         <div class="col-1">:</div>
                         <div class="col-4">
-                             ${company.formattedDate}                          
+                             ${company.located_on}                          
+                        </div>
+                    </div>
+                    </li> 
+                    
+                    
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-5">
+                              <strong>Purchased From</strong>
+                        </div>
+                        <div class="col-1">:</div>
+                        <div class="col-4">
+                             ${company.purchased_from}                          
                         </div>
                     </div>
                     </li>
 
                         <li class="list-group-item"><p class="m-0">
                     <div class="row">
+                        <div class="col-5">
+                              <strong>Filter Change On</strong>
+                        </div>
+                        <div class="col-1">:</div>
                         <div class="col-4">
+                             ${company.filter_change_on}                          
+                        </div>
+                    </div>
+                    </li>
+
+                        <li class="list-group-item"><p class="m-0">
+                    <div class="row">
+                        <div class="col-5">
                               <strong>Assigned</strong>
                         </div>
                         <div class="col-1">:</div>
@@ -584,35 +696,52 @@ $(document).on('click', '.edit-company', function() {
    $.get(`{{ url('/admin/purchase/company/edit') }}/${userId}`, function(data) {
        
         const formHtml = `
-                       <form id="editCompanyForm" data-id="${data.corporate_id}">
+            <form id="editCompanyForm" data-id="${data.corporate_id}">
             @csrf
             <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Corporate Company</h3>
                 <div class="mb-3">
                     <label for="company_name" class="form-label">Company Name</label>
-                    <input type="text" class="form-control" id="edit_company_name" name="company_name" value="${data.company_name}">
-                </div>
-                <div class="mb-3">
-                    <label for="Center Name" class="form-label">Center Name</label>
-                    <input type="text" class="form-control" id="edit_center_name" name="center_name" value="${data.center_name}">
-                </div>
-                 <div class="mb-3">
-                    <label for="sub_center" class="form-label">Sub Center</label>
-                    <input type="text" class="form-control" id="edit_sub_center" name="sub_center" value="${data.sub_center}">
-                </div>
-                       <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Contact Person</h3>
-                 <div class="mb-3">
+                   <select id="edit-company-select" name="company_id" class="form-select">                 
+                    <option value="${data.company_id}">${data.company_name}</option>
+                    @foreach($company as $com)
+                    <option value="{{ $com->company_id }}">{{ $com->company_name }}</option>
+                    @endforeach
+                    </select><br><span class="error  text-danger" id="company_name-error"></span>
+                                        
+                    <br><label for="center_name">Center Name</label>
+                    <select id="edit-centre-select" name="centre_id" class="form-select"> 
+                        <option value="">Select Centre</option>                   
+                     <option value="${data.centre_id}">${data.centre_name}</option>
+                    
+                    </select>
+                    <span class="error  text-danger" id="center_name-error"></span>
+                                        
+                     <br><label for="sub_center">Sub Center</label>
+                    <select id="edit-subcentre-select" name="subcentre_id" class="form-select"> 
+                    <option value="">Select Sub Centre</option>                  
+                    <option value="${data.subcentre_id}">${data.subcentre_name}</option>                    
+                    </select>
+                    <span class="error text-danger" id="sub_center-error"></span>                                       
+
+                    <br><label for="sub_center">Located On</label>
+                    <input type="text" name="located_on" id="locatedon" value="${data.located_on}" placeholder="Located On" class="form-control">
+                    <span class="error text-danger" id="located_on-error"></span>
+                                      
+                                        
+                    <h3 class="text-center text-primary p-1 rounded-1 w-50" style="margin-left:150px">Contact Person</h3>
+                    <div class="mb-3">
                     <label for="contact_person" class="form-label">Contact Person</label>
                     <input type="text" class="form-control" id="edit_contact_person" name="contact_person" value="${data.contact_person}">
-                </div>
-                 <div class="mb-3">
+                  </div>
+                  <div class="mb-3">
                     <label for="contact_mobile" class="form-label">Contact Mobile</label>
                     <input type="text" class="form-control" id="edit_contact_mobile" name="contact_mobile" value="${data.contact_mobile}">
-                </div>
+                  </div>
                  <div class="mb-3">
                     <label for="center_address" class="form-label">Center Address</label>
                     <input type="text" class="form-control" id="edit_center_address" name="center_address" value="${data.center_address}">
                      <h3 class="text-center  text-primary p-1 rounded-1 w-50 mt-3" style="margin-left:170px">Product Details</h3>
-                </div>  <div class="form-group mb-2">
+                  </div>  <div class="form-group mb-2">
                                             <label for="category">Category:</label>
                                             <select id="edit-category-select" name="category_id" class="form-select fixed-width"
                                                 style="width:725px !important;">
@@ -647,7 +776,22 @@ $(document).on('click', '.edit-company', function() {
                     
                                                 <span class="error text-danger" id="product-error"></span>
                                             </div>
-                                        </div>
+                                        </div>  
+
+                                        
+                                           
+
+
+
+                                          <div class="form-group">
+                        <label for="">Purchased From</label>
+                        <select name="purchased_from" id="purchasedFrom" class="form-select">
+                            <option value="${data.purchased_from}">${data.purchased_from}</option>
+                            <option value="Mukkam">Mukkam</option>
+                            <option value="Mavoor">Mavoor</option>
+                            <option value="Calicut">Calicut</option>
+                        </select>
+                    </div>
 
                                         <h3 class="text-center text-light p-1 rounded-1 w-50" style="margin-left:170px">Installation Details</h3>
                                         <div class="form-group mb-2">
@@ -712,13 +856,35 @@ $('#edit-category-select').change(function() {
         } else {
             $('#edit-sub-category-select').empty().append('<option value="">Select sub category</option>'); // Clear products if no category is selected
         }
-    });
+    });    
 
+    $('#edit-company-select').change(function(){
+        $.ajax({
+               url: "{{ url('/admin/centre/select') }}?company_id=" + $(this).val(),
+                method: 'GET',
+                success: function(data) {
+                    $('#edit-centre-select').find('option').remove().end();
+                    $('#edit-centre-select').html(data.html);
+                }
+            });      
+         });
 
-    });
+    $('#edit-centre-select').change(function(){
+        $.ajax({
+               url: "{{ url('/admin/subcentre/select') }}?centre_id=" + $(this).val(),
+                method: 'GET',
+                success: function(data) {
+                    $('#edit-subcentre-select').find('option').remove().end();
+                    $('#edit-subcentre-select').html(data.html);
+                }
+            });    
+         });
+    });    
+});  
 
-    
-}); 
+ 
+   
+     
 // update company purchase 
 
 $(document).on('submit', '#editCompanyForm', function(event) {

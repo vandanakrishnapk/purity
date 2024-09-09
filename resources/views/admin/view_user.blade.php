@@ -168,9 +168,12 @@ $(document).ready(function() {
                 title:'Staff List',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
-                exportOptions:{
-                    columns: [0,1,2,3,4] // Include the serial number column in export
-                }
+                exportOptions: { 
+                        columns: function (idx, data, node)
+                         {               
+                         return true;
+                         } 
+                           }
             }
         ],
         lengthMenu: [

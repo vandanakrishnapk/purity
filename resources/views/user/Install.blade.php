@@ -208,7 +208,7 @@
         let buttonDisabled = false;
 
         // Check the status from the row data
-        if (row.status === 'Completed') {
+        if (row.status === 'Completed' ||  row.status === 'Service_Completed') {
             buttonClass = 'btn btn-warning btn-sm'; // Change to a different color
             buttonText = 'DONE'; // Change text to 'COMPLETED'
             buttonDisabled = true; // Disable the button
