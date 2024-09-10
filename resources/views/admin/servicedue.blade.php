@@ -24,6 +24,8 @@
                             <th class="text-light">Installation Date</th>
                             <th class="text-light">Main Service</th>
                             <th class="text-light">Days Left</th>
+                            <th class="text-light">Assigned To</th>
+                            <th class="text-light">Action</th>
                         </tr>
                         
                     </thead>
@@ -33,6 +35,7 @@
                             <td></td>
                             <td></td>
                             <td></td>
+                            <td></td> 
                             <td></td>
                            
                         </tr>
@@ -42,6 +45,35 @@
         </div>
 
 
+<!--change staff modal -->
+<div class="modal fade" id="changeStaffModal" tabindex="-1" aria-labelledby="changeStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="changeStaffModalLabel">Change Staff Here</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="changeStaff">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--change next service modal -->
+<div class="modal fade" id="nextServiceModal" tabindex="-1" aria-labelledby="nextServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5 text-light" id="nextServiceModalLabel">Update Main Service Date</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="nextServiceBody">
+                
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 
@@ -116,15 +148,234 @@
                 { data: 'days_left', name: 'days_left',
                 render: function(data, type, row) {
             // Determine badge class based on days left
-            let badgeClass = data < 15 ? 'text-bg-warning' : 'text-bg-primary';
+                 let badgeClass = data < 15 ? 'text-bg-warning' : 'text-bg-primary';
 
             // Return the formatted badge
-            return `<span class="badge ${badgeClass}">${data} days</span>`;
-        }
-    },
+                 return `<span class="badge ${badgeClass}">${data} days</span>`;
+                 }
+                }, 
+                {
+                    data:'staff' ,name:'staff',
+                },
+                {
+                // Adding the "View More" button column
+                data: null,
+                name: 'Action',
+                render: function(data, type, row) {
+                    console.log('Row Data:', row); // Debugging line to see the row data
+                    if (row) {
+                        return ` 
+                            <button class="btn btn-danger ps-1 pe-1 pt-0 pb-0 change-staff me-2" 
+                                data-id="${row.installId}" 
+                                data-user="${row.customer_id}">
+                                <i class="ri-file-add-fill"></i>
+                            </button> 
+                            <button class="btn btn-info ps-1 pe-1 pt-0 pb-0 change-nextService me-2" 
+                                data-id="${row.installId}">
+                                <i class="ri-calendar-2-line"></i>
+                            </button>   
+                        `;
+                    }
+                }
+            }
             ]
         });
     });
+
+
+
+    $('#serviceDueTable').on('click', '.change-staff', function() {
+    var id = $(this).data('id');  
+ 
+    var user = $(this).data('user');
+       // Fetch and display more details based on the id
+    $.ajax({
+        url: `{{ url('/admin/servicedue/change/staff') }}/${id}`, // Adjust the URL as needed
+        type: 'GET',
+        success: function(response) {
+            var users = response.users;
+            var currentStaff = response.currentStaff;
+            var installId = response.installId;
+           
+
+            // Create the form HTML
+            var formHtml = `
+                <form id="updateStaffForm" data-id="${installId}">
+                @csrf
+                    <div class="mb-3">
+                        <label for="assigned_to" class="form-label">Change Staff</label>
+                        <select id="assigned_to" name="assigned_to" class="form-control">
+                            <option value="">Select a staff</option>
+            `;
+
+            // Populate the select options
+            users.forEach(user => {
+                formHtml += `<option value="${user.id}" ${user.id === currentStaff ? 'selected' : ''}>${user.name}</option>`;
+            });
+
+            formHtml += `
+                        </select> 
+                    </div>
+                    <input type="hidden" name="customer_id" value="${user}">
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col-4">
+                              <button type="submit" class="btn btn-primary">Update</button>   
+                        </div>
+                    </div>
+                </form>
+            `;
+
+            // Insert form HTML into the modal
+            $('#changeStaff').html(formHtml);
+
+            // Show the modal
+            $('#changeStaffModal').modal('show');
+        },
+        error: function(xhr) {
+            console.error('An error occurred:', xhr.responseText);
+        }
+    });
+}); 
+
+//update staff 
+$(document).on('submit', '#updateStaffForm', function(event) {
+    event.preventDefault();    
+    const updateId = $(this).data('id');
+    const formData = $(this).serialize();
+    const url = `{{ url('/admin/servicedue/update/staff') }}/${updateId}`; // Ensure this URL is correct
+
+    $.ajax({
+    url: url,
+    type: 'POST',
+    data: formData,
+    dataType: "json",
+    success: function(response) {
+        if (response.status === 0) {
+            $.each(response.error, function(key, value) {
+                $('#' + key + '_error').text(value);
+            });
+            toastr.error('Please fix the errors and try again.', 'Validation Error', {
+                positionClass: 'toast-top-right'
+            });
+        } else if (response.status === 1) {
+            toastr.success(response.message, 'Success', {
+                positionClass: 'toast-top-right'
+            });
+            $('#updateStaffForm')[0].reset();
+            $('#changeStaffModal').modal('hide');
+            $('#serviceDueTable').DataTable().ajax.reload();
+        } else {
+            toastr.error('Unexpected response format.', 'Error', {
+                positionClass: 'toast-top-right'
+            });
+           
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+        toastr.error('Something went wrong!', 'Error', {
+            positionClass: 'toast-top-right'
+        });
+    }
+});
+});   
+
+//next service form 
+
+$('#serviceDueTable').on('click', '.change-nextService', function() {
+    var id = $(this).data('id');
+
+    // Fetch and display more details based on the id
+    $.ajax({
+        url: `{{ url('/admin/servicedue/change/nextService') }}/${id}`, // Adjust the URL as needed
+        type: 'GET',
+        success: function(response) {
+          
+            var currentNextService = response.currentMainService;
+            var installId = response.installId;
+
+            // Create the form HTML
+            var formHtml = `
+                <form id="updateNextServiceForm" data-id="${installId}">
+                @csrf
+                    <div class="mb-3">
+                            <label for="specificDate">Select a specific date to update next Service:</label>
+                            <input type="date" id="specificDate" name="mainService" class="form-control" value="${currentNextService}">
+ 
+            `;         
+            formHtml += `
+                       
+                    </div>
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col-4">
+                              <button type="submit" class="btn btn-primary">Update</button>   
+                        </div>
+                    </div>
+               
+                </form>
+            `;
+
+            // Insert form HTML into the modal
+
+            $('#nextServiceBody').html(formHtml);
+
+            // Show the modal
+            $('#nextServiceModal').modal('show');
+        },
+        error: function(xhr) {
+            console.error('An error occurred:', xhr.responseText);
+        }
+    });
+}); 
+
+
+// update Main service 
+
+
+$(document).on('submit', '#updateNextServiceForm', function(event) {
+    event.preventDefault();    
+    const updateId = $(this).data('id');
+    const formData = $(this).serialize();
+   
+    const url = `{{ url('/admin/servicedue/update/mainService') }}/${updateId}`; // Ensure this URL is correct
+
+    $.ajax({
+    url: url,
+    type: 'POST',
+    data: formData,
+    dataType: "json",
+    success: function(response) {
+        if (response.status === 0) {
+            $.each(response.error, function(key, value) {
+                $('#' + key + '_error').text(value);
+            });
+            toastr.error('Please fix the errors and try again.', 'Validation Error', {
+                positionClass: 'toast-top-right'
+            });
+        } else if (response.status === 1) {
+            toastr.success(response.message, 'Success', {
+                positionClass: 'toast-top-right'
+            });
+            $('#updateNextServiceForm')[0].reset();
+            $('#nextServiceModal').modal('hide');
+            $('#serviceTable').DataTable().ajax.reload();
+        } else {
+            toastr.error('Unexpected response format.', 'Error', {
+                positionClass: 'toast-top-right'
+            });
+           
+        }
+    },
+    error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+        toastr.error('Something went wrong!', 'Error', {
+            positionClass: 'toast-top-right'
+        });
+    }
+});
+});  
 
 
 

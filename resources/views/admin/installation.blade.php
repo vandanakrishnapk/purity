@@ -145,11 +145,7 @@
          {
             colorClass = 'text-bg-warning';
         } 
-        else if (data === 'Service_Completed')
-        {
-            colorClass = 'text-bg-success';
-        }
-         else
+        else
         {
             return "null";
         }

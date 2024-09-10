@@ -11,7 +11,8 @@ use App\Http\Controllers\InstallationController;
 use App\Http\Controllers\ServiceController; 
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyController; 
+use App\Http\Controllers\ServiceDueController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -104,9 +105,14 @@ Route::post('/service/update/staff/{id}',[ServiceController::class,'updateStaff'
 Route::get('/service/change/nextService/{id}',[ServiceController::class,'changeNextService']);
 Route::post('/service/update/nextService/{id}',[ServiceController::class,'updateNextService']);
 
-Route::get('/service/due/view',[ServiceController::class,'getServiceDuePage'])->name('admin.getServiceDuePage'); 
-Route::get('/service/due/reminder',[ServiceController::class,'getServiceReminder'])->name('admin.getServiceReminder');
-Route::get('/service/due/table',[ServiceController::class,'getServiceReminderTable'])->name('admin.getServiceReminderTable');
+Route::get('/service/due/view',[ServiceDueController::class,'getServiceDuePage'])->name('admin.getServiceDuePage'); 
+Route::get('/service/due/reminder',[ServiceDueController::class,'getServiceReminder'])->name('admin.getServiceReminder');
+Route::get('/service/due/table',[ServiceDueController::class,'getServiceReminderTable'])->name('admin.getServiceReminderTable'); 
+Route::get('/servicedue/change/staff/{id}',[ServiceDueController::class,'getChangeStaffView'])->name('admin.getChangeStaffView');
+Route::post('/servicedue/update/staff/{id}',[ServiceDueController::class,'updateStaff'])->name('admin.updateStaffDue');
+Route::get('/servicedue/change/nextService/{id}',[ServiceDueController::class,'getNextService'])->name('admin.getNextService');
+Route::post('servicedue/update/mainService/{id}',[ServiceDueController::class,'updateMainService'])->name('admin.updateMainService');
+
 
 Route::get('/subcentre/view',[CompanyController::class,'getsubcentreView'])->name('admin.getsubcentreView');
 Route::get('/centre/select',[CompanyController::class,'getcentres'])->name('admin.getcentres'); 
@@ -115,7 +121,10 @@ Route::post('/company/new',[CompanyController::class,'doCompany']);
 Route::post('/centres/new',[CompanyController::class,'doCentres']); 
 Route::post('/subcentre/new',[CompanyController::class,'doSubcentre']);
 Route::get('/subcentre/datatable',[CompanyController::class,'getsubcentreData']); 
-Route::get('/subcentre/select',[CompanyController::class,'getsubcentres']);
+Route::get('/subcentre/select',[CompanyController::class,'getsubcentres']); 
+Route::get('/subcentre/edit/{id}',[CompanyController::class,'editSubcentre'])->name('admin.editSubcentre');
+Route::post('/subcentre/update',[CompanyController::class,'updateSubcentre'])->name('admin.updateSubcentre');
+Route::delete('/subcentre/delete/{id}',[CompanyController::class,'deleteSubcentre'])->name('admin.deleteSubcentre');
 
 });
 

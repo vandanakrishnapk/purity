@@ -107,8 +107,7 @@ class CorporateController extends Controller
             ->join('products', 'corporates.product_id', '=', 'products.product_id')
             ->join('users','corporates.assigned_to','=','users.id')
             ->select('corporates.corporate_id','companies.company_name', 'corporates.center_address','centres.centre_name','subcentres.subcentre_name','corporates.contact_person','corporates.contact_mobile','corporates.purchased_from','corporates.filter_change_on','categories.category_name', 'subcategories.subcategory_name','products.product_name','corporates.located_on','users.name')
-            ->get();
-            
+            ->get();        
             
             $totalRecords = count($companyPurchase); // Total records in your data source
             $filteredRecords = count($companyPurchase); // Number of records after applying filters

@@ -284,20 +284,24 @@ $(document).ready(function() {
         }
     });
 });
-
 $(document).ready(function() {
     // Fetch reminders from the server
     $.ajax({
-        url: `{{ url('/admin/service/due/reminder')}}`, // Ensure this URL matches your route
+        url: `{{ url('/admin/service/due/reminder') }}`, // Ensure this URL matches your route
         type: 'GET',
         dataType: 'json',
         success: function(response) {
+            // Clear existing reminders
+            $('#reminderContainer').empty();
+            
             // Loop through each service and display reminders
-            response.forEach(function(service) {
-                if (service.is_due) {
+            response.data.forEach(function(service) {
+                // Check if days_left is less than or equal to 7 days (1 week) for reminder
+              
+                if (service.days_left <= 7) {
                     $('#reminderContainer').append(`
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Reminder!</strong> The service for <strong>${service.product_name}</strong> (installed on ${service.installation_date}) is due for a checkup. Please schedule an appointment. Reminder date: ${service.reminder_date}.
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>Reminder!</strong> The service for <strong>${service.product_name}</strong> (installed on ${service.installation_date}) is due for a checkup. Please schedule an appointment. The reminder date is ${service.reminder_date}. 
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     `);
@@ -309,5 +313,6 @@ $(document).ready(function() {
         }
     });
 });
+
 </script>
 @endpush

@@ -76,7 +76,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="editDetailsModalLabel">Edit User</h1>
+                <h1 class="modal-title fs-5 text-light" id="editDetailsModalLabel">Edit Parts</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="editDetails">
@@ -84,6 +84,38 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Delete confirmation modal-->
+<!-- Bootstrap Modal -->
+<div id="deleteConfirmationModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header custommodal">
+                <h5 class="modal-title text-light" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            
+
+                <table class="table table-bordered table-sm">
+                
+                    <tr>
+                        <th>Parts Name</th>
+                        <th><span id="modalUserName"></span></th>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>
@@ -167,7 +199,7 @@ $(document).ready(function() {
                         <button class="btn btn-warning btn-sm edit-part" data-id="${row.parts_id}">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-danger btn-sm delete-part" data-id="${row.parts_id}">
+                        <button class="btn btn-danger btn-sm delete-part" data-id="${row.parts_id}" data-parts="${row.parts_name}">
                             <i class="bi bi-trash"></i>
                         </button>
                     `;
@@ -211,7 +243,7 @@ $(document).ready(function() {
     } else if (response.status === 1) {
         toastr.success(response.message, 'Success', { positionClass: 'toast-top-right' });
         $('#submitApplication')[0].reset(); // Clear form fields
-        $('#exampleModal').modal('hide'); // Optionally, close the modal
+        $('#partsModal').modal('hide'); // Optionally, close the modal
         $('#partsTable').DataTable().ajax.reload();
     } else {
         toastr.error('Unexpected response format', 'Error', { positionClass: 'toast-top-right' });
@@ -293,28 +325,53 @@ $(document).on('submit', '#editpartForm', function(event) {
             });
         }
     });
-});
+}); 
+
+
+
+
 //delete 
+
+
 $(document).on('click', '.delete-part', function() {
-    const partId = $(this).data('id');
-    if(confirm('Are you sure you want to delete this parts?')) {
+    const Id = $(this).data('id');
+    const partsName = $(this).data('parts'); // Assuming you have the username data attribute
+
+  
+    $('#modalUserName').text(partsName);
+    $('#modalMessage').text('Are you sure you want to delete this Parts?');
+
+    // Show the modal
+    $('#deleteConfirmationModal').modal('show');
+     $('.close').on('click', function()
+    {
+        $('#deleteConfirmationModal').modal('hide');
+    });
+
+    $('.cancel').on('click', function()
+    {
+        $('#deleteConfirmationModal').modal('hide');
+    });  
+    $('#confirmDelete').off('click').on('click', function() {
         $.ajax({
-            url: `{{ url('/admin/service/parts/delete') }}/${partId}`,
+            url: `{{ url('/admin/service/parts/delete') }}/${Id}`,
             type: 'DELETE',
             data: {
                 _token: '{{ csrf_token() }}'
             },
             success: function(response) {
-                if (response.status === 1) {
-                    toastr.success(response.message, 'Success', {
-                        positionClass: 'toast-top-right'
-                    });
-                } else {
-                    toastr.error('Unexpected response format.', 'Error', {
-                        positionClass: 'toast-top-right'
-                    });
-                }
-                $('#partsTable').DataTable().ajax.reload();
+         if (response.status === 1) {
+                     toastr.success(response.message, 'Success', {
+                         positionClass: 'toast-top-right'
+                     });
+                 } else {
+                     toastr.error('Unexpected response format.', 'Error', {
+                         positionClass: 'toast-top-right'
+                     });
+                 }
+                 $('#partsTable').DataTable().ajax.reload();
+             
+                $('#deleteConfirmationModal').modal('hide'); // Hide the modal on success
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -323,8 +380,41 @@ $(document).on('click', '.delete-part', function() {
                 });
             }
         });
-    }
+    });
 });
+
+
+
+// $(document).on('click', '.delete-part', function() {
+//     const partId = $(this).data('id');
+//     if(confirm('Are you sure you want to delete this parts?')) {
+//         $.ajax({
+//             url: `{{ url('/admin/service/parts/delete') }}/${partId}`,
+//             type: 'DELETE',
+//             data: {
+//                 _token: '{{ csrf_token() }}'
+//             },
+//             success: function(response) {
+//                 if (response.status === 1) {
+//                     toastr.success(response.message, 'Success', {
+//                         positionClass: 'toast-top-right'
+//                     });
+//                 } else {
+//                     toastr.error('Unexpected response format.', 'Error', {
+//                         positionClass: 'toast-top-right'
+//                     });
+//                 }
+//                 $('#partsTable').DataTable().ajax.reload();
+//             },
+//             error: function(xhr, status, error) {
+//                 console.error(xhr.responseText);
+//                 toastr.error('Something went wrong!', 'Error', {
+//                     positionClass: 'toast-top-right'
+//                 });
+//             }
+//         });
+//     }
+// });
 
 
 

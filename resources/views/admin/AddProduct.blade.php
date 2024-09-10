@@ -63,7 +63,7 @@
     </div>
    
     </div>
- </div>
+ </div>  
 @endsection 
 @section('user_modal')
 <button type="button" class="btn btn-primary float-end add-user-btn" data-bs-toggle="modal" data-bs-target="#CategoryProductDetailsModal">
@@ -277,6 +277,38 @@
     </div>
 </div> 
 
+<!--Delete confirmation modal-->
+<!-- Bootstrap Modal -->
+<div id="deleteConfirmationModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header custommodal">
+                <h5 class="modal-title text-light" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            
+
+                <table class="table table-bordered table-sm">
+                
+                    <tr>
+                        <th>Product Name</th>
+                        <th><span id="modalUserName"></span></th>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection 
 
 
@@ -366,7 +398,7 @@
                             <button class="btn btn-warning btn-sm edit-product me-1" data-id="${row.product_id}">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-danger btn-sm delete-product" data-id="${row.product_id}">
+                            <button class="btn btn-danger btn-sm delete-product" data-id="${row.product_id}" data-proname="${row.product_name}">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -578,27 +610,47 @@ $(document).ready(function() {
 
 
 //delete product
- 
+
+
 $(document).on('click', '.delete-product', function() {
-    const productId = $(this).data('id');
-    if(confirm('Are you sure you want to delete this product?')) {
+    const Id = $(this).data('id');
+    const productName = $(this).data('proname'); // Assuming you have the username data attribute
+
+  
+    $('#modalUserName').text(productName);
+    $('#modalMessage').text('Are you sure you want to delete this Product?');
+
+    // Show the modal
+    $('#deleteConfirmationModal').modal('show');
+     $('.close').on('click', function()
+    {
+        $('#deleteConfirmationModal').modal('hide');
+    });
+
+    $('.cancel').on('click', function()
+    {
+        $('#deleteConfirmationModal').modal('hide');
+    });  
+    $('#confirmDelete').off('click').on('click', function() {
         $.ajax({
-            url: `{{ url('/admin/products') }}/${productId}`,
+            url: `{{ url('/admin/products') }}/${Id}`,
             type: 'DELETE',
             data: {
                 _token: '{{ csrf_token() }}'
             },
             success: function(response) {
-                if (response.status === 1) {
-                    toastr.success(response.message, 'Success', {
-                        positionClass: 'toast-top-right'
-                    });
-                } else {
-                    toastr.error('Unexpected response format.', 'Error', {
-                        positionClass: 'toast-top-right'
-                    });
-                }
-                $('#productData').DataTable().ajax.reload();
+         if (response.status === 1) {
+                     toastr.success(response.message, 'Success', {
+                         positionClass: 'toast-top-right'
+                     });
+                 } else {
+                     toastr.error('Unexpected response format.', 'Error', {
+                         positionClass: 'toast-top-right'
+                     });
+                 }
+                 $('#productData').DataTable().ajax.reload();
+             
+                $('#deleteConfirmationModal').modal('hide'); // Hide the modal on success
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -607,11 +659,10 @@ $(document).on('click', '.delete-product', function() {
                 });
             }
         });
-    }
+    });
 });
 
-
-
+ 
 </script>
 
 @endpush

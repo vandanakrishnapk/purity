@@ -295,7 +295,6 @@ public function edit($id)
     public function changeStaff($id)
     {
         $service = Service::find($id); 
-        $customer = 
         $users = User::where('role','=',1)->get(); // Get all users
         
         return response()->json([
@@ -376,103 +375,5 @@ public function edit($id)
 
 
     //service due section 
-
-    public function getServiceDuePage()
-    {
-        return view('admin.servicedue');
-    } 
-
-    //get reminder 
-
-    public function getServiceReminder()
-    {
-        $insDetails = DB::table('individuals')
-        ->join('products', 'individuals.product_id', '=', 'products.product_id')
-        ->join('installations','installations.customer_id','=','individuals.individual_id')
-        ->select('individuals.*', 'products.product_name','installations.created_at as installdate')
-        ->whereIn('individuals.status', ['completed', 'assigned'])
-        ->get();
-    
-    // Process each service to calculate the reminder date and check if it falls in the reminder window
-    $services = $insDetails->map(function ($service) {
-        // Calculate the date 1 year after the installation date
-        $installationDate = Carbon::parse($service->installdate);
-        $reminderDate = $installationDate->addYear();
-        
-        // Calculate the window for the reminder (1 week before the reminder date)
-        $oneWeekBeforeReminder = $reminderDate->copy()->subWeek();
-        
-        // Check if the current date is within the reminder window
-        $today = Carbon::now();
-        $isDue = $today->greaterThanOrEqualTo($oneWeekBeforeReminder) && $today->lessThanOrEqualTo($reminderDate);
-
-        return [
-           
-            'product_name' => $service->product_name,
-            'installation_date' => $service->installdate,
-            'reminder_date' => $reminderDate->format('Y-m-d'),
-            'is_due' => $isDue,
-        ];
-    });
-
-    // Return the reminders as JSON
-    return response()->json($services);  
-  }  
-
-  
-  public function getServiceReminderTable()
-  {
-      $insDetails = DB::table('installations')
-          ->join('individuals', 'installations.customer_id', '=', 'individuals.individual_id')
-          ->join('products', 'individuals.product_id', '=', 'products.product_id')
-          ->select('individuals.p_name', 'products.product_name', 'installations.created_at as installdate')
-          ->get();
-  
-      // Process each service to calculate the reminder date and days left
-      $services = $insDetails->map(function ($service) {
-          $installationDate = Carbon::parse($service->installdate);
-          $reminderDate = $installationDate->copy()->addYear();
-          $today = Carbon::now();
-  
-          // Calculate the number of days left until the reminder date
-          $daysLeft = $today->diffInDays($reminderDate, false);
-  
-          // Ensure daysLeft is non-negative
-          $daysLeft = max($daysLeft, 0);
-  
-          // Format daysLeft as an integer and append " days"
-          $formattedDaysLeft = intval($daysLeft);
-  
-          return [
-              'client_name' => $service->p_name,
-              'product_name' => $service->product_name,
-              'installation_date' => $installationDate->format('d-m-Y'),
-              'reminder_date' => $reminderDate->format('d-m-Y'),
-              'days_left' => $formattedDaysLeft,
-          ];
-      });
-  
-      // Extract the total number of records before any filtering
-      $totalRecords = $insDetails->count();
-  
-      // Extract the number of records after applying filters
-      $filteredRecords = $services->count();
-  
-      // Handle DataTables' pagination and draw parameters
-      $draw = request()->get('draw', 1);
-      // Uncomment these lines if you want to support pagination
-      // $start = request()->get('start', 0);
-      // $length = request()->get('length', $totalRecords);
-      // $paginatedData = $services->slice($start, $length);
-  
-      // Return the reminders as JSON
-      return response()->json([
-          'draw' => $draw,
-          'recordsTotal' => $totalRecords,
-          'recordsFiltered' => $filteredRecords,
-          'data' => $services,
-      ]);
-  }
    
-    
 }

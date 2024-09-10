@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Individual;
-use App\Models\Installation;
+use App\Models\Installation; 
+use Carbon\Carbon;
 
 
 
@@ -55,6 +56,7 @@ class InstallationController extends Controller
         }
 } 
 
+
 public function doInstallation(Request $request)
 {
     $validator = Validator::make($request->all(), [
@@ -63,6 +65,7 @@ public function doInstallation(Request $request)
         'nextService' => 'required',
         'customer_id' =>'required',
         'staff_id' =>'required',
+         // This may be optional if we set it later
     ], 
     [
         'rawWater.required' => 'Raw Water is required.',
@@ -79,6 +82,7 @@ public function doInstallation(Request $request)
         ]);
     } 
 
+    // Create a new Installation record
     $installation = new Installation();
     $installation->rawWater = $request->input('rawWater');
     $installation->sow = $request->input('sow'); // Mutator will handle JSON conversion
@@ -86,7 +90,17 @@ public function doInstallation(Request $request)
     $installation->customer_id = $request->input('customer_id');
     $installation->staff_id = $request->input('staff_id');
     
+    // Save the installation to get the created_at timestamp
     $installation->save();
+
+    // Calculate the mainService date one year after the created_at timestamp
+    $mainServiceDate = Carbon::parse($installation->created_at)->addYear();
+
+    // Update the mainService field with the calculated date
+    $installation->mainService = $mainServiceDate;
+    $installation->save();
+
+    // Update the status of the Individual
     $individual = Individual::find($request->input('customer_id'));
     if ($individual) {
         $individual->status = 'Completed'; // Update status as needed
@@ -97,7 +111,8 @@ public function doInstallation(Request $request)
         'status' => 1,
         'message' => 'Installation done successfully!',
     ]);
-}   
+}
+
 
 
 //admin functions 
@@ -112,7 +127,7 @@ public function getInstallations(Request $request)
         $insDetails = DB::table('individuals')
                       ->join('products','individuals.product_id','=','products.product_id')                    
                       ->select('individuals.*','products.product_name')
-                      ->whereIn('individuals.status', ['Completed', 'Assigned','Service_Completed'])
+                      ->whereIn('individuals.status', ['Completed', 'Assigned'])
                       ->get();
         $totalRecords = count($insDetails); // Total records in your data source
         $filteredRecords = count($insDetails); // Number of records after applying filters

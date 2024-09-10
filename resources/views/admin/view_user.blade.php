@@ -124,7 +124,38 @@
     </div>
 </div>
 
-@endsection
+@endsection   
+<!--Delete confirmation modal-->
+<!-- Bootstrap Modal -->
+<div id="deleteConfirmationModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header custommodal">
+                <h5 class="modal-title text-light" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+                <table class="table table-bordered table-sm">
+                
+                    <tr>
+                        <th>Staff Name</th>
+                        <th><span id="modalUserName"></span></th>
+                    </tr>
+                </table>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
 
 
 
@@ -213,7 +244,7 @@ $(document).ready(function() {
                         <button class="btn btn-warning btn-sm edit-user" data-id="${row.id}">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="btn btn-danger btn-sm delete-user" data-id="${row.id}">
+                        <button class="btn btn-danger btn-sm delete-user" data-id="${row.id}" data-user="${row.name}">
                             <i class="bi bi-trash"></i>
                         </button>
                     `;
@@ -423,14 +454,28 @@ $(document).on('submit', '#editUserForm', function(event) {
     });
 });
 
-
-    
-//delete user 
 $(document).on('click', '.delete-user', function() {
-    const userId = $(this).data('id');
-    if(confirm('Are you sure you want to delete this user?')) {
+    const Id = $(this).data('id');
+    const userName = $(this).data('user'); // Assuming you have the username data attribute
+
+    // Set the user name and message in the modal
+    $('#modalUserName').text(userName);
+    $('#modalMessage').text('Are you sure you want to delete this Staff?');
+
+    // Show the modal
+    $('#deleteConfirmationModal').modal('show');
+     $('.close').on('click', function()
+    {
+        $('#deleteConfirmationModal').modal('hide');
+    });
+
+    $('.cancel').on('click', function()
+    {
+        $('#deleteConfirmationModal').modal('hide');
+    });  
+    $('#confirmDelete').off('click').on('click', function() {
         $.ajax({
-            url: `{{ url('/admin/users') }}/${userId}`,
+            url: `{{ url('/admin/users') }}/${Id}`,
             type: 'DELETE',
             data: {
                 _token: '{{ csrf_token() }}'
@@ -446,6 +491,7 @@ $(document).on('click', '.delete-user', function() {
                     });
                 }
                 $('#usersTable').DataTable().ajax.reload();
+                $('#deleteConfirmationModal').modal('hide'); // Hide the modal on success
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -454,8 +500,9 @@ $(document).on('click', '.delete-user', function() {
                 });
             }
         });
-    }
+    });
 });
+
 
 
 </script>

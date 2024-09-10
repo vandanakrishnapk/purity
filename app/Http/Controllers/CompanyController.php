@@ -132,5 +132,56 @@ class CompanyController extends Controller
                                                  'data' => $sub]);
                        return response()->json(['error' => 'Invalid request'], 400);
         
+    } 
+
+    public function editSubcentre($id)
+    {
+        $editId = Subcentre::find($id);
+       
+$sid = $editId->subcentre_id;
+$sub = DB::table('subcentres')
+        ->join('companies','companies.company_id','=','subcentres.company_id')
+        ->join('centres','centres.centre_id','=','subcentres.centre_id')
+        ->select('companies.company_name','companies.company_id','centres.centre_name','centres.centre_id','subcentres.subcentre_name','subcentres.subcentre_id')
+        ->where('subcentre_id','=',$sid)
+        ->first();
+        return response()->json([
+            'data'=>$sub,
+          
+        ]);
+
+    }  
+
+    public function updateSubcentre(Request $request)
+{
+    $request->validate([
+        'company_id' => 'required|integer',
+        'centre_id' => 'required|integer',
+        'subcentre_name' => 'required|string|max:255',
+        'remarks' => 'nullable|string',
+    ]);
+   $id = $request->input('subcentre_id');
+    $subcentre = Subcentre::findOrFail($id);
+    $subcentre->company_id = $request->input('company_id');
+    $subcentre->centre_id = $request->input('centre_id');
+    $subcentre->subcentre_name = $request->input('subcentre_name');
+    $subcentre->remarks = $request->input('remarks');
+    $subcentre->save();
+
+    return response()->json([
+        'status' =>1,
+        'success' => true, 
+        'message' => 'Subcentre updated successfully']);
+} 
+
+public function deleteSubcentre($id)
+{
+    try {
+        Subcentre::findOrFail($id)->delete();
+        return response()->json(['status' => 1, 'message' => 'Subcentre deleted successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 0, 'error' => 'Subcentre deletion failed']);
     }
+} 
+
 }

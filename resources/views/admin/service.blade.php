@@ -242,7 +242,7 @@ $(document).ready(function() {
                         </button>                  
                         `;
                 }
-            }
+            },
         ],
         columnDefs: [{ visible: false, targets: [4,5] }],
 

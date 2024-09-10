@@ -151,14 +151,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="EditsubcentreDetails">
-            <form id="EditsubcentreForm" action="" method="POST">
+            <form id="EditsubcentreForm" action="{{ route('admin.updateSubcentre') }}" method="POST">
               @csrf
             <div class="row align-items-start justify-content-start">
                 <div class="col-11">
                 <label>Company:</label>
-                <select id="Company-edit" name="Company_id" class="form-select">
+                <select id="Company-edit" name="company_id" class="form-select">
                 @foreach($company as $com)
-                <option value="{{ $com->Company_id }}">{{ $com->Company_name }}</option>
+                <option value="{{ $com->company_id }}">{{ $com->company_name }}</option>
                 @endforeach
               </select><br>
                 </div>
@@ -170,8 +170,8 @@
             
     <div class="row align-items-start justify-content-start">
         <div class="col-11">
-            <label for="centre-select">centre:</label>
-            <select id="centre-edit" name="centreId" class="form-select">
+            <label for="centre-select">Centre:</label>
+            <select id="centre-edit" name="centre_id" class="form-select">
                 <option value=""></option>
             </select>
         </div>
@@ -182,8 +182,8 @@
     </div>
 <div class="row align-items-start justify-content-start">
     <div class="col-11">
-    <label>subcentre:</label>
-            <input type="text" name="subcentre_edit" class="form-control" id="subcentre-edit">
+    <label>Subcentre:</label>
+            <input type="text" name="subcentre_name" class="form-control" id="subcentre-edit">
     </div>
     <div class="col-1 text-start mt-3">
     
@@ -196,13 +196,15 @@
     </div>
    
 </div>   
-        <input type="hidden" name="subcentreId" id="editsubcentreId">
+        <input type="hidden" name="subcentre_id" id="editsubcentreId">
         <button type="submit" class="btn btn-primary mt-2" style="margin-left:290px">Submit</button>
             </form>
             </div>
         </div>
     </div>
 </div> 
+
+
 <div class="modal fade" id="centreDetailsModal" tabindex="-1" aria-labelledby="centreDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -219,7 +221,7 @@
 
         </select><br>
         
-        <label for="centre">centre:</label>
+        <label for="centre">Centre:</label>
         <input type="text" id="centre" name="centre_name" class="form-control"><br>
         
         <button type="submit" class="btn btn-primary" style="margin-left:180px">Submit</button>
@@ -227,7 +229,44 @@
             </div>
         </div>
     </div>
-</div> 
+</div>  
+
+
+<!--Delete confirmation modal-->
+<!-- Bootstrap Modal -->
+<div id="deleteConfirmationModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header custommodal">
+                <h5 class="modal-title text-light" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            
+
+                <table class="table table-bordered table-sm">
+                
+                    <tr>
+                        <th>Company Name</th>
+                        <th><span id="modalCompanyName"></span></th>
+                    </tr>
+                    <tr>
+                        <th>Sub Centre Name</th>
+                        <th><span id="modalUserName"></span></th>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @endsection  
 
@@ -278,7 +317,7 @@
     </div>
    
     </div>
- </div>
+ </div>  
 @endsection 
 
 
@@ -368,7 +407,7 @@
                             <button class="btn btn-warning btn-sm edit-subcentre me-1" data-id="${row.subcentre_id}">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-danger btn-sm delete-subcentre" data-id="${row.subcentre_id}">
+                            <button class="btn btn-danger btn-sm delete-subcentre" data-id="${row.subcentre_id}" data-subcentre="${row.subcentre_name}" data-company="${row.company_name}">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -430,7 +469,8 @@ $('#centreForm').on('submit', function(event) {
             data: formData,
             success: function(response) {
                 $('#centreDetailsModal').modal('hide');
-                alert(response.message);
+                toastr.success(response.message, 'Success');
+                location.reload();
             },
             error: function(error) {
                 console.log("Error submitting subcentre:", error);
@@ -449,8 +489,9 @@ $('#CompanyForm').on('submit', function(event) {
             data: formData,
             success: function(response) { 
                 $('#CompanyDetailsModal').modal('hide');
-                alert(response.message);
                 $('#CompanyForm')[0].reset();
+                toastr.success(response.message, 'Success');
+                location.reload();
             },
             error: function(error) {
                 console.log("Error submitting subcentre:", error);
@@ -492,51 +533,55 @@ $('#CompanyForm').on('submit', function(event) {
 
     //edit subcentre 
   //id="subcentreDetailsModal" class="subcentreDetail"
-$("#subcentreData").on("click", ".edit-subcentre", function(e){
-              e.preventDefault();
-              var subcentreId = $(this).data('id');
-              $('.EditsubcentreDetails').find('form')[0].reset();
-              $('.EditsubcentreDetails').find('span.error_text').text('');
-               $('#EditsubcentreDetailsModal').modal('show');
-              $.ajax({
-                  method: "GET",
-                  headers: {
-                      Accept: "application/json"
-                  },
-           
-                  data: {
-                      "_token": "{{ csrf_token() }}",
-                      id: subcentreId,
-                  },
-                  dataType: 'json',
-                  success: function(res) 
-                  {               
-                    $('#editsubcentreId').val(res.subcentre_id);
-                    $('#Company-edit option[value="'+res.Company_id+'"]').attr("selected", "selected"); 
-                    
-                    $('#centre-edit option[value="'+res.centreId+'"]').attr("selected", "selected"); 
-  
-                    $('#subcentre-edit').val(res.subcentre_name);  
-                    $('#remarkon').val(res.remarks);             
-                   $('#EditsubcentreDetailsModal').modal('show');
-                  }
+  $("#subcentreTable").on("click", ".edit-subcentre", function(e){
+    e.preventDefault();
+    var subcentreId = $(this).data('id');
+    
+    // Reset the form and clear errors
+    $('#EditsubcentreDetails').find('form')[0].reset();
+    $('#EditsubcentreDetails').find('span.error_text').text('');
+    
+    // Show the modal
+    $('#EditsubcentreDetailsModal').modal('show');
 
-              })
-              $('#Company-edit').change(function(){
-   
-            $.ajax({
-           
-                method: 'GET',
-                success: function(data) {
-                    $('#centre-edit').find('option').remove().end();
-                    $('#centre-edit').html(data.html);
-                }
-            });            
+    $.ajax({
+        url: `{{ url('/admin/subcentre/edit') }}/${subcentreId}`,
+        method: "GET",
+        headers: {
+            Accept: "application/json"
+        },
+        data: {
+            "_token": "{{ csrf_token() }}",
+            id: subcentreId,
+        },
+        dataType: 'json',
+        success: function(res) {
+            // Populate form fields with response data
+            $('#editsubcentreId').val(res.data.subcentre_id);
+            $('#Company-edit').val(res.data.company_id).change(); // Trigger change to reload centres
+            $('#centre-edit').val(res.data.centre_id);
+            $('#subcentre-edit').val(res.data.subcentre_name);
+            $('#remarkon').val(res.data.remarks); // Assuming remarks is part of your response
+        }
+    });
+
+    // Reload centre options when company changes
+    $('#Company-edit').change(function(){
+        var companyId = $(this).val();
         
-        });
-      
-        });
-//update subcentre  
+        $.ajax({
+            url: "{{ url('/admin/centre/select') }}",
+            method: 'GET',
+            data: {
+                company_id: companyId
+            },
+            success: function(data) {
+                $('#centre-edit').find('option').remove().end().html(data.html);
+            }
+        });      
+    });
+});
+
 
 $(document).ready(function() {
     $('#EditsubcentreForm').on('submit', function(e) {
@@ -546,10 +591,7 @@ $(document).ready(function() {
 
         $.ajax({
             method: "POST",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            url: "",
+            url: "{{ route('admin.updateSubcentre') }}",
             data: formData,
             dataType: 'json',
             beforeSend: function() {
@@ -560,10 +602,10 @@ $(document).ready(function() {
                     $.each(data.error, function(prefix, val) {
                         $('#' + prefix + '-error').text(val[0]);
                     });
-                } else if(data.status == 1) {
-                    $('#EditsubcentreDetailsModal').modal('hide');
-                    $('#EditsubcentreForm')[0].reset();
+                } else if(data.status == 1) {               
+                 
                     toastr.success(data.message);
+                    $('#EditsubcentreDetailsModal').modal('hide');
                     setTimeout(function() {
                         location.reload();
                     }, 2000);
@@ -581,28 +623,48 @@ $(document).ready(function() {
 
 
 
+
 //delete subcentre
  
 $(document).on('click', '.delete-subcentre', function() {
-    const subcentreId = $(this).data('id');
-    if(confirm('Are you sure you want to delete this subcentre?')) {
-        $.ajax({
+    const Id = $(this).data('id');
+    const subcentreName = $(this).data('subcentre'); // Assuming you have the username data attribute
+    const com = $(this).data('company');
+    $('#modalCompanyName').text(com);
+    $('#modalUserName').text(subcentreName);
+    $('#modalMessage').text('Are you sure you want to delete this Sub Centre?');
 
+    // Show the modal
+    $('#deleteConfirmationModal').modal('show');
+     $('.close').on('click', function()
+    {
+        $('#deleteConfirmationModal').modal('hide');
+    });
+
+    $('.cancel').on('click', function()
+    {
+        $('#deleteConfirmationModal').modal('hide');
+    });  
+    $('#confirmDelete').off('click').on('click', function() {
+        $.ajax({
+            url: `{{ url('/admin/subcentre/delete') }}/${Id}`,
             type: 'DELETE',
             data: {
                 _token: '{{ csrf_token() }}'
             },
             success: function(response) {
-                if (response.status === 1) {
-                    toastr.success(response.message, 'Success', {
-                        positionClass: 'toast-top-right'
-                    });
-                } else {
-                    toastr.error('Unexpected response format.', 'Error', {
-                        positionClass: 'toast-top-right'
-                    });
-                }
-                $('#subcentreData').DataTable().ajax.reload();
+         if (response.status === 1) {
+                     toastr.success(response.message, 'Success', {
+                         positionClass: 'toast-top-right'
+                     });
+                 } else {
+                     toastr.error('Unexpected response format.', 'Error', {
+                         positionClass: 'toast-top-right'
+                     });
+                 }
+                 $('#subcentreTable').DataTable().ajax.reload();
+             
+                $('#deleteConfirmationModal').modal('hide'); // Hide the modal on success
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -611,9 +673,8 @@ $(document).on('click', '.delete-subcentre', function() {
                 });
             }
         });
-    }
+    });
 });
-
 
 
 </script>

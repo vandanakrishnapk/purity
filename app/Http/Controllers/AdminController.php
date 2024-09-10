@@ -281,9 +281,9 @@ $nextNumber = str_pad($nextNumberInt, 3, '0', STR_PAD_LEFT); // Ensure zero padd
     {
         try {
             Individual::findOrFail($id)->delete();
-            return response()->json(['status' => 1, 'message' => 'User deleted successfully']);
+            return response()->json(['status' => 1, 'message' => 'Customer deleted successfully']);
         } catch (\Exception $e) {
-            return response()->json(['status' => 0, 'error' => 'User deletion failed']);
+            return response()->json(['status' => 0, 'error' => 'Customer deletion failed']);
         }
     } 
     
