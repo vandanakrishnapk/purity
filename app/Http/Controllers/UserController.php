@@ -29,7 +29,7 @@ class UserController extends Controller
 
     // Check if the user exists
     if (!$user) {
-        return response()->json(['error' => 'User not found'], 404);
+        return response()->json(['error' => 'Staff not found'], 404);
     }
 
     // Return the user data as JSON
@@ -79,7 +79,7 @@ class UserController extends Controller
         if (DB::table('users')->insert($data)) {
             return response()->json([
                 'status' => 1,
-                'message' => 'user created successfully!',
+                'message' => 'Staff created successfully!',
             ]);
         } else {
             return response()->json([
@@ -92,21 +92,73 @@ class UserController extends Controller
 
     //to get users data to datatable
       
-    public function getUserData(Request $request)
-    {
+    // public function getUserData(Request $request)
+    // {
       
-        if ($request->ajax()) {
-            $users = User::select(['id','name', 'email', 'mobile','designation'])->where('role','=','1')->get();
-            $totalRecords = count($users); // Total records in your data source
-            $filteredRecords = count($users); // Number of records after applying filters
+    //     if ($request->ajax()) {
+    //         $users = User::select(['id','name', 'email', 'mobile','designation'])->where('role','=','1')->get();
+    //         $totalRecords = count($users); // Total records in your data source
+    //         $filteredRecords = count($users); // Number of records after applying filters
         
-            return response()->json(['draw' => request()->get('draw'),
-                                    'recordsTotal' => $totalRecords,
-                                     'recordsFiltered' => $filteredRecords,
-                                      'data' => $users]);
+    //         return response()->json(['draw' => request()->get('draw'),
+    //                                 'recordsTotal' => $totalRecords,
+    //                                  'recordsFiltered' => $filteredRecords,
+    //                                   'data' => $users]);
+    //     }
+    //     return response()->json(['error' => 'Invalid request'], 400);
+    // }   
+    public function getUserData(Request $request)
+{
+    if ($request->ajax()) {
+        // Retrieve parameters from DataTables
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $searchValue = $request->get('search')['value'];
+        $orderColumn = $request->get('order')[0]['column'];
+        $orderDir = $request->get('order')[0]['dir'];
+
+        // Define column names to use for sorting
+        $columns = ['id', 'name', 'email', 'mobile', 'designation'];
+
+        // Build query with filters and sorting
+        $query = User::select(['id', 'name', 'email', 'mobile', 'designation'])
+                     ->where('role', '=', '1');
+
+        // Apply search filter
+        if (!empty($searchValue)) {
+            $query->where(function($q) use ($searchValue) {
+                $q->where('name', 'like', "%{$searchValue}%")
+                  ->orWhere('email', 'like', "%{$searchValue}%")
+                  ->orWhere('mobile', 'like', "%{$searchValue}%")
+                  ->orWhere('designation', 'like', "%{$searchValue}%");
+            });
         }
-        return response()->json(['error' => 'Invalid request'], 400);
-    } 
+
+        // Apply sorting
+        if (isset($columns[$orderColumn])) {
+            $query->orderBy($columns[$orderColumn], $orderDir);
+        }
+
+        // Total records without filtering
+        $totalRecords = User::where('role', '=', '1')->count();
+
+        // Paginate the results
+        $users = $query->offset($start)->limit($length)->get();
+
+        // Filtered records count
+        $filteredRecords = $query->count();
+
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $users
+        ]);
+    }
+    return response()->json(['error' => 'Invalid request'], 400);
+}
+
 
     //user home 
 
@@ -132,18 +184,18 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
             $user->update($request->all());
-            return response()->json(['status' => 1, 'message' => 'User updated successfully']);
+            return response()->json(['status' => 1, 'message' => 'Staff updated successfully']);
         } catch (\Exception $e) {
-            return response()->json(['status' => 0, 'error' => ['message' => 'User update failed']]);
+            return response()->json(['status' => 0, 'error' => ['message' => 'Staff update failed']]);
         }
     }
     public function destroy($id)
     {
         try {
             User::findOrFail($id)->delete();
-            return response()->json(['status' => 1, 'message' => 'User deleted successfully']);
+            return response()->json(['status' => 1, 'message' => 'Staff deleted successfully']);
         } catch (\Exception $e) {
-            return response()->json(['status' => 0, 'error' => 'User deletion failed']);
+            return response()->json(['status' => 0, 'error' => 'Staff deletion failed']);
         }
     }
     

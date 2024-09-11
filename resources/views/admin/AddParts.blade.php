@@ -12,7 +12,7 @@
 @section('data_table')
 <div class="card"> 
     <div class="card-header">
-        <h3 class="text-start mt-3 rounded-3">STAFF LIST</h3>
+        <h3 class="text-start mt-3 rounded-3">PARTS</h3>
     </div>
             <div class="card-body">
                 <table id="partsTable" class="table table-striped dt-responsive nowrap w-100">
@@ -20,8 +20,7 @@
                         <tr>
                             <th class="text-light">S.No</th>
                             <th class="text-light">Name</th>
-                            <th class="text-light">Action</th>
-                          
+                            <th class="text-light">Action</th>                          
                         </tr>
                         
                     </thead>
@@ -157,26 +156,24 @@ $(document).ready(function() {
             {
                 extend: 'csvHtml5',
                 text: 'Download Excel',
-                title:'Parts',
+                title: 'Parts',
                 titleAttr: 'Export to CSV',
                 className: 'custombutton',
                 exportOptions: { 
-                        columns: function (idx, data, node)
-                         {               
-                         return true;
-                         } 
-                           }
+                    columns: function (idx, data, node) {
+                        return true;
+                    } 
+                }
             }
         ],
         lengthMenu: [
             [10, 25, 50, -1],
-            ['10 Users', '25 Users', '50 Users', 'All Users']
+            ['10 Parts', '25 Parts', '50 Parts', 'All Parts']
         ],
-        
         ajax: {
-            url: `{{ url('/admin/service/getPartsData') }}`,
+            url: `{{ url('/admin/service/getPartsData') }}`, // Ensure this URL matches your route
             type: 'GET',
-            dataSrc: 'data',
+            dataSrc: 'data'
         },
         columns: [
             { 
@@ -208,8 +205,6 @@ $(document).ready(function() {
         ]
     });
 });
-
-
 
 
 

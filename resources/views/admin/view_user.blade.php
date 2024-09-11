@@ -96,7 +96,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="userDetailsModalLabel">User Details</h1>
+                <h1 class="modal-title fs-5 text-light" id="userDetailsModalLabel">Staff Details</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="userDetails">
@@ -111,15 +111,13 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-primary">
-                <h1 class="modal-title fs-5 text-light" id="editDetailsModalLabel">Edit User</h1>
+                <h1 class="modal-title fs-5 text-light" id="editDetailsModalLabel">Edit Staff</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4" id="editDetails">
                 <!-- Form will be injected here -->
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+           
         </div>
     </div>
 </div>
@@ -397,9 +395,14 @@ $(document).on('click', '.edit-user', function() {
                     <label for="designation" class="form-label">designation</label>
                     <input type="text" class="form-control" id="designation" name="designation" value="${data.designation}">
                 </div>
-        
+        <div class="row"> 
+          
+            <div class="col-8"></div>
+             <div class="col-4">
                 <button type="submit" class="btn btn-primary">Save changes</button>
-            </form>
+          
+             </div>
+        </div>  </form>
         `;
         
         // Inject the form HTML into the modal

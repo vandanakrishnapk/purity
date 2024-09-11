@@ -160,7 +160,10 @@ $(document).ready(function() {
         },
         columns: [
             {
-                name: 'serial_no',
+                data: null, 
+                orderable: false, 
+                searchable: false, 
+                className: 'text-center',
                 render: function(data, type, row, meta) {
                     return meta.row + meta.settings._iDisplayStart + 1; // Serial number
                 }

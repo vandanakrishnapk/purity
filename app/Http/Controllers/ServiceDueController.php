@@ -24,7 +24,7 @@ class ServiceDueController extends Controller
         $insDetails = DB::table('individuals')
             ->join('products', 'individuals.product_id', '=', 'products.product_id')
             ->join('installations', 'installations.customer_id', '=', 'individuals.individual_id')
-            ->select('individuals.p_name', 'products.product_name', 'installations.created_at as installdate', 'installations.mainService')
+            ->select('individuals.p_name', 'products.product_name','individuals.customerId', 'installations.created_at as installdate', 'installations.mainService')
             ->whereIn('individuals.status', ['Completed', 'Assigned'])
             ->get();
         
@@ -36,16 +36,16 @@ class ServiceDueController extends Controller
          
             // Calculate the number of days left until the reminder date
             $daysLeft = $today->diffInDays($reminderDate, false);
-    
-            // Ensure daysLeft is non-negative
+                      // Ensure daysLeft is non-negative
             $daysLeft = max($daysLeft, 0);
           
             return [
-                'client_name' => $service->p_name,
+                'customer_id' => $service->customerId,
                 'product_name' => $service->product_name,
                 'installation_date' => $installationDate->format('d-m-Y'),
                 'reminder_date' => $reminderDate->format('d-m-Y'),
                 'days_left' => $daysLeft,
+                
             ];
         });
       
@@ -202,7 +202,7 @@ return response()->json([
     $service->save(); // Save changes to the database
 
     // Return a success response
-    return response()->json(['status' => 1, 'message' => 'Next Service updated successfully']);
+    return response()->json(['status' => 1, 'message' => 'Next Main Service updated successfully']);
 
 
    }

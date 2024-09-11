@@ -158,7 +158,7 @@ $sub = DB::table('subcentres')
         'company_id' => 'required|integer',
         'centre_id' => 'required|integer',
         'subcentre_name' => 'required|string|max:255',
-        'remarks' => 'nullable|string',
+        'remarks' => 'nullable',
     ]);
    $id = $request->input('subcentre_id');
     $subcentre = Subcentre::findOrFail($id);

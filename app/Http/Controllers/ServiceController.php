@@ -180,7 +180,7 @@ public function doParts(Request $request)
     if (DB::table('parts')->insert($data)) {
         return response()->json([
             'status' => 1,
-            'message' => 'parts created successfully!',
+            'message' => 'Parts created successfully!',
         ]);
     } else {
         return response()->json([
@@ -243,19 +243,46 @@ public function getuserFixService(Request $request,$id)
 public function getPartsData(Request $request)
 {
     if ($request->ajax()) {
-        $parts = Part::select(['parts_id','parts_name'])->get();
-        $totalRecords = count($parts); // Total records in your data source
-        $filteredRecords = count($parts); // Number of records after applying filters
-    
-        return response()->json(['draw' => request()->get('draw'),
-                                'recordsTotal' => $totalRecords,
-                                 'recordsFiltered' => $filteredRecords,
-                                  'data' => $parts]);
+        // Retrieve parameters from DataTables
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $searchValue = $request->get('search')['value'];
+        $orderColumn = $request->get('order')[0]['column'];
+        $orderDir = $request->get('order')[0]['dir'];
+
+        $partsQuery = Part::select(['parts_id', 'parts_name']);
+
+        // Apply search filter
+        if (!empty($searchValue)) {
+            $partsQuery->where('parts_name', 'like', "%{$searchValue}%");
+        }
+
+        // Apply sorting
+        $columns = ['parts_id', 'parts_name'];
+        if (isset($columns[$orderColumn])) {
+            $partsQuery->orderBy($columns[$orderColumn], $orderDir);
+        }
+
+        // Total records without filtering
+        $totalRecords = $partsQuery->count();
+
+        // Apply pagination
+        $parts = $partsQuery->offset($start)->limit($length)->get();
+
+        // Filtered records count
+        $filteredRecords = $partsQuery->count();
+
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $parts
+        ]);
     }
     return response()->json(['error' => 'Invalid request'], 400);
+}
 
-
-} 
 public function edit($id)
     {
         $parts = Part::findOrFail($id);

@@ -300,10 +300,11 @@ $(document).ready(function() {
               
                 if (service.days_left <= 7) {
                     $('#reminderContainer').append(`
-                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            <strong>Reminder!</strong> The service for <strong>${service.product_name}</strong> (installed on ${service.installation_date}) is due for a checkup. Please schedule an appointment. The reminder date is ${service.reminder_date}. 
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                       <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <strong>Reminder!</strong> The service for <strong>Customer ID: ${service.customer_id}</strong> (Product: ${service.product_name}) installed on ${service.installation_date} is due for a checkup. Please schedule an appointment. The next service is due on ${service.reminder_date}.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
                     `);
                 }
             });

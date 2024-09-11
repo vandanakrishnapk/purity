@@ -32,7 +32,7 @@
                     <th class="text-light">Sub Category</th>
                     <th class="text-light">Product</th>
                     <th class="text-light">Purchased From</th>
-                    <th class="text-light">Filter Changed On</th>
+                    <th class="text-light">Filter Change On</th>
                     <th class="text-light">Assigned To</th>
                     <th class="text-light">Remarks</th>
                     <th class="text-light">Action</th>

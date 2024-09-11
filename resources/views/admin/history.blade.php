@@ -14,7 +14,13 @@
         <div class="accordion-body">
             <div class="card">
                 <div class="card-body fs-4">
-                <div class="row">
+                  <div class="row">
+                    <div class="col-2"></div>
+                      <div class="col-4">Customer ID</div>
+                     <div class="col-1">:</div>
+                      <div class="col-4 text-start"><strong>{{ $purchase->customerId }}</strong></div>
+                  </div>
+                <div class="row mt-1">
                   <div class="col-2"></div>
                     <div class="col-4">Customer Name</div>
                    <div class="col-1">:</div>
@@ -47,6 +53,13 @@
                       <div class="col-4">Landmark</div>
                      <div class="col-1">:</div>
                       <div class="col-4 text-start"><strong>{{ $purchase->landmark }}</strong></div>
+                  </div>
+
+                  <div class="row mt-1">
+                    <div class="col-2"></div>
+                      <div class="col-4">Premier Customer</div>
+                     <div class="col-1">:</div>
+                      <div class="col-4 text-start"><strong>{{ $purchase->premier_customer }}</strong></div>
                   </div>
                 </div>
               </div>
@@ -100,6 +113,13 @@
                           <div class="col-4">Filter Change On</div>
                          <div class="col-1">:</div>
                           <div class="col-4 text-start"><strong>{{ $filter_change_on }}</strong></div>
+                      </div>  
+
+                      <div class="row mt-1">
+                        <div class="col-2"></div>
+                          <div class="col-4">Purchased From</div>
+                         <div class="col-1">:</div>
+                          <div class="col-4 text-start"><strong>{{ $purchase->purchased_from }}</strong></div>
                       </div>
 
 
@@ -110,7 +130,7 @@
         </div>
       </div>
     </div>
-    @if($purchase->status==="Completed")
+    @if($purchase->pstatus==="Service_Completed" || $purchase->pstatus=="Completed")
     <div class="accordion-item">
       <h1 class="accordion-header p-1">
         <button class="accordion-button collapsed bg-secondary text-light fs-3" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
@@ -167,13 +187,21 @@
                           <div class="col-4">Next Service</div>
                          <div class="col-1">:</div>
                           <div class="col-4 text-start"><strong>{{ $first_service }}</strong></div>
-                      </div>                     
+                      </div>   
+                      
+                      <div class="row mt-1">
+                        <div class="col-2"></div>
+                          <div class="col-4">Main Service</div>
+                         <div class="col-1">:</div>
+                          <div class="col-4 text-start"><strong>{{ $mainService }}</strong></div>
+                      </div> 
                 </div>
             </div>
         
         </div>
       </div>
     </div>
+      @if($purchase->pstatus==="Service_Completed")
     <div class="accordion-item">
       <h1 class="accordion-header p-1">
         <button class="accordion-button collapsed bg-secondary text-light fs-3" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false" aria-controls="panelsStayOpen-collapseFour">
@@ -253,6 +281,7 @@
         </div>
       </div>
     </div>
+  @endif
   @endif
   </div>
 @endsection 

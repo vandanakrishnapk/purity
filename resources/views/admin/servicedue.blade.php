@@ -360,7 +360,7 @@ $(document).on('submit', '#updateNextServiceForm', function(event) {
             });
             $('#updateNextServiceForm')[0].reset();
             $('#nextServiceModal').modal('hide');
-            $('#serviceTable').DataTable().ajax.reload();
+            $('#serviceDueTable').DataTable().ajax.reload();
         } else {
             toastr.error('Unexpected response format.', 'Error', {
                 positionClass: 'toast-top-right'
