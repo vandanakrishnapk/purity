@@ -21,27 +21,72 @@ class InstallationController extends Controller
         return view('user.Install');
     } 
     public function getInstallationData(Request $request)
-    {
-        if ($request->ajax()) {
-            $staffId = Auth::user()->id;
-            $insDetails = DB::table('individuals')
-                          ->join('products','individuals.product_id','=','products.product_id')
-                          ->join('categories','categories.category_id','=','individuals.category_id')
-                          ->join('subcategories','subcategories.subcat_id','=','individuals.subcat_id')
-                          ->where('individuals.assigned_to','=',$staffId)
-                          ->select('individuals.*','products.product_name','categories.category_name','subcategories.subcategory_name')
-                          ->get();
-            $totalRecords = count($insDetails); // Total records in your data source
-            $filteredRecords = count($insDetails); // Number of records after applying filters
-        
-            return response()->json(['draw' => request()->get('draw'),
-                                    'recordsTotal' => $totalRecords,
-                                    'recordsFiltered' => $filteredRecords,
-                                    'data' => $insDetails]);
-        }
-        return response()->json(['error' => 'Invalid request'], 400);
-    } 
+{
+    if ($request->ajax()) {
+        $staffId = Auth::user()->id;
 
+        // Extract parameters for pagination, sorting, and search
+        $start = $request->get('start'); // Pagination start (offset)
+        $length = $request->get('length'); // Pagination length (limit)
+        $searchValue = $request->get('search')['value']; // Search term
+        $orderColumnIndex = $request->get('order')[0]['column']; // Column index to sort
+        $orderDirection = $request->get('order')[0]['dir']; // Sort direction (asc/desc)
+
+        // Define column names for sorting
+        $columns = [
+            '0' => 'individuals.individual_id',
+            '1' => 'individuals.p_name',
+            '2' => 'products.product_name',
+            '3' => 'categories.category_name',
+            '4' => 'subcategories.subcategory_name',
+            '5' => 'individuals.created_at',
+        ];
+
+        // Base query
+        $query = DB::table('individuals')
+            ->join('products', 'individuals.product_id', '=', 'products.product_id')
+            ->join('categories', 'categories.category_id', '=', 'individuals.category_id')
+            ->join('subcategories', 'subcategories.subcat_id', '=', 'individuals.subcat_id')
+            ->where('individuals.assigned_to', '=', $staffId)
+            ->select('individuals.*', 'products.product_name', 'categories.category_name', 'subcategories.subcategory_name');
+
+        // Apply search
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('individuals.p_name', 'like', "%{$searchValue}%")
+                      ->orWhere('products.product_name', 'like', "%{$searchValue}%")
+                      ->orWhere('categories.category_name', 'like', "%{$searchValue}%")
+                      ->orWhere('subcategories.subcategory_name', 'like', "%{$searchValue}%");
+            });
+        }
+
+        // Apply sorting
+        if (isset($columns[$orderColumnIndex])) {
+            $query->orderBy($columns[$orderColumnIndex], $orderDirection);
+        }
+
+        // Get total records count (before applying pagination and search)
+        $totalRecords = $query->count();
+
+        // Apply pagination
+        $insDetails = $query->offset($start)->limit($length)->get();
+
+        // Get filtered records count (after applying search)
+        $filteredRecords = $query->count();
+
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $insDetails
+        ]);
+    }
+
+    return response()->json(['error' => 'Invalid request'], 400);
+}
+
+
+    
     public function getInstallationbid(Request $request,$id)
     {
         $stId = Auth::user()->id;
@@ -120,24 +165,55 @@ public function getInstallationPage()
 {
     return view('admin.installation');
 }
+
 public function getInstallations(Request $request)
 {
     if ($request->ajax()) {
-        
-        $insDetails = DB::table('individuals')
-                      ->join('products','individuals.product_id','=','products.product_id')                    
-                      ->select('individuals.*','products.product_name')
-                      ->whereIn('individuals.status', ['Completed', 'Assigned'])
-                      ->get();
-        $totalRecords = count($insDetails); // Total records in your data source
-        $filteredRecords = count($insDetails); // Number of records after applying filters
-   
-        return response()->json(['draw' => request()->get('draw'),
-                                'recordsTotal' => $totalRecords,
-                                'recordsFiltered' => $filteredRecords,
-                                'data' => $insDetails]);
+        // Get parameters for pagination, sorting, and search
+        $start = $request->get('start'); // Pagination start
+        $length = $request->get('length'); // Pagination length
+        $searchValue = $request->get('search')['value']; // Search term
+        $orderColumnIndex = $request->get('order')[0]['column']; // Column index to sort
+        $orderDirection = $request->get('order')[0]['dir']; // Sort direction (asc/desc)
+
+        // Build query
+        $query = DB::table('individuals')
+            ->join('products', 'individuals.product_id', '=', 'products.product_id')
+            ->select('individuals.*', 'products.product_name')
+            ->whereIn('individuals.status', ['Completed', 'Assigned']);
+
+        // Apply search
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('individuals.p_name', 'like', "%{$searchValue}%")
+                      ->orWhere('individuals.mobile', 'like', "%{$searchValue}%")
+                      ->orWhere('products.product_name', 'like', "%{$searchValue}%");
+            });
+        }
+
+        // Get total records count (before applying pagination and search)
+        $totalRecords = $query->count();
+
+        // Apply sorting
+        $columns = [ 'p_name', 'mobile', 'product_name', 'created_at', 'status', 'remarks']; // Column names
+        if (isset($columns[$orderColumnIndex])) {
+            $query->orderBy($columns[$orderColumnIndex], $orderDirection);
+        }
+
+        // Apply pagination
+        $insDetails = $query->offset($start)->limit($length)->get();
+
+        // Get filtered records count (after applying search)
+        $filteredRecords = $query->count();
+
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $insDetails
+        ]);
     }
-    return response()->json(['error' => 'Invalid request'], 400);    
+    return response()->json(['error' => 'Invalid request'], 400);
 }
 
 }

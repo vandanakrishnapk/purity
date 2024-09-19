@@ -13,13 +13,32 @@ return new class extends Migration
     {
         Schema::create('corporates', function (Blueprint $table) {
             $table->id('corporate_id');
-            $table->string('company_name');
-            $table->string('center_name');
-            $table->string('sub_center');
+            $table->unsignedBigInteger('company_name');
+            $table->unsignedBigInteger('center_name');
+            $table->unsignedBigInteger('sub_center');
+            $table->string('located_on');
             $table->string('contact_person');
             $table->bigInteger('contact_mobile');
-            $table->string('center_address');  
-            $table->string('remarks')->nullable()->after('assigned_to');          
+            $table->string('center_address'); 
+            $table->unsignedBigInteger('category_id'); 
+            $table->unsignedBigInteger('subcat_id');
+            $table->unsignedBigInteger('product_id');  
+            $table->string('filter_change_on');       
+            $table->unsignedBigInteger('assigned_to');
+            $table->string('remarks')->nullable(); 
+
+            $table->foreign('company_name')->references('company_id')->on('companies')->onDelete('cascade');
+            $table->foreign('center_name')->references('centre_id')->on('centres')->onDelete('cascade');
+            $table->foreign('sub_center')->references('subcentre_id')->on('subcentres')->onDelete('cascade');     
+            $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('cascade');
+             
+            $table->foreign('subcat_id')->references('subcat_id')->on('subcategories')->onDelete('cascade');
+          
+            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
+            $table->string('purchased_from');
+    
+            $table->foreign('assigned_to')->references('id')->on('users')->onDelete('cascade');
+    
             $table->timestamps();
         });
     }

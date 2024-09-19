@@ -96,8 +96,17 @@ $nextNumberInt = $lastNumberInt + 1;
 $nextNumber = str_pad($nextNumberInt, 3, '0', STR_PAD_LEFT); // Ensure zero padding
 
 
-    $customerId = "P{$branchCode}{$CategoryCode}{$subCategoryCode}{$year}{$month}{$nextNumber}";
+    $customerId = "P{$branchCode}{$CategoryCode}{$subCategoryCode}{$year}{$month}{$nextNumber}"; 
 
+    $typeOfPurchase = $request->input('type_of_purchase'); 
+
+    if ($typeOfPurchase === 'Old Purchase' || $typeOfPurchase === 'Outside Purchase') {
+        $status = 'Completed';
+    }
+    elseif($typeOfPurchase === 'New Purchase') 
+    {
+        $status="Assigned";
+    }
     $data = [ 
         'customerId' => $customerId,
         'p_name' => $request->input('p_name'),
@@ -114,6 +123,7 @@ $nextNumber = str_pad($nextNumberInt, 3, '0', STR_PAD_LEFT); // Ensure zero padd
         'assigned_to' => $request->input('assigned_to'),
         'type_of_purchase' => $request->input('type_of_purchase'),
         'remarks' => $request->input('remarks'),
+        'status' =>$status,
         'created_at' => Carbon::now(),
         'updated_at' => Carbon::now(),
     ];
@@ -138,29 +148,121 @@ $nextNumber = str_pad($nextNumberInt, 3, '0', STR_PAD_LEFT); // Ensure zero padd
         $subcat = DB::table('subcategories')->get();
         return view('admin.view_individual_purchase',['users' => $users, 'categories' => $categories,'subcat' => $subcat]);
     }
-    public function viewIndividualData()
-    {
-        $purchase = DB::table('individuals')
-        ->join('categories', 'individuals.category_id', '=', 'categories.category_id')
-        ->join('subcategories','individuals.subcat_id','=','subcategories.subcat_id')
-        ->join('products', 'individuals.product_id', '=', 'products.product_id')
-        ->join('users','individuals.assigned_to','=','users.id')
-        ->select('individuals.individual_id','individuals.customerId','individuals.p_name', 'individuals.address','individuals.mobile','individuals.whatsapp','individuals.landmark','individuals.purchased_from','individuals.filter_change_on','individuals.premier_customer','categories.category_name', 'subcategories.subcategory_name','products.product_name','users.name','individuals.remarks')
-        ->get();
-        $totalRecords = count($purchase); // Total records in your data source
-        $filteredRecords = count($purchase); // Number of records after applying filters
+    // public function viewIndividualData()
+    // {
+    //     $purchase = DB::table('individuals')
+    //     ->join('categories', 'individuals.category_id', '=', 'categories.category_id')
+    //     ->join('subcategories','individuals.subcat_id','=','subcategories.subcat_id')
+    //     ->join('products', 'individuals.product_id', '=', 'products.product_id')
+    //     ->join('users','individuals.assigned_to','=','users.id')
+    //     ->select('individuals.individual_id','individuals.customerId','individuals.p_name', 'individuals.address','individuals.mobile','individuals.whatsapp','individuals.landmark','individuals.purchased_from','individuals.filter_change_on','individuals.premier_customer','categories.category_name', 'subcategories.subcategory_name','products.product_name','users.name','individuals.remarks')
+    //     ->get();
+    //     $totalRecords = count($purchase); // Total records in your data source
+    //     $filteredRecords = count($purchase); // Number of records after applying filters
+    //     foreach ($purchase as $item) {
+    //         if ($item->filter_change_on) {
+    //             $item->filter_change_on = Carbon::parse($item->filter_change_on)->format('d-m-Y');
+    //         }
+    //     }
+        
+    //     return response()->json(['draw' => request()->get('draw'),
+    //                             'recordsTotal' => $totalRecords,
+    //                              'recordsFiltered' => $filteredRecords,
+    //                               'data' => $purchase]);
+    //     return response()->json(['error' => 'Invalid request'], 400);
+    // }   
+    public function viewIndividualData(Request $request)
+{
+    if ($request->ajax()) {
+        // Retrieve parameters from DataTables
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $searchValue = $request->get('search')['value'];
+        $orderColumn = $request->get('order')[0]['column'];
+        $orderDir = $request->get('order')[0]['dir'];
+
+        // Define column names to use for sorting
+        $columns = [
+            'individuals.individual_id', 
+            'individuals.customerId', 
+            'individuals.p_name',
+            'individuals.address',
+            'individuals.mobile',
+            'individuals.whatsapp',
+            'individuals.landmark',
+            'individuals.purchased_from',
+            'individuals.filter_change_on',
+            'individuals.premier_customer',
+            'categories.category_name', 
+            'subcategories.subcategory_name',
+            'products.product_name',
+            'users.name',
+            'individuals.remarks'
+        ];
+
+        // Build query with joins
+        $query = DB::table('individuals')
+            ->join('categories', 'individuals.category_id', '=', 'categories.category_id')
+            ->join('subcategories', 'individuals.subcat_id', '=', 'subcategories.subcat_id')
+            ->join('products', 'individuals.product_id', '=', 'products.product_id')
+            ->join('users', 'individuals.assigned_to', '=', 'users.id')
+            ->select('individuals.individual_id', 'individuals.customerId', 'individuals.p_name', 'individuals.address', 'individuals.mobile', 'individuals.whatsapp', 'individuals.landmark', 'individuals.purchased_from', 'individuals.filter_change_on', 'individuals.premier_customer', 'categories.category_name', 'subcategories.subcategory_name', 'products.product_name', 'users.name', 'individuals.remarks');
+
+        // Apply search filter
+        if (!empty($searchValue)) {
+            $query->where(function($q) use ($searchValue) {
+                $q->where('individuals.customerId', 'like', "%{$searchValue}%")
+                  ->orWhere('individuals.p_name', 'like', "%{$searchValue}%")
+                  ->orWhere('individuals.address', 'like', "%{$searchValue}%")
+                  ->orWhere('individuals.mobile', 'like', "%{$searchValue}%")
+                  ->orWhere('individuals.whatsapp', 'like', "%{$searchValue}%")
+                  ->orWhere('individuals.landmark', 'like', "%{$searchValue}%")
+                  ->orWhere('individuals.purchased_from', 'like', "%{$searchValue}%")
+                  ->orWhere('categories.category_name', 'like', "%{$searchValue}%")
+                  ->orWhere('subcategories.subcategory_name', 'like', "%{$searchValue}%")
+                  ->orWhere('products.product_name', 'like', "%{$searchValue}%")
+                  ->orWhere('users.name', 'like', "%{$searchValue}%")
+                  ->orWhere('individuals.remarks', 'like', "%{$searchValue}%");
+            });
+        }
+
+        // Apply sorting
+        if (isset($columns[$orderColumn])) {
+            $query->orderBy($columns[$orderColumn], $orderDir);
+        }
+
+        // Total records without filtering
+        $totalRecords = DB::table('individuals')
+            ->join('categories', 'individuals.category_id', '=', 'categories.category_id')
+            ->join('subcategories', 'individuals.subcat_id', '=', 'subcategories.subcat_id')
+            ->join('products', 'individuals.product_id', '=', 'products.product_id')
+            ->join('users', 'individuals.assigned_to', '=', 'users.id')
+            ->count();
+
+        // Paginate the results
+        $purchase = $query->offset($start)->limit($length)->get();
+
+        // Filtered records count
+        $filteredRecords = $query->count();
+
+        // Format the date field
         foreach ($purchase as $item) {
             if ($item->filter_change_on) {
                 $item->filter_change_on = Carbon::parse($item->filter_change_on)->format('d-m-Y');
             }
         }
-        
-        return response()->json(['draw' => request()->get('draw'),
-                                'recordsTotal' => $totalRecords,
-                                 'recordsFiltered' => $filteredRecords,
-                                  'data' => $purchase]);
-        return response()->json(['error' => 'Invalid request'], 400);
-    }  
+
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $purchase
+        ]);
+    }
+    return response()->json(['error' => 'Invalid request'], 400);
+}
+
 
     public function show($id)
     {
@@ -325,27 +427,93 @@ $nextNumber = str_pad($nextNumberInt, 3, '0', STR_PAD_LEFT); // Ensure zero padd
     ]);
    
  } 
- public function getProductData(Request $request)
- {
-     $purchase = DB::table('products')
-         ->join('categories', 'products.category_id', '=', 'categories.category_id')
-         ->join('subcategories', 'products.subcategoryId', '=', 'subcategories.subcat_id') // Assuming subcategory_id is the correct column name
-         ->select('products.product_id', 'products.product_name','products.remarks', 'categories.category_name', 'subcategories.subcategory_name')
-         ->get();
+//  public function getProductData(Request $request)
+//  {
+//      $purchase = DB::table('products')
+//          ->join('categories', 'products.category_id', '=', 'categories.category_id')
+//          ->join('subcategories', 'products.subcategoryId', '=', 'subcategories.subcat_id') // Assuming subcategory_id is the correct column name
+//          ->select('products.product_id', 'products.product_name','products.remarks', 'categories.category_name', 'subcategories.subcategory_name')
+//          ->get();
    
-                       $totalRecords = count($purchase); // Total records in your data source
-                       $filteredRecords = count($purchase); // Number of records after applying filters
+//                        $totalRecords = count($purchase); // Total records in your data source
+//                        $filteredRecords = count($purchase); // Number of records after applying filters
                    
-                       return response()->json(['draw' => request()->get('draw'),
-                                               'recordsTotal' => $totalRecords,
-                                                'recordsFiltered' => $filteredRecords,
-                                                 'data' => $purchase]);
-                       return response()->json(['error' => 'Invalid request'], 400);
+//                        return response()->json(['draw' => request()->get('draw'),
+//                                                'recordsTotal' => $totalRecords,
+//                                                 'recordsFiltered' => $filteredRecords,
+//                                                  'data' => $purchase]);
+//                        return response()->json(['error' => 'Invalid request'], 400);
                
- }
+//  }   
+public function getProductData(Request $request)
+{
+    if ($request->ajax()) {
+        // Retrieve parameters from DataTables
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $searchValue = $request->get('search')['value'];
+        $orderColumn = $request->get('order')[0]['column'];
+        $orderDir = $request->get('order')[0]['dir'];
+
+        // Define column names to use for sorting
+        $columns = [
+            'products.product_id',
+            'products.product_name',
+            'products.remarks',
+            'categories.category_name',
+            'subcategories.subcategory_name'
+        ];
+
+        // Build query with joins
+        $query = DB::table('products')
+            ->join('categories', 'products.category_id', '=', 'categories.category_id')
+            ->join('subcategories', 'products.subcategoryId', '=', 'subcategories.subcat_id')
+            ->select('products.product_id', 'products.product_name', 'products.remarks', 'categories.category_name', 'subcategories.subcategory_name');
+
+        // Apply search filter
+        if (!empty($searchValue)) {
+            $query->where(function($q) use ($searchValue) {
+                $q->where('products.product_name', 'like', "%{$searchValue}%")
+                  ->orWhere('products.remarks', 'like', "%{$searchValue}%")
+                  ->orWhere('categories.category_name', 'like', "%{$searchValue}%")
+                  ->orWhere('subcategories.subcategory_name', 'like', "%{$searchValue}%");
+            });
+        }
+
+        // Apply sorting
+        if (isset($columns[$orderColumn])) {
+            $query->orderBy($columns[$orderColumn], $orderDir);
+        }
+
+        // Total records without filtering
+        $totalRecords = DB::table('products')
+            ->join('categories', 'products.category_id', '=', 'categories.category_id')
+            ->join('subcategories', 'products.subcategoryId', '=', 'subcategories.subcat_id')
+            ->count();
+
+        // Paginate the results
+        $productData = $query->offset($start)->limit($length)->get();
+
+        // Filtered records count
+        $filteredRecords = $query->count();
+
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $productData
+        ]);
+    }
+    return response()->json(['error' => 'Invalid request'], 400);
+}
+
   public function datatable()
   {
     return view('admin.datatable');
-  }
-    
+  }  
+
+
+
+   
 }

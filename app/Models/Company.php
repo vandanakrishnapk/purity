@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
-    use HasFactory; 
+    use HasFactory;  
     protected $guarded = [];
-    protected $primaryKey ='company_id';
+    protected $primaryKey='company_id';
 }

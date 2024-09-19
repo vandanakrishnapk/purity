@@ -19,10 +19,13 @@ return new class extends Migration
             $table->string('whatsapp')->nullable();
             $table->string('landmark')->nullable();
             $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('subcat_id');
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('assigned_to')->nullable();
             $table->text('remarks')->nullable();
+            $table->string('status')->default('Assigned');
             $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('cascade');
+            $table->foreign('subcat_id')->references('subcat_id')->on('subcategories')->onDelete('cascade');
             $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
             $table->foreign('assigned_to')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

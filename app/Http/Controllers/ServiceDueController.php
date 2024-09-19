@@ -69,62 +69,88 @@ class ServiceDueController extends Controller
         ]);
     }
     
+   
     
-  
-  public function getServiceReminderTable()
-  {    $insDetails = DB::table('installations')
-    ->join('individuals', 'installations.customer_id', '=', 'individuals.individual_id')
-    ->join('products', 'individuals.product_id', '=', 'products.product_id')
-    ->join('users', 'individuals.assigned_to', '=', 'users.id')
-    ->select('individuals.p_name', 'users.name', 'installations.mainService', 'individuals.individual_id', 'installations.customer_id', 'installations.installId', 'products.product_name', 'installations.created_at as installdate')
-    ->get();
-
-// Process each service to calculate the reminder date and days left
-$services = $insDetails->map(function ($service) {
-    $installationDate = Carbon::parse($service->installdate);
-    $reminderDate = Carbon::parse($service->mainService);
-    $today = Carbon::now();
-
-    // Calculate the number of days left until the reminder date
-    $daysLeft = $today->diffInDays($reminderDate, false);
-
-    // Ensure daysLeft is non-negative
-    $daysLeft = max($daysLeft, 0);
-
-    // Format daysLeft as an integer
-    $formattedDaysLeft = intval($daysLeft);
-
-    return [
-        'client_name' => $service->p_name,
-        'product_name' => $service->product_name,
-        'installation_date' => $installationDate->format('d-m-Y'),
-        'reminder_date' => $reminderDate->format('d-m-Y'),
-        'days_left' => $formattedDaysLeft,
-        'installId' => $service->installId,
-        'customer_id' => $service->customer_id,
-        'staff' => $service->name,
-    ];
-});
-
-// Sort services by days_left in ascending order
-$sortedServices = $services->sortBy('days_left');
-
-// Extract the total number of records before any filtering
-$totalRecords = $services->count();
-
-// Extract the number of records after applying filters
-$filteredRecords = $sortedServices->count(); 
-
-// Handle DataTables' draw parameter
-$draw = request()->get('draw', 1);
-
-return response()->json([
-    'draw' => $draw,
-    'recordsTotal' => $totalRecords,
-    'recordsFiltered' => $filteredRecords,
-    'data' => $sortedServices->values(), // Ensure reindexing
-]);
-}   
+    public function getServiceReminderTable()
+    {
+        // Retrieve search, sort, and pagination parameters
+        $search = request()->get('search')['value'] ?? '';
+        $sortColumn = request()->get('order')[0]['column'] ?? 0; // default to first column
+        $sortDirection = request()->get('order')[0]['dir'] ?? 'asc'; // default to ascending
+        $start = request()->get('start', 0); // starting index for pagination
+        $length = request()->get('length', 10); // number of records per page
+    
+        // Determine the sort column and direction
+        $columns = ['p_name', 'name', 'mainService', 'individual_id', 'customer_id', 'installId', 'product_name', 'installdate'];
+        $sortColumn = $columns[$sortColumn] ?? 'days_left';
+    
+        // Get the query builder with search and sorting
+        $query = DB::table('installations')
+            ->join('individuals', 'installations.customer_id', '=', 'individuals.individual_id')
+            ->join('products', 'individuals.product_id', '=', 'products.product_id')
+            ->join('users', 'individuals.assigned_to', '=', 'users.id')
+            ->select('individuals.p_name', 'users.name', 'installations.mainService', 'individuals.individual_id', 'installations.customer_id', 'installations.installId', 'products.product_name', 'installations.created_at as installdate')
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($query) use ($search) {
+                    $query->where('individuals.p_name', 'like', "%$search%")
+                          ->orWhere('products.product_name', 'like', "%$search%")
+                          ->orWhere('users.name', 'like', "%$search%");
+                });
+            });
+    
+        // Get the total number of records before filtering
+        $totalRecords = $query->count();
+    
+        // Apply sorting
+        $query->orderBy($sortColumn, $sortDirection);
+    
+        // Apply pagination
+        $paginatedRecords = $query->skip($start)->take($length)->get();
+    
+        // Process each service to calculate the reminder date and days left
+        $services = $paginatedRecords->map(function ($service) {
+            $installationDate = Carbon::parse($service->installdate);
+            $reminderDate = Carbon::parse($service->mainService);
+            $today = Carbon::now();
+    
+            // Calculate the number of days left until the reminder date
+            $daysLeft = $today->diffInDays($reminderDate, false);
+    
+            // Ensure daysLeft is non-negative
+            $daysLeft = max($daysLeft, 0);
+    
+            // Format daysLeft as an integer
+            $formattedDaysLeft = intval($daysLeft);
+    
+            return [
+                'client_name' => $service->p_name,
+                'product_name' => $service->product_name,
+                'installation_date' => $installationDate->format('d-m-Y'),
+                'reminder_date' => $reminderDate->format('d-m-Y'),
+                'days_left' => $formattedDaysLeft,
+                'installId' => $service->installId,
+                'customer_id' => $service->customer_id,
+                'staff' => $service->name,
+            ];
+        });
+    
+        // Sort services by days_left in ascending order
+        $sortedServices = $services->sortBy('days_left');
+    
+        // Extract the number of records after applying filters
+        $filteredRecords = $sortedServices->count(); 
+    
+        // Handle DataTables' draw parameter
+        $draw = request()->get('draw', 1);
+    
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $sortedServices->values(), // Ensure reindexing
+        ]);
+    }
+    
 
 
   public function getChangeStaffView($id)

@@ -116,23 +116,84 @@ class CompanyController extends Controller
     }   
 
     public function getsubcentreData(Request $request)
-    {
-        $sub = DB::table('subcentres')
-         ->join('companies', 'subcentres.company_id', '=', 'companies.company_id')
-         ->join('centres', 'subcentres.centre_id', '=', 'centres.centre_id') // Assuming subcategory_id is the correct column name
-         ->select('subcentres.subcentre_id', 'subcentres.subcentre_name','subcentres.remarks', 'companies.company_name', 'centres.centre_name')
-         ->get();
+{
+    if ($request->ajax()) {
+        // Extract parameters from the request
+        $start = $request->get('start'); // Pagination start (offset)
+        $length = $request->get('length'); // Pagination length (limit)
+        $searchValue = $request->get('search')['value']; // Search term
+        $orderColumnIndex = $request->get('order')[0]['column']; // Column index to sort
+        $orderDirection = $request->get('order')[0]['dir']; // Sort direction (asc/desc)
+
+        // Define column names for sorting
+        $columns = [
+            '0' => 'subcentres.subcentre_id',
+            '1' => 'subcentres.subcentre_name',
+            '2' => 'subcentres.remarks',
+            '3' => 'companies.company_name',
+            '4' => 'centres.centre_name',
+        ];
+
+        // Base query
+        $query = DB::table('subcentres')
+            ->join('companies', 'subcentres.company_id', '=', 'companies.company_id')
+            ->join('centres', 'subcentres.centre_id', '=', 'centres.centre_id')
+            ->select('subcentres.subcentre_id', 'subcentres.subcentre_name', 'subcentres.remarks', 'companies.company_name', 'centres.centre_name');
+
+        // Apply search
+        if ($searchValue) {
+            $query->where(function($query) use ($searchValue) {
+                $query->where('subcentres.subcentre_name', 'like', "%{$searchValue}%")
+                      ->orWhere('subcentres.remarks', 'like', "%{$searchValue}%")
+                      ->orWhere('companies.company_name', 'like', "%{$searchValue}%")
+                      ->orWhere('centres.centre_name', 'like', "%{$searchValue}%");
+            });
+        }
+
+        // Apply sorting
+        if (isset($columns[$orderColumnIndex])) {
+            $query->orderBy($columns[$orderColumnIndex], $orderDirection);
+        }
+
+        // Get total records count (before applying pagination and search)
+        $totalRecords = $query->count();
+
+        // Apply pagination
+        $subcentres = $query->offset($start)->limit($length)->get();
+
+        // Get filtered records count (after applying search)
+        $filteredRecords = $query->count();
+
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $subcentres
+        ]);
+    }
+
+    return response()->json(['error' => 'Invalid request'], 400);
+}
+
+
+    // public function getsubcentreData(Request $request)
+    // {
+    //     $sub = DB::table('subcentres')
+    //      ->join('companies', 'subcentres.company_id', '=', 'companies.company_id')
+    //      ->join('centres', 'subcentres.centre_id', '=', 'centres.centre_id') // Assuming subcategory_id is the correct column name
+    //      ->select('subcentres.subcentre_id', 'subcentres.subcentre_name','subcentres.remarks', 'companies.company_name', 'centres.centre_name')
+    //      ->get();
    
-                       $totalRecords = count($sub); // Total records in your data source
-                       $filteredRecords = count($sub); // Number of records after applying filters
+    //                    $totalRecords = count($sub); // Total records in your data source
+    //                    $filteredRecords = count($sub); // Number of records after applying filters
                    
-                       return response()->json(['draw' => request()->get('draw'),
-                                               'recordsTotal' => $totalRecords,
-                                                'recordsFiltered' => $filteredRecords,
-                                                 'data' => $sub]);
-                       return response()->json(['error' => 'Invalid request'], 400);
+    //                    return response()->json(['draw' => request()->get('draw'),
+    //                                            'recordsTotal' => $totalRecords,
+    //                                             'recordsFiltered' => $filteredRecords,
+    //                                              'data' => $sub]);
+    //                    return response()->json(['error' => 'Invalid request'], 400);
         
-    } 
+    // } 
 
     public function editSubcentre($id)
     {

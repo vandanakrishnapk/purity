@@ -95,35 +95,134 @@ class CorporateController extends Controller
         }
     } 
 
-    public function viewCorporatePurchase(Request $request)
-    {
-        if ($request->ajax()) {
-            $companyPurchase = DB::table('corporates')
-            ->join('companies','corporates.company_name','=','companies.company_id')
-            ->join('centres','corporates.center_name','=','centres.centre_id')
-            ->join('subcentres','corporates.sub_center','=','subcentres.subcentre_id')
-            ->join('categories', 'corporates.category_id', '=', 'categories.category_id')
-            ->join('subcategories','corporates.subcat_id','=','subcategories.subcat_id')
-            ->join('products', 'corporates.product_id', '=', 'products.product_id')
-            ->join('users','corporates.assigned_to','=','users.id')
-            ->select('corporates.corporate_id','companies.company_name', 'corporates.center_address','centres.centre_name','subcentres.subcentre_name','corporates.contact_person','corporates.contact_mobile','corporates.purchased_from','corporates.filter_change_on','categories.category_name', 'subcategories.subcategory_name','products.product_name','corporates.located_on','users.name')
-            ->get();        
+    // public function viewCorporatePurchase(Request $request)
+    // {
+    //     if ($request->ajax()) {
+    //         $companyPurchase = DB::table('corporates')
+    //         ->join('companies','corporates.company_name','=','companies.company_id')
+    //         ->join('centres','corporates.center_name','=','centres.centre_id')
+    //         ->join('subcentres','corporates.sub_center','=','subcentres.subcentre_id')
+    //         ->join('categories', 'corporates.category_id', '=', 'categories.category_id')
+    //         ->join('subcategories','corporates.subcat_id','=','subcategories.subcat_id')
+    //         ->join('products', 'corporates.product_id', '=', 'products.product_id')
+    //         ->join('users','corporates.assigned_to','=','users.id')
+    //         ->select('corporates.corporate_id','companies.company_name', 'corporates.center_address','centres.centre_name','subcentres.subcentre_name','corporates.contact_person','corporates.contact_mobile','corporates.purchased_from','corporates.filter_change_on','categories.category_name', 'subcategories.subcategory_name','products.product_name','corporates.located_on','users.name')
+    //         ->get();        
             
-            $totalRecords = count($companyPurchase); // Total records in your data source
-            $filteredRecords = count($companyPurchase); // Number of records after applying filters
-            $companyPurchase = $companyPurchase->map(function($item) {
-                $item->filter_change_on = Carbon::parse($item->filter_change_on)->format('d-m-Y');
-                return $item;
-            });
+    //         $totalRecords = count($companyPurchase); // Total records in your data source
+    //         $filteredRecords = count($companyPurchase); // Number of records after applying filters
+    //         $companyPurchase = $companyPurchase->map(function($item) {
+    //             $item->filter_change_on = Carbon::parse($item->filter_change_on)->format('d-m-Y');
+    //             return $item;
+    //         });
     
-            return response()->json(['draw' => request()->get('draw'),
-                                    'recordsTotal' => $totalRecords,
-                                     'recordsFiltered' => $filteredRecords,
-                                      'data' => $companyPurchase]);
-        }
-        return response()->json(['error' => 'Invalid request'], 400);
+    //         return response()->json(['draw' => request()->get('draw'),
+    //                                 'recordsTotal' => $totalRecords,
+    //                                  'recordsFiltered' => $filteredRecords,
+    //                                   'data' => $companyPurchase]);
+    //     }
+    //     return response()->json(['error' => 'Invalid request'], 400);
    
-    } 
+    // }   
+
+    public function viewCorporatePurchase(Request $request)
+{
+    if ($request->ajax()) {
+        // Retrieve parameters from DataTables
+        $draw = $request->get('draw');
+        $start = $request->get('start');
+        $length = $request->get('length');
+        $searchValue = $request->get('search')['value'];
+        $orderColumn = $request->get('order')[0]['column'];
+        $orderDir = $request->get('order')[0]['dir'];
+
+        // Define column names to use for sorting
+        $columns = [
+            'corporates.corporate_id', 
+            'companies.company_name', 
+            'corporates.center_address',
+            'centres.centre_name',
+            'subcentres.subcentre_name',
+            'corporates.contact_person',
+            'corporates.contact_mobile',
+            'corporates.purchased_from',
+            'corporates.filter_change_on',
+            'categories.category_name', 
+            'subcategories.subcategory_name',
+            'products.product_name',
+            'corporates.located_on',
+            'users.name'
+        ];
+
+        // Build query with joins
+        $query = DB::table('corporates')
+            ->join('companies', 'corporates.company_name', '=', 'companies.company_id')
+            ->join('centres', 'corporates.center_name', '=', 'centres.centre_id')
+            ->join('subcentres', 'corporates.sub_center', '=', 'subcentres.subcentre_id')
+            ->join('categories', 'corporates.category_id', '=', 'categories.category_id')
+            ->join('subcategories', 'corporates.subcat_id', '=', 'subcategories.subcat_id')
+            ->join('products', 'corporates.product_id', '=', 'products.product_id')
+            ->join('users', 'corporates.assigned_to', '=', 'users.id')
+            ->select('corporates.corporate_id', 'companies.company_name', 'corporates.center_address', 'centres.centre_name', 'subcentres.subcentre_name', 'corporates.contact_person', 'corporates.contact_mobile', 'corporates.purchased_from', 'corporates.filter_change_on', 'categories.category_name', 'subcategories.subcategory_name', 'products.product_name', 'corporates.located_on', 'users.name');
+
+        // Apply search filter
+        if (!empty($searchValue)) {
+            $query->where(function($q) use ($searchValue) {
+                $q->where('companies.company_name', 'like', "%{$searchValue}%")
+                  ->orWhere('corporates.center_address', 'like', "%{$searchValue}%")
+                  ->orWhere('centres.centre_name', 'like', "%{$searchValue}%")
+                  ->orWhere('subcentres.subcentre_name', 'like', "%{$searchValue}%")
+                  ->orWhere('corporates.contact_person', 'like', "%{$searchValue}%")
+                  ->orWhere('corporates.contact_mobile', 'like', "%{$searchValue}%")
+                  ->orWhere('corporates.purchased_from', 'like', "%{$searchValue}%")
+                  ->orWhere('categories.category_name', 'like', "%{$searchValue}%")
+                  ->orWhere('subcategories.subcategory_name', 'like', "%{$searchValue}%")
+                  ->orWhere('products.product_name', 'like', "%{$searchValue}%")
+                  ->orWhere('corporates.located_on', 'like', "%{$searchValue}%")
+                  ->orWhere('users.name', 'like', "%{$searchValue}%");
+            });
+        }
+
+        // Apply sorting
+        if (isset($columns[$orderColumn])) {
+            $query->orderBy($columns[$orderColumn], $orderDir);
+        }
+
+        // Total records without filtering
+        $totalRecords = DB::table('corporates')
+            ->join('companies', 'corporates.company_name', '=', 'companies.company_id')
+            ->join('centres', 'corporates.center_name', '=', 'centres.centre_id')
+            ->join('subcentres', 'corporates.sub_center', '=', 'subcentres.subcentre_id')
+            ->join('categories', 'corporates.category_id', '=', 'categories.category_id')
+            ->join('subcategories', 'corporates.subcat_id', '=', 'subcategories.subcat_id')
+            ->join('products', 'corporates.product_id', '=', 'products.product_id')
+            ->join('users', 'corporates.assigned_to', '=', 'users.id')
+            ->count();
+
+        // Paginate the results
+        $companyPurchase = $query->offset($start)->limit($length)->get();
+
+        // Filtered records count
+        $filteredRecords = $query->count();
+
+        // Format the date field
+        $companyPurchase = $companyPurchase->map(function($item) {
+            if ($item->filter_change_on) {
+                $item->filter_change_on = Carbon::parse($item->filter_change_on)->format('d-m-Y');
+            }
+            return $item;
+        });
+
+        return response()->json([
+            'draw' => $draw,
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $companyPurchase
+        ]);
+    }
+    return response()->json(['error' => 'Invalid request'], 400);
+}
+
     
     public function show($id)
     {

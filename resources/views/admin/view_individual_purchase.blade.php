@@ -432,6 +432,7 @@
     </div>
 </div>
 
+
 @endsection
 @push('scripts')
 
@@ -529,10 +530,13 @@
                         <button class="btn btn-danger btn-sm delete-purchase" data-id="${row.individual_id}" data-custid="${row.customerId}" data-cname="${row.p_name}">
                             <i class="bi bi-trash"></i>
                         </button>
+                     
                         
                         <a href="${url}" class="btn btn-info ms-1">
                         <i class="ri-folder-history-line"></i>
-                        </a>                        
+                        </a>   
+                        
+                            
                         </div>
                     `;
                 }
@@ -1047,7 +1051,6 @@ $(document).on('click', '.delete-purchase', function() {
         });
     });
 });
-
 
 
 

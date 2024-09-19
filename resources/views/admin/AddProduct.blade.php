@@ -220,6 +220,7 @@
         <div class="col-11">
             <label for="subcategory-select">SubCategory:</label>
             <select id="subcategory-edit" name="subcategoryId" class="form-select">
+                <option value="">Select Subcategory</option>
                 <option value=""></option>
             </select>
         </div>
@@ -231,7 +232,7 @@
 <div class="row align-items-start justify-content-start">
     <div class="col-11">
     <label>Product:</label>
-            <input type="text" name="product_edit" class="form-control" id="product-edit">
+            <input type="text" name="product_name" class="form-control" id="product-edit">
     </div>
     <div class="col-1 text-start mt-3">
     
@@ -244,7 +245,7 @@
     </div>
    
 </div>   
-        <input type="hidden" name="productId" id="editProductId">
+        <input type="hidden" name="product_id" id="editProductId">
         <button type="submit" class="btn btn-primary mt-2" style="margin-left:290px">Submit</button>
             </form>
             </div>
@@ -458,7 +459,10 @@ $('#SubCategoryForm').on('submit', function(event) {
             data: formData,
             success: function(response) {
                 $('#SubCategoryDetailsModal').modal('hide');
-                alert(response.message);
+                toastr.success(response.message);
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
             },
             error: function(error) {
                 console.log("Error submitting product:", error);
@@ -477,7 +481,10 @@ $('#categoryForm').on('submit', function(event) {
             data: formData,
             success: function(response) { 
                 $('#CategoryDetailsModal').modal('hide');
-                alert(response.message);
+                toastr.success(response.message);
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
                 
             },
             error: function(error) {
@@ -520,50 +527,67 @@ $('#categoryForm').on('submit', function(event) {
 
     //edit product 
   //id="ProductDetailsModal" class="ProductDetail"
-$("#productData").on("click", ".edit-product", function(e){
-              e.preventDefault();
-              var productId = $(this).data('id');
-              $('.EditProductDetails').find('form')[0].reset();
-              $('.EditProductDetails').find('span.error_text').text('');
-               $('#EditProductDetailsModal').modal('show');
-              $.ajax({
-                  method: "GET",
-                  headers: {
-                      Accept: "application/json"
-                  },
-                  url: `{{ url('/admin/products/${productId}/edit') }}`,
-                  data: {
-                      "_token": "{{ csrf_token() }}",
-                      id: productId,
-                  },
-                  dataType: 'json',
-                  success: function(res) 
-                  {               
-                    $('#editProductId').val(res.product_id);
-                    $('#category-edit option[value="'+res.category_id+'"]').attr("selected", "selected"); 
-                    
-                    $('#subcategory-edit option[value="'+res.subcategoryId+'"]').attr("selected", "selected"); 
-  
-                    $('#product-edit').val(res.product_name);  
-                    $('#remarkon').val(res.remarks);             
-                   $('#EditProductDetailsModal').modal('show');
-                  }
-
-              })
-              $('#category-edit').change(function(){
-   
-            $.ajax({
-                url: "{{ url('/admin/subcatSelect') }}?category_id=" + $(this).val(),
-                method: 'GET',
-                success: function(data) {
-                    $('#subcategory-edit').find('option').remove().end();
-                    $('#subcategory-edit').html(data.html);
-                }
-            });            
+  $(document).ready(function() {
+    $("#productData").on("click", ".edit-product", function(e) {
+        e.preventDefault();
+        var productId = $(this).data('id');
         
+        // Reset form and error messages
+        $('.EditProductDetails').find('form')[0].reset();
+        $('.EditProductDetails').find('span.error_text').text('');
+        
+        // Show the modal
+        $('#EditProductDetailsModal').modal('show');
+        
+        $.ajax({
+            method: "GET",
+            headers: {
+                Accept: "application/json"
+            },
+            url: `{{ url('/admin/products/${productId}/edit') }}`,
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: productId
+            },
+            dataType: 'json',
+            success: function(response) {
+                // Populate form fields
+                $('#editProductId').val(response.product_id);
+                $('#category-edit').val(response.category_id); // Set category
+                
+                // Manually trigger the category change event to load subcategories
+                loadSubcategories(response.category_id, function() {
+                    // Ensure subcategory is selected after loading options
+                    $('#subcategory-edit').val(response.subcategoryId);
+                });
+
+                $('#product-edit').val(response.product_name);
+                $('#remarkon').val(response.remarks);
+            }
         });
-      
+    });
+
+    // Function to load subcategories based on selected category
+    function loadSubcategories(categoryId, callback) {
+        $.ajax({
+            url: "{{ url('/admin/subcatSelect') }}?category_id=" + categoryId,
+            method: 'GET',
+            success: function(data) {
+                $('#subcategory-edit').html(data.html);
+                if (callback) {
+                    callback(); // Execute the callback function after loading options
+                }
+            }
         });
+    }
+
+    // Handle category change to load new subcategories
+    $('#category-edit').change(function() {
+        var categoryId = $(this).val();
+        loadSubcategories(categoryId);
+    });
+});
+
 //update product  
 
 $(document).ready(function() {

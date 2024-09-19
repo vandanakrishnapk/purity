@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('nextService');
             $table->bigInteger('amount')->nullable();
             $table->string('remarks')->nullable();
+            $table->string('status');
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('staff_id');           
             $table->foreign('customer_id')->references('individual_id')->on('individuals')->onDelete('cascade');

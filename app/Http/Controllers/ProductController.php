@@ -23,15 +23,19 @@ class ProductController extends Controller
 }
 
 public function edit($id)
-{    
+{      
+   $pro = DB::table('products')
+   ->join('categories','categories.category_id','=','products.category_id')
+   ->join('subcategories','subcategories.subcat_id','=','products.subcategoryId')
+   ->select('products.*','categories.*','subcategories.*')
+   ->where('products.product_id','=',$id)
+   ->first();
 
-   $purchase = Product::findOrFail($id);   
-
-   return response()->json($purchase);
+   return response()->json($pro);
    
 } public function update(Request $request)
 {
-    $productid = $request->productId;
+    $productid = $request->product_id;
 
     // Validate incoming data
     $validator = Validator::make($request->all(), [
@@ -47,7 +51,7 @@ public function edit($id)
         $query = DB::table('products')->where('product_id', $productid)->update([
             'category_id' => $request->category_id,
             'subcategoryId' => $request->subcategoryId, // Make sure this field exists in your table
-            'product_name' => $request->product_edit,
+            'product_name' => $request->product_name,
             'remarks' =>$request->remarks,
         ]);
 
@@ -63,9 +67,9 @@ public function destroy($id)
 {
     try {
         Product::findOrFail($id)->delete();
-        return response()->json(['status' => 1, 'message' => 'User deleted successfully']);
+        return response()->json(['status' => 1, 'message' => 'Product deleted successfully']);
     } catch (\Exception $e) {
-        return response()->json(['status' => 0, 'error' => 'User deletion failed']);
+        return response()->json(['status' => 0, 'error' => 'Product deletion failed']);
     }
 } 
 

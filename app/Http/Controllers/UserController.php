@@ -88,25 +88,7 @@ class UserController extends Controller
             ]);
         }
     } 
-
-
-    //to get users data to datatable
-      
-    // public function getUserData(Request $request)
-    // {
-      
-    //     if ($request->ajax()) {
-    //         $users = User::select(['id','name', 'email', 'mobile','designation'])->where('role','=','1')->get();
-    //         $totalRecords = count($users); // Total records in your data source
-    //         $filteredRecords = count($users); // Number of records after applying filters
-        
-    //         return response()->json(['draw' => request()->get('draw'),
-    //                                 'recordsTotal' => $totalRecords,
-    //                                  'recordsFiltered' => $filteredRecords,
-    //                                   'data' => $users]);
-    //     }
-    //     return response()->json(['error' => 'Invalid request'], 400);
-    // }   
+ 
     public function getUserData(Request $request)
 {
     if ($request->ajax()) {

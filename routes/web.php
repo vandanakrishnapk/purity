@@ -126,6 +126,10 @@ Route::get('/subcentre/edit/{id}',[CompanyController::class,'editSubcentre'])->n
 Route::post('/subcentre/update',[CompanyController::class,'updateSubcentre'])->name('admin.updateSubcentre');
 Route::delete('/subcentre/delete/{id}',[CompanyController::class,'deleteSubcentre'])->name('admin.deleteSubcentre');
 
+//add service for a non purity customer 
+// Route::get('/nonpurity/service/add/{id}',[AdminController::class,'addService']);
+// Route::post('/nonpurity/service/update/{id}',[AdminController::class,'updateServiceStatus']);
+
 });
 
 //user routes

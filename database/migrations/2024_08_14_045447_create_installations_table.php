@@ -16,6 +16,14 @@ return new class extends Migration
             $table->string('rawWater');
             $table->json('sow');  
             $table->string('nextService');
+            $table->date('mainService');
+            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('staff_id');
+            
+            $table->foreign('customer_id')->references('individual_id')->on('individuals')->onDelete('cascade');
+    
+            $table->foreign('staff_id')->references('id')->on('users')->onDelete('cascade');
+    
             $table->timestamps();
         });
     }
